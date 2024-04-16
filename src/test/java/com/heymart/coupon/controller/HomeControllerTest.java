@@ -27,8 +27,8 @@ class HomeControllerTest {
     void testEditProductPage() throws Exception {
         String supermarket = "Raflimart";
 
-        mockMvc.perform(get("/product/edit/" + supermarket))
+        mockMvc.perform(get("/" + supermarket))
                 .andExpect(status().isOk())
-                .andExpect(view().name("Ini isinya list kupon dari " + supermarket + "!"));
+                .andExpect(content().string("Ini isinya list kupon dari " + supermarket + "!"));
     }
 }
