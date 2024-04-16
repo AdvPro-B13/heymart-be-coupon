@@ -34,7 +34,7 @@ public class TransactionCouponTest {
     }
     @Test
     void testCreateCouponSuccess() {
-        TransactionCoupon tCoupon = new TransactionCoupon("id",10,10,20,"Indomaret",0);
+        TransactionCoupon tCoupon = new TransactionCoupon("id",10,15,20,"Indomaret",0);
         assertNotNull(tCoupon.id);
         assertEquals(tCoupon.percentDiscount, 10);
         assertEquals(tCoupon.fixedDiscount, 15);
