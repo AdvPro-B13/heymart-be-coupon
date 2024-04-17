@@ -31,4 +31,13 @@ class HomeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Ini isinya list kupon dari " + supermarket + "!"));
     }
+
+    @Test
+    void createCouponList() throws Exception {
+        String supermarket = "Raflimart";
+
+        mockMvc.perform(get("/create/" + supermarket))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Form pembuatan kupon untuk supermarket " + supermarket + "!"));
+    }
 }
