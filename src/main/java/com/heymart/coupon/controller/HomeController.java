@@ -26,5 +26,8 @@ public class HomeController {
     public String updateCoupon(@PathVariable String supermarket) {
         return "Update kupon untuk supermarket " + supermarket + "!";
     }
-
+    @DeleteMapping("/delete/{supermarket}")
+    public String deleteCoupon(@PathVariable String supermarket) {
+        return "Delete kupon untuk supermarket " + supermarket + "!";
+    }
 }
