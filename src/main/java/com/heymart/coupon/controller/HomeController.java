@@ -12,7 +12,7 @@ public class HomeController {
         return "Ini isinya list kupon dari " + supermarket + "!";
     }
 
-    @GetMapping("/create/{supermarket}")
+    @PostMapping("/create/{supermarket}")
     public String createCoupon(@PathVariable String supermarket) {
         return "Form pembuatan kupon untuk supermarket " + supermarket + "!";
     }

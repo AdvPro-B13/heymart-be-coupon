@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -36,8 +36,8 @@ class HomeControllerTest {
     void createCouponList() throws Exception {
         String supermarket = "Raflimart";
 
-        mockMvc.perform(get("/create/" + supermarket))
+        mockMvc.perform(post("/create/" + supermarket))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Form pembuatan kupon untuk supermarket " + supermarket + "!"));
+                .andExpect(content().string("Pembuatan kupon untuk supermarket " + supermarket + "!"));
     }
 }
