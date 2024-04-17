@@ -55,4 +55,12 @@ class HomeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Update kupon untuk supermarket " + supermarket + "!"));
     }
+    @Test
+    void testDeleteCoupon() throws Exception {
+        String supermarket = "Raflimart";
+
+        mockMvc.perform(delete("/delete/" + supermarket))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Delete kupon untuk supermarket " + supermarket + "!"));
+    }
 }
