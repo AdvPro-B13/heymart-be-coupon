@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("")
 public class HomeController {
 
-    @GetMapping("/{supermarket}")
-    public String getPayments(@PathVariable String supermarket) {
+    @GetMapping("/list/{supermarket}")
+    public String couponList(@PathVariable String supermarket) {
         return "Ini isinya list kupon dari " + supermarket + "!";
     }
 

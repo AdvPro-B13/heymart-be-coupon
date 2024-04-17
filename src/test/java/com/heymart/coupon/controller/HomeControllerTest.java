@@ -24,10 +24,10 @@ class HomeControllerTest {
     }
 
     @Test
-    void testEditProductPage() throws Exception {
+    void testCouponList() throws Exception {
         String supermarket = "Raflimart";
 
-        mockMvc.perform(get("/" + supermarket))
+        mockMvc.perform(get("/list/" + supermarket))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Ini isinya list kupon dari " + supermarket + "!"));
     }
