@@ -7,6 +7,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("")
 public class HomeController {
 
+    @GetMapping("/")
+    public String helloWorld() {
+        return "Hello World!";
+    }
+
     @GetMapping("/list/{supermarket}")
     public String couponList(@PathVariable String supermarket) {
         return "Ini isinya list kupon dari " + supermarket + "!";
