@@ -24,6 +24,13 @@ class HomeControllerTest {
     }
 
     @Test
+    void helloWorld() throws Exception {
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Hello World!"));
+    }
+
+    @Test
     void testCouponList() throws Exception {
         String supermarket = "Raflimart";
 
