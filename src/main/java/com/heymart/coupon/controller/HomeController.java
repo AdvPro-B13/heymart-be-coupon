@@ -19,7 +19,12 @@ public class HomeController {
 
     @PostMapping("/create/{supermarket}")
     public String createCoupon(@PathVariable String supermarket) {
-        return "Form pembuatan kupon untuk supermarket " + supermarket + "!";
+        return "Pembuatan kupon untuk supermarket " + supermarket + "!";
+    }
+
+    @PutMapping("/update/{supermarket}")
+    public String updateCoupon(@PathVariable String supermarket) {
+        return "Update kupon untuk supermarket " + supermarket + "!";
     }
 
 }
