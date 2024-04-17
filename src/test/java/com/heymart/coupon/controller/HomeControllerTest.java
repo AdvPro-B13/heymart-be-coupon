@@ -40,11 +40,19 @@ class HomeControllerTest {
     }
 
     @Test
-    void createCouponList() throws Exception {
+    void testCreateCoupon() throws Exception {
         String supermarket = "Raflimart";
 
         mockMvc.perform(post("/create/" + supermarket))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Pembuatan kupon untuk supermarket " + supermarket + "!"));
+    }
+    @Test
+    void testUpdateCoupon() throws Exception {
+        String supermarket = "Raflimart";
+
+        mockMvc.perform(put("/update/" + supermarket))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Update kupon untuk supermarket " + supermarket + "!"));
     }
 }
