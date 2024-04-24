@@ -20,7 +20,6 @@ public class CouponBuilderTest {
                 .setMaxDiscount(300)
                 .setSupermarket("Indomaret")
                 .setIdProduct("P01")
-                .setMinTransaction(0)
                 .getResult();
 
         assertEquals("id1", coupon.getId());
