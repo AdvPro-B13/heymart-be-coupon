@@ -35,14 +35,8 @@ public class Coupon {
     int minTransaction;
     public Coupon() {
     }
-    public Coupon(String id, String type, int percentDiscount, int fixedDiscount,
+    public Coupon(String type, int percentDiscount, int fixedDiscount,
                          int maxDiscount, String supermarket, String idProduct, int minTransaction) {
-        if (id == null) {
-            throw new IllegalArgumentException();
-        } else {
-            this.id = id;
-        }
-
         if (CouponType.contains(type)) {
                 this.type = type;
         } else {

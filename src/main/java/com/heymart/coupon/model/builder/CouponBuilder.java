@@ -1,7 +1,6 @@
 package com.heymart.coupon.model.builder;
 import com.heymart.coupon.model.Coupon;
 public class CouponBuilder {
-    String id;
     String type;
     int percentDiscount;
     int fixedDiscount;
@@ -10,11 +9,6 @@ public class CouponBuilder {
     String idProduct;
     int minTransaction;
 
-
-    public CouponBuilder setId(String id) {
-        this.id = id;
-        return this;
-    }
 
     public CouponBuilder setType(String type) {
         this.type = type;
@@ -52,6 +46,6 @@ public class CouponBuilder {
     }
 
     public Coupon getResult() {
-        return new Coupon(id, type, percentDiscount, fixedDiscount, maxDiscount, supermarket, idProduct, minTransaction);
+        return new Coupon(type, percentDiscount, fixedDiscount, maxDiscount, supermarket, idProduct, minTransaction);
     }
 }

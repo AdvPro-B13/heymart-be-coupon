@@ -13,7 +13,6 @@ public class CouponBuilderTest {
     @Test
     void testCouponBuilder() {
         Coupon coupon = new CouponBuilder()
-                .setId("id1")
                 .setType(CouponType.PRODUCT.getValue())
                 .setPercentDiscount(20)
                 .setFixedDiscount(100)
@@ -22,7 +21,6 @@ public class CouponBuilderTest {
                 .setIdProduct("P01")
                 .getResult();
 
-        assertEquals("id1", coupon.getId());
         assertEquals(CouponType.PRODUCT.getValue(), coupon.getType());
         assertEquals(20, coupon.getPercentDiscount());
         assertEquals(100, coupon.getFixedDiscount());
@@ -36,7 +34,6 @@ public class CouponBuilderTest {
     void testCouponBuilderWithNullValues() {
         assertThrows(IllegalArgumentException.class, () -> {
             Coupon coupon = new CouponBuilder()
-                    .setId(null)
                     .setType(null)
                     .setPercentDiscount(-20)
                     .setFixedDiscount(-100)

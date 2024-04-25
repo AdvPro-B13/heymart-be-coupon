@@ -1,6 +1,7 @@
 package com.heymart.coupon.service;
 
 import com.heymart.coupon.model.Coupon;
+import com.heymart.coupon.model.builder.CouponBuilder;
 import com.heymart.coupon.model.enums.CouponType;
 import com.heymart.coupon.repository.CouponRepository;
 import com.heymart.coupon.service.CouponService;
@@ -82,8 +83,15 @@ public class CouponServiceTest {
     @Test
     public void testFindAllCoupons() {
         List<Coupon> couponList = new ArrayList<>();
-        Coupon coupon = new Coupon("id1", CouponType.PRODUCT.getValue(), 20, 100, 300, "Indomaret", "P01", 0);
-        assertEquals("id1", coupon.getId());
+        Coupon coupon = new CouponBuilder()
+                .setType(CouponType.PRODUCT.getValue())
+                .setPercentDiscount(20)
+                .setFixedDiscount(100)
+                .setMaxDiscount(300)
+                .setSupermarket("Indomaret")
+                .setIdProduct("P01")
+                .getResult();;
+
         assertEquals(CouponType.PRODUCT.getValue(), coupon.getType());
         assertEquals(20, coupon.getPercentDiscount());
         assertEquals(100, coupon.getFixedDiscount());
