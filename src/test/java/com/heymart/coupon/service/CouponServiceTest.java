@@ -15,8 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class CouponServiceTest {
@@ -34,10 +33,14 @@ public class CouponServiceTest {
 
     @Test
     void testCreateAndFind() {
-        Coupon coupon = new Coupon();
-        coupon.setId("1");
-        coupon.setType("Product");
-        coupon.setPercentDiscount(10);
+        Coupon coupon = new CouponBuilder()
+                .setType(CouponType.PRODUCT.getValue())
+                .setPercentDiscount(20)
+                .setFixedDiscount(100)
+                .setMaxDiscount(300)
+                .setSupermarket("Indomaret")
+                .setIdProduct("P01")
+                .getResult();;
 
         when(couponRepository.save(any())).thenReturn(coupon);
 
@@ -52,31 +55,48 @@ public class CouponServiceTest {
 
     @Test
     public void testEditCoupon() {
-        Coupon editedCoupon = new Coupon();
-        editedCoupon.setId("1");
-        editedCoupon.setType("Product");
-        editedCoupon.setPercentDiscount(15);
+        Coupon coupon = new CouponBuilder()
+                .setType(CouponType.PRODUCT.getValue())
+                .setPercentDiscount(20)
+                .setFixedDiscount(100)
+                .setMaxDiscount(300)
+                .setSupermarket("Indomaret")
+                .setIdProduct("P01")
+                .getResult();;
 
-        when(couponRepository.save(any())).thenReturn(editedCoupon);
+        when(couponRepository.save(any())).thenReturn(coupon);
+        coupon.setMaxDiscount(250);
+        Coupon updatedCoupon = couponService.edit(coupon);
 
-        Coupon updatedCoupon = couponService.edit(editedCoupon);
-
-        assertEquals(editedCoupon.getId(), updatedCoupon.getId());
-        assertEquals(editedCoupon.getType(), updatedCoupon.getType());
-        assertEquals(editedCoupon.getPercentDiscount(), updatedCoupon.getPercentDiscount());
-
+        assertEquals(coupon.getId(), updatedCoupon.getId());
+        assertEquals(coupon.getMaxDiscount(), 250);
+        assertEquals(updatedCoupon.getMaxDiscount(), 250);
         verify(couponRepository, times(1)).save(any());
     }
 
     @Test
     public void testDeleteCoupon() {
-        Coupon coupon = new Coupon();
-        coupon.setId("1");
-        coupon.setType("Product");
-        coupon.setPercentDiscount(10);
+        Coupon coupon = new CouponBuilder()
+                .setType(CouponType.PRODUCT.getValue())
+                .setPercentDiscount(20)
+                .setFixedDiscount(100)
+                .setMaxDiscount(300)
+                .setSupermarket("Indomaret")
+                .setIdProduct("P01")
+                .getResult();
+
+        List<Coupon> couponList = new ArrayList<>();
+        couponList.add(coupon);
+        when(couponRepository.findAll()).thenReturn(couponList);
+        List<Coupon> foundCoupons = couponService.findAll();
 
         couponService.delete(coupon);
+        List<Coupon> couponList2 = new ArrayList<>();
+        when(couponRepository.findAll()).thenReturn(couponList2);
+        List<Coupon> foundCoupons2 = couponService.findAll();
 
+        assertFalse(foundCoupons.isEmpty());
+        assertTrue(foundCoupons2.isEmpty());
         verify(couponRepository, times(1)).delete(any());
     }
 
