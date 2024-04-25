@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class CouponServiceImpl {
+public class CouponServiceImpl implements CouponService{
     @Autowired
     private CouponRepository couponRepository;
     public Coupon createCoupon(Coupon coupon) {
