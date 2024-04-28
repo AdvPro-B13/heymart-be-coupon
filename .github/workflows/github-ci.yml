@@ -30,6 +30,8 @@ jobs:
       - name: Build with Gradle
         run: |
           ./gradlew assemble
+        env:
+          JDBC_DATABASE_PASSWORD: ${{ secrets.JDBC_DATABASE_PASSWORD }}
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -63,6 +65,9 @@ jobs:
           ./gradlew check --info --stacktrace
           ./gradlew test
           ./gradlew jacocoTestReport
+        env:
+          JDBC_DATABASE_PASSWORD: ${{ secrets.JDBC_DATABASE_PASSWORD }}
+
   publish:
     name: Publish Docker Image
     runs-on: ubuntu-latest
