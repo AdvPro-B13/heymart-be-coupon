@@ -3,7 +3,7 @@ name: Github CI
 on:
   push:
     branches:
-      - development
+      - staging
 
 jobs:
   build:
@@ -63,11 +63,6 @@ jobs:
           ./gradlew check --info --stacktrace
           ./gradlew test
           ./gradlew jacocoTestReport
-      - name: Upload test results
-        uses: actions/upload-artifact@v2
-        with:
-          name: test-results
-          path: /home/runner/work/heymart-be-coupon/heymart-be-coupon/build/test-results/test
   publish:
     name: Publish Docker Image
     runs-on: ubuntu-latest
