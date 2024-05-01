@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
-@Setter
 @Getter
 @MappedSuperclass
 public abstract class Coupon {
@@ -52,5 +51,25 @@ public abstract class Coupon {
         } else {
             this.supermarketName = supermarketName;
         }
+    }
+    public void setPercentDiscount(int percentDiscount) {
+        if (percentDiscount < 0) {
+            throw new IllegalArgumentException("Percent discount cannot be negative");
+        }
+        this.percentDiscount = percentDiscount;
+    }
+
+    public void setFixedDiscount(int fixedDiscount) {
+        if (fixedDiscount < 0) {
+            throw new IllegalArgumentException("Fixed discount cannot be negative");
+        }
+        this.fixedDiscount = fixedDiscount;
+    }
+
+    public void setMaxDiscount(int maxDiscount) {
+        if (maxDiscount < this.fixedDiscount) {
+            throw new IllegalArgumentException("Max discount must be greater than or equal to fixed discount");
+        }
+        this.maxDiscount = maxDiscount;
     }
 }

@@ -4,7 +4,6 @@ package com.heymart.coupon.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-@Setter
 @Getter
 @Entity
 @Table(name = "TransactionCoupon")
@@ -25,5 +24,9 @@ public class TransactionCoupon extends Coupon {
         } else {
             this.minTransaction = minTransaction;
         }
+    }
+
+    public void setMinTransaction(int minTransaction) {
+        this.minTransaction = minTransaction;
     }
 }
