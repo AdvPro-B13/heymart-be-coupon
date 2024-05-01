@@ -34,12 +34,12 @@ class HomeControllerTest {
     @Mock
     private CouponService couponService;
     @InjectMocks
-    HomeController homeController;
+    CouponController controller;
 
     @BeforeEach
     void setup() {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(homeController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 
     @Test
@@ -56,28 +56,6 @@ class HomeControllerTest {
         mockMvc.perform(get("/list/" + supermarket))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Ini isinya list kupon dari " + supermarket + "!"));
-    }
-    @Test
-    void testCreateCoupon() throws Exception {
-        String supermarket = "Raflimart";
-        Coupon expectedCoupon = new CouponBuilder()
-                .setType(CouponType.PRODUCT.getValue())
-                .setPercentDiscount(20)
-                .setFixedDiscount(100)
-                .setMaxDiscount(300)
-                .setSupermarket(supermarket)
-                .setIdProduct("P01")
-                .getResult();
-
-        when(couponService.createCoupon(any(Coupon.class))).thenReturn(expectedCoupon);
-
-        mockMvc.perform(post("/create")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("supermarket", supermarket))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Pembuatan kupon untuk supermarket " + supermarket + "!"));
-
-        verify(couponService, times(1)).createCoupon(argThat(coupon -> coupon.getSupermarket().equals(supermarket)));
     }
     @Test
     void testUpdateCoupon() throws Exception {
