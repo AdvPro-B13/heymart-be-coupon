@@ -1,51 +1,30 @@
 package com.heymart.coupon.model.builder;
-import com.heymart.coupon.model.Coupon;
-public class CouponBuilder {
-    String type;
-    int percentDiscount;
-    int fixedDiscount;
-    int maxDiscount;
-    String supermarket;
-    String idProduct;
-    int minTransaction;
 
+public abstract class CouponBuilder<T extends CouponBuilder<T>> {
+    protected int percentDiscount;
+    protected int fixedDiscount;
+    protected int maxDiscount;
+    protected String supermarketName;
 
-    public CouponBuilder setType(String type) {
-        this.type = type;
-        return this;
-    }
-
-    public CouponBuilder setPercentDiscount(int percentDiscount) {
+    public T setPercentDiscount(int percentDiscount) {
         this.percentDiscount = percentDiscount;
-        return this;
+        return self();
     }
 
-    public CouponBuilder setFixedDiscount(int fixedDiscount) {
+    public T setFixedDiscount(int fixedDiscount) {
         this.fixedDiscount = fixedDiscount;
-        return this;
+        return self();
     }
 
-    public CouponBuilder setIdProduct(String idProduct) {
-        this.idProduct = idProduct;
-        return this;
-    }
-
-    public CouponBuilder setMaxDiscount(int maxDiscount) {
+    public T setMaxDiscount(int maxDiscount) {
         this.maxDiscount = maxDiscount;
-        return this;
+        return self();
     }
 
-    public CouponBuilder setMinTransaction(int minTransaction) {
-        this.minTransaction = minTransaction;
-        return this;
+    public T setSupermarketName(String supermarketName) {
+        this.supermarketName = supermarketName;
+        return self();
     }
 
-    public CouponBuilder setSupermarket(String supermarket) {
-        this.supermarket = supermarket;
-        return this;
-    }
-
-    public Coupon getResult() {
-        return new Coupon(type, percentDiscount, fixedDiscount, maxDiscount, supermarket, idProduct, minTransaction);
-    }
+    protected abstract T self();
 }
