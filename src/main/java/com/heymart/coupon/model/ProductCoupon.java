@@ -11,7 +11,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "ProductCoupon")
 public class ProductCoupon extends Coupon {
 
-    @Column(name = "id_product")
+    @Column(name = "id_product", nullable = false)
     private String idProduct;
 
     // Protected no-arg constructor for JPA

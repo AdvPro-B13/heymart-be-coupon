@@ -11,7 +11,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "TransactionCoupon")
 public class TransactionCoupon extends Coupon {
 
-    @Column(name = "min_transaction")
+    @Column(name = "min_transaction", nullable = false)
     private int minTransaction;
 
     // Protected no-arg constructor for JPA

@@ -11,7 +11,8 @@ import org.hibernate.annotations.GenericGenerator;
 @MappedSuperclass
 public abstract class Coupon {
     @Id
-    @GeneratedValue(generator = "UUID")
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "id", updatable = false, nullable = false)
     private String id;
 
