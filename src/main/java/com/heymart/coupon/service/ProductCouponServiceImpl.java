@@ -14,39 +14,39 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class TransactionCouponServiceImpl implements CouponService{
+public class ProductCouponServiceImpl implements CouponService {
 
     @Autowired
-    private TransactionCouponRepository transactionCouponRepository;
+    private ProductCouponRepository productCouponRepository;
 
-    public TransactionCoupon createCoupon(CouponRequest request) {
-        TransactionCoupon coupon = new TransactionCouponBuilder()
+    public ProductCoupon createCoupon(CouponRequest request) {
+        ProductCoupon coupon = new ProductCouponBuilder()
                 .setPercentDiscount(request.getPercentDiscount())
                 .setFixedDiscount(request.getFixedDiscount())
                 .setMaxDiscount(request.getMaxDiscount())
                 .setSupermarketName(request.getSupermarketName())
-                .setMinTransaction(request.getMinTransaction())
+                .setIdProduct(request.getIdProduct())
                 .build();
-        return transactionCouponRepository.save(coupon);
+        return productCouponRepository.save(coupon);
     }
 
-    public TransactionCoupon updateCoupon(CouponRequest request) {
-        Optional<TransactionCoupon>optional = transactionCouponRepository.findById(request.getId());
-        TransactionCoupon coupon = optional.orElseThrow(() -> new RuntimeException("Coupon not found"));
+    public ProductCoupon updateCoupon(CouponRequest request) {
+        Optional<ProductCoupon>optional = productCouponRepository.findById(request.getId());
+        ProductCoupon coupon = optional.orElseThrow(() -> new RuntimeException("Coupon not found"));
         coupon.setPercentDiscount(request.getPercentDiscount());
         coupon.setFixedDiscount(request.getFixedDiscount());
         coupon.setMaxDiscount(request.getMaxDiscount());
-        coupon.setMinTransaction(request.getMinTransaction());
-        return transactionCouponRepository.save(coupon);
+        return productCouponRepository.save(coupon);
     }
 
     public void deleteCoupon(CouponRequest request) {
-        Optional<TransactionCoupon>optional = transactionCouponRepository.findById(request.getId());
-        TransactionCoupon coupon = optional.orElseThrow(() -> new RuntimeException("Coupon not found"));
-        transactionCouponRepository.delete(coupon);
+        Optional<ProductCoupon>optional = productCouponRepository.findById(request.getId());
+        ProductCoupon coupon = optional.orElseThrow(() -> new RuntimeException("Coupon not found"));
+        productCouponRepository.delete(coupon);
     }
 
-    public List<TransactionCoupon> findAllCoupons() {
-        return transactionCouponRepository.findAll();
+    public List<ProductCoupon> findAllCoupons() {
+        return productCouponRepository.findAll();
     }
+
 }
