@@ -64,13 +64,13 @@ class ProductCouponServiceImplTest {
 
         when(productCouponRepository.save(any(ProductCoupon.class))).thenReturn(coupon);
 
-        ProductCoupon result = productCouponService.createCoupon(request);
+        productCouponService.createCoupon(request);
 
         coupon.setPercentDiscount(20);
 
         when(productCouponRepository.findById(coupon.getId())).thenReturn(Optional.of(coupon));
 
-        result = productCouponService.updateCoupon(request);
+        ProductCoupon result = productCouponService.updateCoupon(request);
         assertNotNull(result);
         verify(productCouponRepository).save(coupon);
     }
