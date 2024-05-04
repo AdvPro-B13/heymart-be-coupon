@@ -76,6 +76,23 @@ class ProductCouponServiceImplTest {
     }
 
     @Test
+    public void testUpdateNonExistingProductCoupon() {
+        CouponRequest request = new CouponRequest("non-existing-id", 20, 10, 25, "Supermarket", "123", 0);
+
+        when(productCouponRepository.findById(request.getId())).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            productCouponService.updateCoupon(request);
+        });
+
+        assertEquals("Coupon not found", exception.getMessage());
+
+        verify(productCouponRepository, times(1)).findById(request.getId());
+        verify(productCouponRepository, never()).save(any(ProductCoupon.class));
+    }
+
+
+    @Test
     void deleteCoupon_shouldDeleteCoupon() {
         ProductCoupon coupon = new ProductCouponBuilder()
                 .setPercentDiscount(10)
@@ -88,6 +105,20 @@ class ProductCouponServiceImplTest {
         when(productCouponRepository.findById(coupon.getId())).thenReturn(Optional.of(coupon));
         productCouponService.deleteCoupon(new CouponRequest(coupon.getId(),0,0,0,null,null,0));
         verify(productCouponRepository).delete(coupon);
+    }
+
+    @Test
+    void deleteCoupon_shouldThrowRuntimeExceptionWhenCouponNotFound() {
+        CouponRequest request = new CouponRequest("nonexistent-id", 10, 5, 15, "Supermarket", "123", 0);
+
+        when(productCouponRepository.findById(anyString())).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            productCouponService.deleteCoupon(request);
+        });
+
+        assertEquals("Coupon not found", exception.getMessage());
+        verify(productCouponRepository).findById("nonexistent-id");
     }
 
     @Test
