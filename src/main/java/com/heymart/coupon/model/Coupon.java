@@ -63,6 +63,9 @@ public abstract class Coupon {
         if (fixedDiscount < 0) {
             throw new IllegalArgumentException("Fixed discount cannot be negative");
         }
+        if (this.maxDiscount < fixedDiscount) {
+            throw new IllegalArgumentException("Max discount must be greater than or equal to fixed discount");
+        }
         this.fixedDiscount = fixedDiscount;
     }
 
