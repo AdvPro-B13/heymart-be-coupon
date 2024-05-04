@@ -38,7 +38,15 @@ public class CouponControllerTest {
 
     @Test
     public void testCreateProductCoupon() {
-        CouponRequest request = new CouponRequest(null,10, 5, 15, "Supermarket", "123",0);
+        CouponRequest request = new CouponRequest();
+
+        request.setPercentDiscount(10);
+        request.setFixedDiscount(5);
+        request.setMaxDiscount(15);
+        request.setSupermarketName("Supermarket");
+        request.setIdProduct("123");
+        request.setMinTransaction(0);
+
         ProductCoupon coupon = new ProductCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
