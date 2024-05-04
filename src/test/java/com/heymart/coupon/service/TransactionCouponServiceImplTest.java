@@ -1,6 +1,7 @@
 package com.heymart.coupon.service;
 
 import com.heymart.coupon.dto.CouponRequest;
+import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.TransactionCoupon;
 import com.heymart.coupon.model.builder.TransactionCouponBuilder;
 import com.heymart.coupon.repository.TransactionCouponRepository;
@@ -76,6 +77,23 @@ class TransactionCouponServiceImplTest {
     }
 
     @Test
+    public void testUpdateNonExistingCoupon() {
+        CouponRequest request = new CouponRequest("non-existing-id", 20, 10, 25, "Supermarket", "123", 0);
+
+        when(transactionCouponRepository.findById(request.getId())).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            transactionCouponService.updateCoupon(request);
+        });
+
+        assertEquals("Coupon not found", exception.getMessage());
+
+        verify(transactionCouponRepository, times(1)).findById(request.getId());
+        verify(transactionCouponRepository, never()).save(any(TransactionCoupon.class));
+    }
+
+
+    @Test
     void deleteCoupon_shouldDeleteCoupon() {
         TransactionCoupon coupon = new TransactionCouponBuilder()
                 .setPercentDiscount(10)
@@ -89,7 +107,19 @@ class TransactionCouponServiceImplTest {
         transactionCouponService.deleteCoupon(new CouponRequest(coupon.getId(),0,0,0,null,null,0));
         verify(transactionCouponRepository).delete(coupon);
     }
+    @Test
+    void deleteCoupon_shouldThrowRuntimeExceptionWhenCouponNotFound() {
+        CouponRequest request = new CouponRequest("nonexistent-id", 10, 5, 15, "Supermarket", "123", 0);
 
+        when(transactionCouponRepository.findById(anyString())).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            transactionCouponService.deleteCoupon(request);
+        });
+
+        assertEquals("Coupon not found", exception.getMessage());
+        verify(transactionCouponRepository).findById("nonexistent-id");
+    }
     @Test
     void findAllCoupons_shouldReturnListOfCoupons() {
         TransactionCoupon coupon = new TransactionCouponBuilder()
