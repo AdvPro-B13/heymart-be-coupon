@@ -1,7 +1,6 @@
 package com.heymart.coupon.service;
 
 import com.heymart.coupon.dto.CouponRequest;
-import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.TransactionCoupon;
 import com.heymart.coupon.model.builder.TransactionCouponBuilder;
 import com.heymart.coupon.repository.TransactionCouponRepository;

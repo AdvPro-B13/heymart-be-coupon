@@ -2,8 +2,6 @@ package com.heymart.coupon.service;
 
 import com.heymart.coupon.dto.CouponRequest;
 import com.heymart.coupon.model.Coupon;
-import com.heymart.coupon.model.ProductCoupon;
-import com.heymart.coupon.model.TransactionCoupon;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -3,7 +3,6 @@ package com.heymart.coupon.controller;
 import com.heymart.coupon.dto.CouponRequest;
 import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.TransactionCoupon;
-import com.heymart.coupon.service.CouponService;
 import com.heymart.coupon.service.ProductCouponServiceImpl;
 import com.heymart.coupon.service.TransactionCouponServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;

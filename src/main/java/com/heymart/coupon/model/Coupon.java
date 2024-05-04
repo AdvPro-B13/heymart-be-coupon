@@ -2,7 +2,6 @@ package com.heymart.coupon.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 @Getter
 @MappedSuperclass
@@ -64,7 +63,7 @@ public abstract class Coupon {
             throw new IllegalArgumentException("Fixed discount cannot be negative");
         }
         if (this.maxDiscount < fixedDiscount) {
-            throw new IllegalArgumentException("Max discount must be greater than or equal to fixed discount");
+            throw new IllegalArgumentException("Fixed discount must be smaller than or equal to Max Discount");
         }
         this.fixedDiscount = fixedDiscount;
     }

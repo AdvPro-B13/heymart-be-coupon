@@ -113,7 +113,7 @@ class ProductCouponTest {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 coupon.setFixedDiscount(30)
         );
-        assertTrue(ex.getMessage().contains("Max discount must be greater than or equal to fixed discount"));
+        assertTrue(ex.getMessage().contains("Fixed discount must be smaller than or equal to Max Discount"));
     }
     @Test
     void setTooSmallMaxDiscount() {

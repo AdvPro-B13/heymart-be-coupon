@@ -3,7 +3,6 @@ package com.heymart.coupon.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 @Getter
 @Entity
 @Table(name = "TransactionCoupon")
