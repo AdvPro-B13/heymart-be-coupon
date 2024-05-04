@@ -18,6 +18,12 @@ jobs:
           distribution: "temurin"
           java-version: "21"
           cache: "gradle"
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
       - name: Cache Gradle dependencies
         uses: actions/cache@v4
         with:
@@ -27,6 +33,11 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Make gradlew executable
         run: chmod +x ./gradlew
+      - name: Build and analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew build sonar --info
       - name: Build with Gradle
         run: |
           ./gradlew assemble
@@ -37,6 +48,7 @@ jobs:
         with:
           name: java-app
           path: build/libs/*.jar
+
 
   test:
     name: Test
