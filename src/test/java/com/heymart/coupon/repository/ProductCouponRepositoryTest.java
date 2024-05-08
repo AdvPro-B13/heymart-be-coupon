@@ -70,4 +70,5 @@ public class ProductCouponRepositoryTest {
             repository.deleteById("nonexistentId");
         });
     }
+
 }
