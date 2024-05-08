@@ -1,10 +1,10 @@
-package com.heymart.coupon.service;
+package com.heymart.coupon.service.coupon;
 
 import com.heymart.coupon.dto.CouponRequest;
 import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.builder.ProductCouponBuilder;
 import com.heymart.coupon.repository.CouponRepository;
-import com.heymart.coupon.repository.ProductCouponRepository;
+import com.heymart.coupon.service.coupon.ProductCouponServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
