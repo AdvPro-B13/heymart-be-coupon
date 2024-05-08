@@ -1,7 +1,9 @@
 package com.heymart.coupon.service.coupon;
 
 import com.heymart.coupon.dto.CouponRequest;
+import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.TransactionCoupon;
+import com.heymart.coupon.model.builder.ProductCouponBuilder;
 import com.heymart.coupon.model.builder.TransactionCouponBuilder;
 import com.heymart.coupon.repository.TransactionCouponRepository;
 import com.heymart.coupon.service.coupon.TransactionCouponServiceImpl;
@@ -178,5 +180,36 @@ class TransactionCouponServiceImplTest {
         Exception exception = assertThrows(RuntimeException.class, () -> {
             transactionCouponService.findById(couponId);
         });
+    }
+    @Test
+    public void testFindBySupermarketName() {
+        // Mock data
+        String supermarketName = "TestMart";
+        TransactionCoupon coupon = new TransactionCouponBuilder()
+                .setPercentDiscount(10)
+                .setFixedDiscount(5)
+                .setMaxDiscount(15)
+                .setSupermarketName("Supermarket")
+                .setMinTransaction(5)
+                .build();
+
+        TransactionCoupon coupon2 = new TransactionCouponBuilder()
+                .setPercentDiscount(10)
+                .setFixedDiscount(5)
+                .setMaxDiscount(15)
+                .setSupermarketName("Supermarket 2")
+                .setMinTransaction(5)
+                .build();
+        List<TransactionCoupon> expectedCoupons = Arrays.asList(coupon);
+
+        // Stubbing the method call
+        when(transactionCouponRepository.findBySupermarketName(supermarketName)).thenReturn(expectedCoupons);
+
+        // Calling the method under test
+        List<TransactionCoupon> actualCoupons = transactionCouponService.findBySupermarketName(supermarketName);
+
+        // Assertions
+        assertEquals(expectedCoupons.size(), actualCoupons.size());
+        assertEquals(expectedCoupons, actualCoupons);
     }
 }

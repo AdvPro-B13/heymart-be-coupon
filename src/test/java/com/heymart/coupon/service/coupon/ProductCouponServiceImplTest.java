@@ -4,6 +4,7 @@ import com.heymart.coupon.dto.CouponRequest;
 import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.builder.ProductCouponBuilder;
 import com.heymart.coupon.repository.CouponRepository;
+import com.heymart.coupon.repository.ProductCouponRepository;
 import com.heymart.coupon.service.coupon.ProductCouponServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ import static org.mockito.Mockito.*;
 class ProductCouponServiceImplTest {
 
     @Mock
-    private CouponRepository<ProductCoupon> productCouponRepository;
+    private ProductCouponRepository productCouponRepository;
 
     @InjectMocks
     private ProductCouponServiceImpl productCouponService;
@@ -179,5 +180,36 @@ class ProductCouponServiceImplTest {
         Exception exception = assertThrows(RuntimeException.class, () -> {
             productCouponService.findById(couponId);
         });
+    }
+    @Test
+    public void testFindBySupermarketName() {
+        // Mock data
+        String supermarketName = "TestMart";
+        ProductCoupon coupon = new ProductCouponBuilder()
+                .setPercentDiscount(10)
+                .setFixedDiscount(5)
+                .setMaxDiscount(15)
+                .setSupermarketName("Supermarket")
+                .setIdProduct("123")
+                .build();
+
+        ProductCoupon coupon2 = new ProductCouponBuilder()
+                .setPercentDiscount(10)
+                .setFixedDiscount(5)
+                .setMaxDiscount(15)
+                .setSupermarketName("Supermarket 2")
+                .setIdProduct("123")
+                .build();
+        List<ProductCoupon> expectedCoupons = Arrays.asList(coupon);
+
+        // Stubbing the method call
+        when(productCouponRepository.findBySupermarketName(supermarketName)).thenReturn(expectedCoupons);
+
+        // Calling the method under test
+        List<ProductCoupon> actualCoupons = productCouponService.findBySupermarketName(supermarketName);
+
+        // Assertions
+        assertEquals(expectedCoupons.size(), actualCoupons.size());
+        assertEquals(expectedCoupons, actualCoupons);
     }
 }
