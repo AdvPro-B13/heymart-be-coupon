@@ -12,4 +12,5 @@ public interface CouponService<T extends Coupon> {
     public void deleteCoupon(CouponRequest request);
     public List<T> findAllCoupons();
     public T findById(String id);
+    public List<T> findBySupermarketName(String supermarketName);
 }

@@ -1,9 +1,11 @@
 package com.heymart.coupon.service.coupon;
 
 import com.heymart.coupon.dto.CouponRequest;
+import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.TransactionCoupon;
 import com.heymart.coupon.model.builder.TransactionCouponBuilder;
 import com.heymart.coupon.repository.CouponRepository;
+import com.heymart.coupon.repository.TransactionCouponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,7 @@ import java.util.Optional;
 public class TransactionCouponServiceImpl implements CouponService<TransactionCoupon>{
 
     @Autowired
-    private CouponRepository<TransactionCoupon> couponRepository;
+    private TransactionCouponRepository couponRepository;
 
     public TransactionCoupon createCoupon(CouponRequest request) {
         TransactionCoupon coupon = new TransactionCouponBuilder()
@@ -53,5 +55,10 @@ public class TransactionCouponServiceImpl implements CouponService<TransactionCo
     public TransactionCoupon findById(String id) {
         Optional<TransactionCoupon>optional = couponRepository.findById(id);
         return optional.orElseThrow(() -> new RuntimeException("Coupon not found"));
+    }
+
+    @Override
+    public List<TransactionCoupon> findBySupermarketName(String supermarketName) {
+        return couponRepository.findBySupermarketName(supermarketName);
     }
 }

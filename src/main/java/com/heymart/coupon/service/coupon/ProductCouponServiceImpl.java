@@ -4,6 +4,7 @@ import com.heymart.coupon.dto.CouponRequest;
 import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.builder.ProductCouponBuilder;
 import com.heymart.coupon.repository.CouponRepository;
+import com.heymart.coupon.repository.ProductCouponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ import java.util.Optional;
 public class ProductCouponServiceImpl implements CouponService<ProductCoupon> {
 
     @Autowired
-    private CouponRepository<ProductCoupon> couponRepository;
+    private ProductCouponRepository couponRepository;
 
     public ProductCoupon createCoupon(CouponRequest request) {
         ProductCoupon coupon = new ProductCouponBuilder()
@@ -51,6 +52,11 @@ public class ProductCouponServiceImpl implements CouponService<ProductCoupon> {
     public ProductCoupon findById(String id) {
         Optional<ProductCoupon>optional = couponRepository.findById(id);
         return optional.orElseThrow(() -> new RuntimeException("Coupon not found"));
+    }
+
+    @Override
+    public List<ProductCoupon> findBySupermarketName(String supermarketName) {
+        return couponRepository.findBySupermarketName(supermarketName);
     }
 
 }
