@@ -1,20 +1,22 @@
-package com.heymart.coupon.service;
+package com.heymart.coupon.service.coupon;
 
 import com.heymart.coupon.dto.CouponRequest;
 import com.heymart.coupon.model.TransactionCoupon;
 import com.heymart.coupon.model.builder.TransactionCouponBuilder;
-import com.heymart.coupon.repository.TransactionCouponRepository;
+import com.heymart.coupon.repository.CouponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class TransactionCouponServiceImpl implements CouponService{
+@Qualifier("transactionCouponService")
+public class TransactionCouponServiceImpl implements CouponService<TransactionCoupon>{
 
     @Autowired
-    private TransactionCouponRepository transactionCouponRepository;
+    private CouponRepository<TransactionCoupon> couponRepository;
 
     public TransactionCoupon createCoupon(CouponRequest request) {
         TransactionCoupon coupon = new TransactionCouponBuilder()
@@ -24,26 +26,32 @@ public class TransactionCouponServiceImpl implements CouponService{
                 .setSupermarketName(request.getSupermarketName())
                 .setMinTransaction(request.getMinTransaction())
                 .build();
-        return transactionCouponRepository.save(coupon);
+        return couponRepository.save(coupon);
     }
 
     public TransactionCoupon updateCoupon(CouponRequest request) {
-        Optional<TransactionCoupon>optional = transactionCouponRepository.findById(request.getId());
+        Optional<TransactionCoupon>optional = couponRepository.findById(request.getId());
         TransactionCoupon coupon = optional.orElseThrow(() -> new RuntimeException("Coupon not found"));
         coupon.setPercentDiscount(request.getPercentDiscount());
         coupon.setFixedDiscount(request.getFixedDiscount());
         coupon.setMaxDiscount(request.getMaxDiscount());
         coupon.setMinTransaction(request.getMinTransaction());
-        return transactionCouponRepository.save(coupon);
+        return couponRepository.save(coupon);
     }
 
     public void deleteCoupon(CouponRequest request) {
-        Optional<TransactionCoupon>optional = transactionCouponRepository.findById(request.getId());
+        Optional<TransactionCoupon>optional = couponRepository.findById(request.getId());
         TransactionCoupon coupon = optional.orElseThrow(() -> new RuntimeException("Coupon not found"));
-        transactionCouponRepository.delete(coupon);
+        couponRepository.delete(coupon);
     }
 
     public List<TransactionCoupon> findAllCoupons() {
-        return transactionCouponRepository.findAll();
+        return couponRepository.findAll();
+    }
+
+    @Override
+    public TransactionCoupon findById(String id) {
+        Optional<TransactionCoupon>optional = couponRepository.findById(id);
+        return optional.orElseThrow(() -> new RuntimeException("Coupon not found"));
     }
 }

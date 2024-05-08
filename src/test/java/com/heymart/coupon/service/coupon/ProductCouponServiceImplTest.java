@@ -3,6 +3,7 @@ package com.heymart.coupon.service;
 import com.heymart.coupon.dto.CouponRequest;
 import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.builder.ProductCouponBuilder;
+import com.heymart.coupon.repository.CouponRepository;
 import com.heymart.coupon.repository.ProductCouponRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ import static org.mockito.Mockito.*;
 class ProductCouponServiceImplTest {
 
     @Mock
-    private ProductCouponRepository productCouponRepository;
+    private CouponRepository<ProductCoupon> productCouponRepository;
 
     @InjectMocks
     private ProductCouponServiceImpl productCouponService;
@@ -146,5 +147,37 @@ class ProductCouponServiceImplTest {
         assertFalse(result.isEmpty());
         assertEquals(2, result.size());
         verify(productCouponRepository).findAll();
+    }
+    @Test
+    public void testFindById_CouponExists() {
+        // Setup
+        String couponId = "123";
+        ProductCoupon mockCoupon = new ProductCouponBuilder()
+                .setPercentDiscount(10)
+                .setFixedDiscount(5)
+                .setMaxDiscount(15)
+                .setSupermarketName("Supermarket")
+                .setIdProduct("123")
+                .build();
+        when(productCouponRepository.findById(couponId)).thenReturn(Optional.of(mockCoupon));
+
+        // Execute
+        ProductCoupon result = productCouponService.findById(couponId);
+
+        // Verify
+        assertNotNull(result);
+        assertEquals(mockCoupon, result);
+    }
+
+    @Test
+    public void testFindById_CouponDoesNotExist() {
+        // Setup
+        String couponId = "unknown";
+        when(productCouponRepository.findById(couponId)).thenReturn(Optional.empty());
+
+        // Execute
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            productCouponService.findById(couponId);
+        });
     }
 }

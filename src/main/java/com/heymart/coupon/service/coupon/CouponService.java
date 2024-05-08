@@ -1,4 +1,4 @@
-package com.heymart.coupon.service;
+package com.heymart.coupon.service.coupon;
 
 import com.heymart.coupon.dto.CouponRequest;
 import com.heymart.coupon.model.Coupon;
@@ -11,4 +11,5 @@ public interface CouponService<T extends Coupon> {
     public T updateCoupon(CouponRequest request);
     public void deleteCoupon(CouponRequest request);
     public List<T> findAllCoupons();
+    public T findById(String id);
 }

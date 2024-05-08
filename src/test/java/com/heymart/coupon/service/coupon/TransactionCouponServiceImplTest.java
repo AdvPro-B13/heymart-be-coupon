@@ -1,7 +1,9 @@
 package com.heymart.coupon.service;
 
 import com.heymart.coupon.dto.CouponRequest;
+import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.TransactionCoupon;
+import com.heymart.coupon.model.builder.ProductCouponBuilder;
 import com.heymart.coupon.model.builder.TransactionCouponBuilder;
 import com.heymart.coupon.repository.TransactionCouponRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -144,5 +146,38 @@ class TransactionCouponServiceImplTest {
         assertFalse(result.isEmpty());
         assertEquals(2, result.size());
         verify(transactionCouponRepository).findAll();
+    }
+
+    @Test
+    public void testFindById_CouponExists() {
+        // Setup
+        String couponId = "123";
+        TransactionCoupon mockCoupon = new TransactionCouponBuilder()
+                .setPercentDiscount(10)
+                .setFixedDiscount(5)
+                .setMaxDiscount(15)
+                .setSupermarketName("Supermarket")
+                .setMinTransaction(50)
+                .build();
+        when(transactionCouponRepository.findById(couponId)).thenReturn(Optional.of(mockCoupon));
+
+        // Execute
+        TransactionCoupon result = transactionCouponService.findById(couponId);
+
+        // Verify
+        assertNotNull(result);
+        assertEquals(mockCoupon, result);
+    }
+
+    @Test
+    public void testFindById_CouponDoesNotExist() {
+        // Setup
+        String couponId = "unknown";
+        when(transactionCouponRepository.findById(couponId)).thenReturn(Optional.empty());
+
+        // Execute
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            transactionCouponService.findById(couponId);
+        });
     }
 }
