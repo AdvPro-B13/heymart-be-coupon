@@ -1,6 +1,7 @@
 package com.heymart.coupon.controller;
 
 import com.heymart.coupon.dto.CouponRequest;
+import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.TransactionCoupon;
 import com.heymart.coupon.service.AuthServiceClient;
 import com.heymart.coupon.service.coupon.CouponService;
@@ -39,6 +40,11 @@ public class TransactionCouponController implements CouponOperations<Transaction
     @Override
     public ResponseEntity<TransactionCoupon> findById(String id) {
         return ResponseEntity.ok(couponService.findById(id));
+    }
+
+    @Override
+    public ResponseEntity<List<TransactionCoupon> > findBySupermarketName(String supermarketName) {
+        return ResponseEntity.ok(couponService.findBySupermarketName(supermarketName));
     }
 
     @Override

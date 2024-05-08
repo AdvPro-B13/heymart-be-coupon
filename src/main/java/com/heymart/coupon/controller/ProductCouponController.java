@@ -33,12 +33,18 @@ public class ProductCouponController implements CouponOperations<ProductCoupon>{
 
     @Override
     public ResponseEntity<List<ProductCoupon>> findAll() {
+
         return ResponseEntity.ok(couponService.findAllCoupons());
     }
 
     @Override
     public ResponseEntity<ProductCoupon> findById(String id) {
         return ResponseEntity.ok(couponService.findById(id));
+    }
+
+    @Override
+    public ResponseEntity<List<ProductCoupon> > findBySupermarketName(String supermarketName) {
+        return ResponseEntity.ok(couponService.findBySupermarketName(supermarketName));
     }
 
     @Override
