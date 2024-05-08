@@ -112,7 +112,7 @@ public class ProductCouponControllerTest {
         List<ProductCoupon> coupons = Arrays.asList(coupon,coupon2); // Mock some data
         given(couponService.findAllCoupons()).willReturn(coupons);
 
-        mockMvc.perform(get("/product-coupon/")
+        mockMvc.perform(get("/product-coupon/all")
                         .header("Authorization", "Bearer valid-token"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2))); // Assert that two coupons are returned
@@ -129,10 +129,33 @@ public class ProductCouponControllerTest {
 
         given(couponService.findById("1")).willReturn(coupon);
 
-        mockMvc.perform(get("/product-coupon/1")
+        mockMvc.perform(get("/product-coupon/id/1")
                         .header("Authorization", "Bearer valid-token"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.maxDiscount", is(15))); // Adjust this depending on the actual properties
+    }
+    @Test
+    public void testFindCouponsBySupermarketName() throws Exception {
+        ProductCoupon coupon = new ProductCouponBuilder()
+                .setPercentDiscount(10)
+                .setFixedDiscount(5)
+                .setMaxDiscount(15)
+                .setSupermarketName("Supermarket")
+                .setIdProduct("123")
+                .build();
+        ProductCoupon coupon2 = new ProductCouponBuilder()
+                .setPercentDiscount(10)
+                .setFixedDiscount(5)
+                .setMaxDiscount(15)
+                .setSupermarketName("Supermarket")
+                .setIdProduct("123")
+                .build();
+        List<ProductCoupon> coupons = Arrays.asList(coupon,coupon2); // Mock some data
+        given(couponService.findBySupermarketName("Supermarket")).willReturn(coupons);
+
+        mockMvc.perform(get("/product-coupon/supermarket/Supermarket"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2))); // Assert that two coupons are returned
     }
     @Test
     public void testUpdateCoupon_Authorized() throws Exception {

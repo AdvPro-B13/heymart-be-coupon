@@ -1,7 +1,9 @@
 package com.heymart.coupon.controller;
 
 import com.heymart.coupon.dto.CouponRequest;
+import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.TransactionCoupon;
+import com.heymart.coupon.model.builder.ProductCouponBuilder;
 import com.heymart.coupon.model.builder.TransactionCouponBuilder;
 import com.heymart.coupon.service.AuthServiceClient;
 import com.heymart.coupon.service.coupon.CouponService;
@@ -112,7 +114,7 @@ public class TransactionCouponControllerTest {
         List<TransactionCoupon> coupons = Arrays.asList(coupon,coupon2); // Mock some data
         given(couponService.findAllCoupons()).willReturn(coupons);
 
-        mockMvc.perform(get("/transaction-coupon/")
+        mockMvc.perform(get("/transaction-coupon/all")
                         .header("Authorization", "Bearer valid-token"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2))); // Assert that two coupons are returned
@@ -129,10 +131,33 @@ public class TransactionCouponControllerTest {
 
         given(couponService.findById("1")).willReturn(coupon);
 
-        mockMvc.perform(get("/transaction-coupon/1")
+        mockMvc.perform(get("/transaction-coupon/id/1")
                         .header("Authorization", "Bearer valid-token"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.maxDiscount", is(15))); // Adjust this depending on the actual properties
+    }
+    @Test
+    public void testFindCouponsBySupermarketName() throws Exception {
+        TransactionCoupon coupon = new TransactionCouponBuilder()
+                .setPercentDiscount(10)
+                .setFixedDiscount(5)
+                .setMaxDiscount(15)
+                .setSupermarketName("Supermarket")
+                .setMinTransaction(0)
+                .build();
+        TransactionCoupon coupon2 = new TransactionCouponBuilder()
+                .setPercentDiscount(10)
+                .setFixedDiscount(5)
+                .setMaxDiscount(15)
+                .setSupermarketName("Supermarket")
+                .setMinTransaction(0)
+                .build();
+        List<TransactionCoupon> coupons = Arrays.asList(coupon,coupon2); // Mock some data
+        given(couponService.findBySupermarketName("Supermarket")).willReturn(coupons);
+
+        mockMvc.perform(get("/transaction-coupon/supermarket/Supermarket"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2))); // Assert that two coupons are returned
     }
     @Test
     public void testUpdateCoupon_Authorized() throws Exception {
