@@ -6,9 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @DataJpaTest
 public class ProductCouponRepositoryTest {
@@ -69,6 +72,41 @@ public class ProductCouponRepositoryTest {
         assertDoesNotThrow(() -> {
             repository.deleteById("nonexistentId");
         });
+    }
+
+    @Test
+    public void TestFindBySupermarketName() {
+        ProductCoupon coupon = new ProductCouponBuilder()
+                .setPercentDiscount(10)
+                .setFixedDiscount(5)
+                .setMaxDiscount(15)
+                .setSupermarketName("Supermarket")
+                .setIdProduct("123")
+                .build();
+        ProductCoupon coupon2 = new ProductCouponBuilder()
+                .setPercentDiscount(10)
+                .setFixedDiscount(5)
+                .setMaxDiscount(15)
+                .setSupermarketName("Supermarket")
+                .setIdProduct("123")
+                .build();
+        ProductCoupon coupon3 = new ProductCouponBuilder()
+                .setPercentDiscount(10)
+                .setFixedDiscount(5)
+                .setMaxDiscount(15)
+                .setSupermarketName("Other Supermarket")
+                .setIdProduct("123")
+                .build();
+        repository.save(coupon);
+        repository.save(coupon2);
+        repository.save(coupon3);
+        List<ProductCoupon> expectedCoupons = Arrays.asList(coupon, coupon2);
+
+        List<ProductCoupon> actualCoupons = repository.findBySupermarketName("Supermarket");
+
+        assertEquals(expectedCoupons.size(), actualCoupons.size());
+        assertEquals(expectedCoupons, actualCoupons);
+
     }
 
 }
