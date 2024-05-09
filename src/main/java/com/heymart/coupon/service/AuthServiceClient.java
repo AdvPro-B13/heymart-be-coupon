@@ -17,7 +17,7 @@ public class AuthServiceClient {
         HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
 
         try {
-            String authServiceUrl = "http://localhost:8081/api/auth/verify";
+            String authServiceUrl = "http://34.142.195.221/api/auth/verify";
             ResponseEntity<?> response = restTemplate.postForEntity(authServiceUrl, entity, String.class);
             return response.getStatusCode() == HttpStatus.OK;
         }
