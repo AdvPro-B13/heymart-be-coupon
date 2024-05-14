@@ -212,4 +212,35 @@ class ProductCouponServiceImplTest {
         assertEquals(expectedCoupons.size(), actualCoupons.size());
         assertEquals(expectedCoupons, actualCoupons);
     }
+    @Test
+    public void testFindByIdProduct_CouponExists() {
+        String idProduct = "123";
+        ProductCoupon mockCoupon = new ProductCouponBuilder()
+                .setPercentDiscount(10)
+                .setFixedDiscount(5)
+                .setMaxDiscount(15)
+                .setSupermarketName("Supermarket")
+                .setIdProduct("123")
+                .build();
+        when(productCouponRepository.findByIdProduct(idProduct)).thenReturn(mockCoupon);
+
+        ProductCoupon result = productCouponService.findByIdProduct(idProduct);
+        assertNotNull(result);
+        assertEquals(mockCoupon, result);
+    }
+    @Test
+    public void testFindByIdProduct_NotFound() {
+        String idProduct = "123";
+        ProductCoupon mockCoupon = new ProductCouponBuilder()
+                .setPercentDiscount(10)
+                .setFixedDiscount(5)
+                .setMaxDiscount(15)
+                .setSupermarketName("Supermarket")
+                .setIdProduct("123")
+                .build();
+        when(productCouponRepository.findByIdProduct(idProduct)).thenReturn(null);
+        assertThrows(RuntimeException.class, () -> {
+            productCouponService.findByIdProduct(idProduct);
+        });
+    }
 }
