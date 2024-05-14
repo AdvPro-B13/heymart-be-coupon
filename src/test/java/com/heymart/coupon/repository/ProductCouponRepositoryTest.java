@@ -88,14 +88,14 @@ public class ProductCouponRepositoryTest {
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
                 .setSupermarketName("Supermarket")
-                .setIdProduct("123")
+                .setIdProduct("124")
                 .build();
         ProductCoupon coupon3 = new ProductCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
                 .setSupermarketName("Other Supermarket")
-                .setIdProduct("123")
+                .setIdProduct("125")
                 .build();
         repository.save(coupon);
         repository.save(coupon2);
@@ -106,7 +106,24 @@ public class ProductCouponRepositoryTest {
 
         assertEquals(expectedCoupons.size(), actualCoupons.size());
         assertEquals(expectedCoupons, actualCoupons);
-
     }
-
+    @Test
+    public void testFindByProductId() {
+        ProductCoupon coupon = new ProductCouponBuilder()
+                .setPercentDiscount(10)
+                .setFixedDiscount(5)
+                .setMaxDiscount(15)
+                .setSupermarketName("TestSupermarket")
+                .setIdProduct("123")
+                .build();ProductCoupon saved = repository.save(coupon);
+        ProductCoupon found = repository.findByIdProduct("123");
+        assertNotNull(found);
+        assertEquals("TestSupermarket", found.getSupermarketName());
+        assertEquals("123", found.getIdProduct());
+    }
+    @Test
+    public void testFindByProductId_NotFound() {
+        ProductCoupon found = repository.findByIdProduct("123");
+        assertNull(found);
+    }
 }
