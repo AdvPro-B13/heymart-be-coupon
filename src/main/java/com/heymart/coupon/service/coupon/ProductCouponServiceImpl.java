@@ -58,5 +58,13 @@ public class ProductCouponServiceImpl implements CouponService<ProductCoupon> {
     public List<ProductCoupon> findBySupermarketName(String supermarketName) {
         return couponRepository.findBySupermarketName(supermarketName);
     }
+    public ProductCoupon findByIdProduct(String idProduct) {
+        ProductCoupon coupon = couponRepository.findByIdProduct(idProduct);
+        if (coupon == null) {
+            throw new RuntimeException("Coupon not found");
+        }
+        return coupon;
+    }
+
 
 }
