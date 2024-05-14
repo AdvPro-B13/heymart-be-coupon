@@ -41,7 +41,7 @@ public class AuthServiceClient {
     }
     public boolean verifySupermarket(String token, String supermarketName) {
         if (token == null || supermarketName == null) {
-            return  false;
+            return false;
         }
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

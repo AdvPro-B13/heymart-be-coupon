@@ -1,9 +1,7 @@
 package com.heymart.coupon.controller;
 
 import com.heymart.coupon.dto.CouponRequest;
-import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.TransactionCoupon;
-import com.heymart.coupon.model.builder.ProductCouponBuilder;
 import com.heymart.coupon.model.builder.TransactionCouponBuilder;
 import com.heymart.coupon.service.AuthServiceClient;
 import com.heymart.coupon.service.coupon.CouponService;
@@ -19,6 +17,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.BDDMockito.*;
@@ -39,15 +38,31 @@ public class TransactionCouponControllerTest {
     @InjectMocks
     private TransactionCouponController controller;
 
+    private TransactionCoupon coupon;
+    private TransactionCoupon coupon2;
     @BeforeEach
     public void setup() {
+        coupon = new TransactionCouponBuilder()
+                .setPercentDiscount(10)
+                .setFixedDiscount(5)
+                .setMaxDiscount(15)
+                .setSupermarketName("Supermarket")
+                .setMinTransaction(0)
+                .build();
+        coupon2 = new TransactionCouponBuilder()
+                .setPercentDiscount(10)
+                .setFixedDiscount(5)
+                .setMaxDiscount(15)
+                .setSupermarketName("Supermarket2")
+                .setMinTransaction(0)
+                .build();
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 
     @Test
     public void testCreateCoupon_Unauthorized() throws Exception {
-        CouponRequest request = new CouponRequest(); // Populate this with test data
+        CouponRequest request = new CouponRequest();
         String authorizationHeader = "Bearer invalid-token";
 
         given(authServiceClient.getTokenFromHeader(authorizationHeader)).willReturn("invalid-token");
@@ -63,30 +78,43 @@ public class TransactionCouponControllerTest {
     public void testCreateCoupon_NullToken() throws Exception {
         CouponRequest request = new CouponRequest();
 
-        given(authServiceClient.getTokenFromHeader("ian gay")).willReturn(null);
+        given(authServiceClient.getTokenFromHeader("")).willReturn(null);
         given(authServiceClient.verifyUserAuthorization("coupon:create", "invalid-token")).willReturn(true);
 
         mockMvc.perform(post("/transaction-coupon/create")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "ian gay")
+                        .header("Authorization", "=")
                         .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized());
+    }
+    @Test
+    public void testCreateCoupon_WrongSupermarket() throws Exception {
+        CouponRequest request = new CouponRequest();
+        request.setSupermarketName("rafli-mart");
+        String authorizationHeader = "Bearer valid-token";
+
+        given(authServiceClient.getTokenFromHeader(authorizationHeader)).willReturn("valid-token");
+        given(authServiceClient.verifyUserAuthorization("coupon:create", "valid-token")).willReturn(true);
+        given(authServiceClient.verifySupermarket("valid-token","rafli-mart")).willReturn(false);
+
+        given(couponService.createCoupon(request)).willReturn(coupon);
+
+        mockMvc.perform(post("/transaction-coupon/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .header("Authorization", authorizationHeader))
                 .andExpect(status().isUnauthorized());
     }
     @Test
     public void testCreateCoupon_Authorized() throws Exception {
         CouponRequest request = new CouponRequest();
+        request.setSupermarketName("rafli-mart");
         String authorizationHeader = "Bearer valid-token";
 
         given(authServiceClient.getTokenFromHeader(authorizationHeader)).willReturn("valid-token");
         given(authServiceClient.verifyUserAuthorization("coupon:create", "valid-token")).willReturn(true);
+        given(authServiceClient.verifySupermarket("valid-token","rafli-mart")).willReturn(true);
 
-        TransactionCoupon coupon = new TransactionCouponBuilder()
-                .setPercentDiscount(10)
-                .setFixedDiscount(5)
-                .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
-                .setMinTransaction(0)
-                .build();
         given(couponService.createCoupon(request)).willReturn(coupon);
 
         mockMvc.perform(post("/transaction-coupon/create")
@@ -97,20 +125,9 @@ public class TransactionCouponControllerTest {
     }
     @Test
     public void testFindAllCoupons_Authorized() throws Exception {
-        TransactionCoupon coupon = new TransactionCouponBuilder()
-                .setPercentDiscount(10)
-                .setFixedDiscount(5)
-                .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
-                .setMinTransaction(0)
-                .build();
-        TransactionCoupon coupon2 = new TransactionCouponBuilder()
-                .setPercentDiscount(10)
-                .setFixedDiscount(5)
-                .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
-                .setMinTransaction(0)
-                .build();
+        String authorizationHeader = "Bearer valid-token";
+        given(authServiceClient.getTokenFromHeader(authorizationHeader)).willReturn("valid-token");
+        given(authServiceClient.verifyUserAuthorization("coupon:read", "valid-token")).willReturn(true);
         List<TransactionCoupon> coupons = Arrays.asList(coupon,coupon2); // Mock some data
         given(couponService.findAllCoupons()).willReturn(coupons);
 
@@ -120,61 +137,77 @@ public class TransactionCouponControllerTest {
                 .andExpect(jsonPath("$", hasSize(2))); // Assert that two coupons are returned
     }
     @Test
-    public void testFindCouponById() throws Exception {
-        TransactionCoupon coupon = new TransactionCouponBuilder()
-                .setPercentDiscount(10)
-                .setFixedDiscount(5)
-                .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
-                .setMinTransaction(0)
-                .build();
+    public void testFindAllCoupons_Unauthorized() throws Exception {
+        String authorizationHeader = "Bearer valid-token";
+        given(authServiceClient.getTokenFromHeader(authorizationHeader)).willReturn("valid-token");
+        given(authServiceClient.verifyUserAuthorization("coupon:read", "valid-token")).willReturn(false);
+        List<TransactionCoupon> coupons = Arrays.asList(coupon,coupon2);
+        given(couponService.findAllCoupons()).willReturn(coupons);
 
+        mockMvc.perform(get("/transaction-coupon/all")
+                        .header("Authorization", "Bearer valid-token"))
+                .andExpect(status().isUnauthorized());
+    }
+    @Test
+    public void testFindCouponById_Authorized() throws Exception {
+        String authorizationHeader = "Bearer valid-token";
+        given(authServiceClient.getTokenFromHeader(authorizationHeader)).willReturn("valid-token");
+        given(authServiceClient.verifyUserAuthorization("coupon:read", "valid-token")).willReturn(true);
         given(couponService.findById("1")).willReturn(coupon);
 
         mockMvc.perform(get("/transaction-coupon/id/1")
                         .header("Authorization", "Bearer valid-token"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.maxDiscount", is(15))); // Adjust this depending on the actual properties
+                .andExpect(jsonPath("$.maxDiscount", is(15)));
     }
     @Test
-    public void testFindCouponsBySupermarketName() throws Exception {
-        TransactionCoupon coupon = new TransactionCouponBuilder()
-                .setPercentDiscount(10)
-                .setFixedDiscount(5)
-                .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
-                .setMinTransaction(0)
-                .build();
-        TransactionCoupon coupon2 = new TransactionCouponBuilder()
-                .setPercentDiscount(10)
-                .setFixedDiscount(5)
-                .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
-                .setMinTransaction(0)
-                .build();
-        List<TransactionCoupon> coupons = Arrays.asList(coupon,coupon2); // Mock some data
+    public void testFindCouponById_Unauthorized() throws Exception {
+        String authorizationHeader = "Bearer valid-token";
+        given(authServiceClient.getTokenFromHeader(authorizationHeader)).willReturn("valid-token");
+        given(authServiceClient.verifyUserAuthorization("coupon:read", "valid-token")).willReturn(false);
+        given(couponService.findById("1")).willReturn(coupon);
+
+        mockMvc.perform(get("/transaction-coupon/id/1")
+                        .header("Authorization", "Bearer valid-token"))
+                .andExpect(status().isUnauthorized());
+    }
+    @Test
+    public void testFindCouponsBySupermarketName_Authorized() throws Exception {
+        String authorizationHeader = "Bearer valid-token";
+        given(authServiceClient.getTokenFromHeader(authorizationHeader)).willReturn("valid-token");
+        given(authServiceClient.verifyUserAuthorization("coupon:read", "valid-token")).willReturn(true);
+        List<TransactionCoupon> coupons = Collections.singletonList(coupon);
         given(couponService.findBySupermarketName("Supermarket")).willReturn(coupons);
 
-        mockMvc.perform(get("/transaction-coupon/supermarket/Supermarket"))
+        mockMvc.perform(get("/transaction-coupon/supermarket/Supermarket")
+                        .header("Authorization", "Bearer valid-token"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2))); // Assert that two coupons are returned
+                .andExpect(jsonPath("$", hasSize(1)));
+    }
+    @Test
+    public void testFindCouponsBySupermarketName_Unauthorized() throws Exception {
+        String authorizationHeader = "Bearer valid-token";
+        given(authServiceClient.getTokenFromHeader(authorizationHeader)).willReturn("valid-token");
+        given(authServiceClient.verifyUserAuthorization("coupon:read", "valid-token")).willReturn(false);
+        List<TransactionCoupon> coupons = Collections.singletonList(coupon);
+        given(couponService.findBySupermarketName("Supermarket")).willReturn(coupons);
+
+        mockMvc.perform(get("/transaction-coupon/supermarket/Supermarket")
+                        .header("Authorization", "Bearer valid-token"))
+                .andExpect(status().isUnauthorized());
     }
     @Test
     public void testUpdateCoupon_Authorized() throws Exception {
         CouponRequest request = new CouponRequest();
+        request.setId("id");
         String authorizationHeader = "Bearer valid-token";
 
         given(authServiceClient.getTokenFromHeader(authorizationHeader)).willReturn("valid-token");
         given(authServiceClient.verifyUserAuthorization("coupon:update", "valid-token")).willReturn(true);
+        given(couponService.findById("id")).willReturn(coupon);
+        given(authServiceClient.verifySupermarket("valid-token","Supermarket")).willReturn(true);
 
-        TransactionCoupon updatedCoupon = new TransactionCouponBuilder()
-                .setPercentDiscount(10)
-                .setFixedDiscount(5)
-                .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
-                .setMinTransaction(0)
-                .build();
-        given(couponService.updateCoupon(request)).willReturn(updatedCoupon);
+        given(couponService.updateCoupon(request)).willReturn(coupon);
 
         mockMvc.perform(put("/transaction-coupon/update")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -185,6 +218,7 @@ public class TransactionCouponControllerTest {
     @Test
     public void testUpdateCoupon_Unauthorized() throws Exception {
         CouponRequest request = new CouponRequest();
+        request.setId("id");
         String authorizationHeader = "Bearer invalid-token";
 
         given(authServiceClient.getTokenFromHeader(authorizationHeader)).willReturn("invalid-token");
@@ -195,40 +229,41 @@ public class TransactionCouponControllerTest {
                         .header("Authorization", authorizationHeader)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized());
-    }
-    @Test
-    public void testUpdateCoupon_NullToken() throws Exception {
-        CouponRequest request = new CouponRequest();
 
-        given(authServiceClient.getTokenFromHeader("rafli wibu")).willReturn(null);
         given(authServiceClient.verifyUserAuthorization("coupon:update", "invalid-token")).willReturn(true);
+        given(couponService.findById("id")).willReturn(coupon);
+        given(authServiceClient.verifySupermarket("invalid-token","Supermarket")).willReturn(false);
+
+        given(couponService.updateCoupon(request)).willReturn(coupon);
 
         mockMvc.perform(put("/transaction-coupon/update")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "rafli wibu")
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    public void testDeleteCoupon_Authorized() throws Exception {
-        CouponRequest request = new CouponRequest(); // Make sure this is populated as needed for the tes
-        String authorizationHeader = "Bearer valid-token";
-
-        // Mock the AuthServiceClient to simulate a valid token being supplied
-        given(authServiceClient.getTokenFromHeader(authorizationHeader)).willReturn("valid-token");
-        given(authServiceClient.verifyUserAuthorization("coupon:delete", "valid-token")).willReturn(true);
-
-        // Perform the test
-        mockMvc.perform(delete("/transaction-coupon/delete")
-                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", authorizationHeader))
-                .andExpect(status().isNoContent()); // Expecting HTTP 204 No Content on successful deletion
+                .andExpect(status().isUnauthorized());
+    }
+    @Test
+    public void testDeleteCoupon_Authorized() throws Exception {
+        CouponRequest request = new CouponRequest();
+        request.setId("id");
+        String authorizationHeader = "Bearer valid-token";
+
+        given(authServiceClient.getTokenFromHeader(authorizationHeader)).willReturn("valid-token");
+        given(authServiceClient.verifyUserAuthorization("coupon:delete", "valid-token")).willReturn(true);
+        given(couponService.findById("id")).willReturn(coupon);
+        given(authServiceClient.verifySupermarket("valid-token","Supermarket")).willReturn(true);
+
+
+        mockMvc.perform(delete("/transaction-coupon/delete")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", authorizationHeader)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNoContent());
     }
     @Test
     public void testDeleteCoupon_Unauthorized() throws Exception {
-        CouponRequest request = new CouponRequest(); // Populate this with test data
+        CouponRequest request = new CouponRequest();
+        request.setId("id");
         String authorizationHeader = "Bearer invalid-token";
 
         given(authServiceClient.getTokenFromHeader(authorizationHeader)).willReturn("invalid-token");
@@ -239,20 +274,15 @@ public class TransactionCouponControllerTest {
                         .header("Authorization", authorizationHeader)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized());
-    }
-    @Test
-    public void testDeleteCoupon_NullToken() throws Exception {
-        CouponRequest request = new CouponRequest();
 
-        given(authServiceClient.getTokenFromHeader("ian gay")).willReturn(null);
         given(authServiceClient.verifyUserAuthorization("coupon:delete", "invalid-token")).willReturn(true);
+        given(couponService.findById("id")).willReturn(coupon);
+        given(authServiceClient.verifySupermarket("invalid-token","Supermarket")).willReturn(false);
 
         mockMvc.perform(delete("/transaction-coupon/delete")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "ian gay")
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(request))
+                        .header("Authorization", authorizationHeader))
                 .andExpect(status().isUnauthorized());
     }
-
-
 }
