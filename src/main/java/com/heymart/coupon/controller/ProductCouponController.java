@@ -4,12 +4,11 @@ import com.heymart.coupon.dto.CouponRequest;
 import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.service.AuthServiceClient;
 import com.heymart.coupon.service.coupon.CouponService;
+import com.heymart.coupon.service.coupon.ProductCouponServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,7 +31,12 @@ public class ProductCouponController implements CouponOperations<ProductCoupon>{
         if (!authServiceClient.verifySupermarket(token, request.getSupermarketName())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
-        return ResponseEntity.ok(productCouponService.createCoupon(request));
+        try {
+            ((ProductCouponServiceImpl) productCouponService).findByIdProduct(request.getIdProduct());
+        } catch (RuntimeException e) {
+            return ResponseEntity.ok(productCouponService.createCoupon(request));
+        }
+        return  ResponseEntity.status(HttpStatus.CONFLICT).body("Coupon Already Exist");
     }
 
     @Override
@@ -46,6 +50,7 @@ public class ProductCouponController implements CouponOperations<ProductCoupon>{
         return ResponseEntity.ok(productCouponService.findAllCoupons());
     }
 
+
     @Override
     public ResponseEntity<?> findById(
             String authorizationHeader, String id
@@ -56,6 +61,25 @@ public class ProductCouponController implements CouponOperations<ProductCoupon>{
         }
         try {
             ProductCoupon coupon = productCouponService.findById(id);
+            return ResponseEntity.ok(coupon);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Coupon not found");
+        }
+
+    }
+    @GetMapping("/idProduct/{idProduct}")
+    public ResponseEntity<?> findByIdProduct(
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+            @PathVariable("idProduct") String idProduct
+    ) {
+        String token = authServiceClient.getTokenFromHeader(authorizationHeader);
+        if (!authServiceClient.verifyUserAuthorization("coupon:read", token)) {
+            System.out.println(token);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        }
+        System.out.println("konz");
+        try {
+            ProductCoupon coupon = ((ProductCouponServiceImpl) productCouponService).findByIdProduct(idProduct);
             return ResponseEntity.ok(coupon);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Coupon not found");
