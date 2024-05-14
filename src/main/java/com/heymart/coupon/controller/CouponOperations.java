@@ -15,11 +15,19 @@ public interface CouponOperations<T extends Coupon> {
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader
     );
     @GetMapping("/all")
-    public ResponseEntity<List<T>> findAll();
+    public ResponseEntity<?> findAll(
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader
+    );
     @GetMapping("/id/{id}")
-    public ResponseEntity<T> findById(@PathVariable String id);
+    public ResponseEntity<?> findById(
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+            @PathVariable("id") String id
+    );
     @GetMapping("/supermarket/{supermarketName}")
-    public ResponseEntity<List<T>> findBySupermarketName(@PathVariable String supermarketName);
+    public ResponseEntity<?> findBySupermarketName(
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+            @PathVariable("supermarketName") String supermarketName
+    );
     @PutMapping("/update")
     public ResponseEntity<?> updateCoupon(
             @RequestBody CouponRequest request,
