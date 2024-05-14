@@ -8,7 +8,7 @@ import lombok.Getter;
 @Table(name = "ProductCoupon")
 public class ProductCoupon extends Coupon {
 
-    @Column(name = "id_product", nullable = false)
+    @Column(name = "id_product", nullable = false, unique = true)
     private String idProduct;
 
     protected ProductCoupon() {
