@@ -172,6 +172,17 @@ public class ProductCouponControllerTest {
                 .andExpect(status().isUnauthorized());
     }
     @Test
+    public void testFindCouponById_NotFound() throws Exception {
+        String authorizationHeader = "Bearer valid-token";
+        given(authServiceClient.getTokenFromHeader(authorizationHeader)).willReturn("valid-token");
+        given(authServiceClient.verifyUserAuthorization("coupon:read", "valid-token")).willReturn(true);
+        given(couponService.findById("1")).willThrow(new RuntimeException("Coupon not found"));
+
+        mockMvc.perform(get("/product-coupon/id/1")
+                        .header("Authorization", "Bearer valid-token"))
+                .andExpect(status().isNotFound());
+    }
+    @Test
     public void testFindCouponsBySupermarketName_Authorized() throws Exception {
         String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.getTokenFromHeader(authorizationHeader)).willReturn("valid-token");
@@ -214,6 +225,22 @@ public class ProductCouponControllerTest {
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", authorizationHeader))
                 .andExpect(status().isOk());
+    }
+    @Test
+    public void testUpdateCoupon_NotFound() throws Exception {
+        CouponRequest request = new CouponRequest();
+        request.setId("id");
+        String authorizationHeader = "Bearer valid-token";
+
+        given(authServiceClient.getTokenFromHeader(authorizationHeader)).willReturn("valid-token");
+        given(authServiceClient.verifyUserAuthorization("coupon:update", "valid-token")).willReturn(true);
+        given(couponService.findById("id")).willThrow(new RuntimeException());
+
+        mockMvc.perform(put("/product-coupon/update")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .header("Authorization", authorizationHeader))
+                .andExpect(status().isNotFound());
     }
     @Test
     public void testUpdateCoupon_Unauthorized() throws Exception {
@@ -259,6 +286,23 @@ public class ProductCouponControllerTest {
                         .header("Authorization", authorizationHeader)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNoContent());
+    }
+    @Test
+    public void testDeleteCoupon_NotFound() throws Exception {
+        CouponRequest request = new CouponRequest();
+        request.setId("id");
+        String authorizationHeader = "Bearer valid-token";
+
+        given(authServiceClient.getTokenFromHeader(authorizationHeader)).willReturn("valid-token");
+        given(authServiceClient.verifyUserAuthorization("coupon:delete", "valid-token")).willReturn(true);
+        given(couponService.findById("id")).willThrow(new RuntimeException());
+
+
+        mockMvc.perform(delete("/product-coupon/delete")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", authorizationHeader)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound());
     }
     @Test
     public void testDeleteCoupon_Unauthorized() throws Exception {

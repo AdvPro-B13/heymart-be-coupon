@@ -50,6 +50,11 @@ public class AuthServiceClientTest {
         boolean result = authServiceClient.verifyUserAuthorization("someAction", "invalidToken");
         assertFalse(result);
     }
+    @Test
+    public void testVerifyUserAuthorization_TokenNull() {
+        boolean result = authServiceClient.verifyUserAuthorization("someAction", null);
+        assertFalse(result);
+    }
 
     @Test
     public void testVerifyUserAuthorization_Exception() {
@@ -109,6 +114,11 @@ public class AuthServiceClientTest {
 
         boolean result = authServiceClient.verifySupermarket("validToken", "HeyMart");
         assertFalse(result);
+    }
+    @Test
+    public void testVerifySupermarket_NullTokenOrSupermarket() {
+        assertFalse(authServiceClient.verifySupermarket("token", null));
+        assertFalse(authServiceClient.verifySupermarket(null, "HeyMart"));
     }
 
     @Test
