@@ -8,13 +8,16 @@ import com.heymart.coupon.repository.CouponRepository;
 import com.heymart.coupon.repository.TransactionCouponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Qualifier("transactionCouponService")
+@EnableAsync
 public class TransactionCouponServiceImpl implements CouponService<TransactionCoupon>{
 
     @Autowired
@@ -47,8 +50,10 @@ public class TransactionCouponServiceImpl implements CouponService<TransactionCo
         couponRepository.delete(coupon);
     }
 
-    public List<TransactionCoupon> findAllCoupons() {
-        return couponRepository.findAll();
+    public CompletableFuture<List<TransactionCoupon>> findAllCoupons() {
+        return CompletableFuture.supplyAsync(() -> {
+            return couponRepository.findAll();
+        });
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.heymart.coupon.controller;
 
 import com.heymart.coupon.dto.CouponRequest;
-import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.TransactionCoupon;
 import com.heymart.coupon.service.AuthServiceClient;
 import com.heymart.coupon.service.coupon.CouponService;
@@ -11,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/transaction-coupon")
@@ -25,33 +24,33 @@ public class TransactionCouponController implements CouponOperations<Transaction
     public ResponseEntity<?> createCoupon(
             CouponRequest request, String authorizationHeader
     ) {
-        String token = authServiceClient.getTokenFromHeader(authorizationHeader);
-        if (!authServiceClient.verifyUserAuthorization("coupon:create", token)) {
+        if (!authServiceClient.verifyUserAuthorization("coupon:create", authorizationHeader)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
-        if (!authServiceClient.verifySupermarket(token, request.getSupermarketName())) {
+        if (!authServiceClient.verifySupermarket(authorizationHeader, request.getSupermarketName())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
         return ResponseEntity.ok(couponService.createCoupon(request));
     }
 
     @Override
-    public ResponseEntity<?> findAll(
+    public CompletableFuture<ResponseEntity<Object>> findAll(
             String authorizationHeader
     ) {
-        String token = authServiceClient.getTokenFromHeader(authorizationHeader);
-        if (!authServiceClient.verifyUserAuthorization("coupon:read", token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        if (!authServiceClient.verifyUserAuthorization("coupon:read", authorizationHeader)) {
+            return CompletableFuture.supplyAsync(() -> {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+            });
         }
-        return ResponseEntity.ok(couponService.findAllCoupons());
+        return couponService.findAllCoupons()
+                .thenApply(ResponseEntity::ok);
     }
 
     @Override
     public ResponseEntity<?> findById(
             String authorizationHeader, String id
     ) {
-        String token = authServiceClient.getTokenFromHeader(authorizationHeader);
-        if (!authServiceClient.verifyUserAuthorization("coupon:read", token)) {
+        if (!authServiceClient.verifyUserAuthorization("coupon:read", authorizationHeader)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
         try {
@@ -66,8 +65,7 @@ public class TransactionCouponController implements CouponOperations<Transaction
     public ResponseEntity<?> findBySupermarketName(
             String authorizationHeader, String supermarketName
     ) {
-        String token = authServiceClient.getTokenFromHeader(authorizationHeader);
-        if (!authServiceClient.verifyUserAuthorization("coupon:read", token)) {
+        if (!authServiceClient.verifyUserAuthorization("coupon:read", authorizationHeader)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
         return ResponseEntity.ok(couponService.findBySupermarketName(supermarketName));
@@ -77,13 +75,12 @@ public class TransactionCouponController implements CouponOperations<Transaction
     public ResponseEntity<?> updateCoupon(
             CouponRequest request, String authorizationHeader
     ) {
-        String token = authServiceClient.getTokenFromHeader(authorizationHeader);
-        if (!authServiceClient.verifyUserAuthorization("coupon:update", token)) {
+        if (!authServiceClient.verifyUserAuthorization("coupon:update", authorizationHeader)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
         try {
             TransactionCoupon coupon = couponService.findById(request.getId());
-            if (!authServiceClient.verifySupermarket(token, coupon.getSupermarketName())) {
+            if (!authServiceClient.verifySupermarket(authorizationHeader, coupon.getSupermarketName())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
             }
         } catch (Exception e) {
@@ -95,13 +92,12 @@ public class TransactionCouponController implements CouponOperations<Transaction
     @Override
     public ResponseEntity<?> deleteCoupon(
             CouponRequest request, String authorizationHeader) {
-        String token = authServiceClient.getTokenFromHeader(authorizationHeader);
-        if (!authServiceClient.verifyUserAuthorization("coupon:delete", token)) {
+        if (!authServiceClient.verifyUserAuthorization("coupon:delete", authorizationHeader)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
         try {
             TransactionCoupon coupon = couponService.findById(request.getId());
-            if (!authServiceClient.verifySupermarket(token, coupon.getSupermarketName())) {
+            if (!authServiceClient.verifySupermarket(authorizationHeader, coupon.getSupermarketName())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
             }
         } catch (Exception e) {

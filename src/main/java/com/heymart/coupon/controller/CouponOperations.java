@@ -3,9 +3,12 @@ package com.heymart.coupon.controller;
 import com.heymart.coupon.dto.CouponRequest;
 import com.heymart.coupon.model.Coupon;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 @RequestMapping("/default")
 public interface CouponOperations<T extends Coupon> {
@@ -15,7 +18,7 @@ public interface CouponOperations<T extends Coupon> {
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader
     );
     @GetMapping("/all")
-    public ResponseEntity<?> findAll(
+    public CompletableFuture<ResponseEntity<Object>> findAll(
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader
     );
     @GetMapping("/id/{id}")

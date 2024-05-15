@@ -13,6 +13,7 @@ public class AuthServiceClient {
     @Value("${auth.api}")
     String authServiceUrl;
     public boolean verifyUserAuthorization(String action, String token) {
+        token = getTokenFromHeader(token);
         if (token == null) {
             return  false;
         }
@@ -33,7 +34,7 @@ public class AuthServiceClient {
             return false;
         }
     }
-    public String getTokenFromHeader(String authorizationHeader) {
+    private String getTokenFromHeader(String authorizationHeader) {
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             return null;
         }

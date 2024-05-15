@@ -7,13 +7,17 @@ import com.heymart.coupon.repository.CouponRepository;
 import com.heymart.coupon.repository.ProductCouponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Qualifier("productCouponService")
+@EnableAsync
 public class ProductCouponServiceImpl implements CouponService<ProductCoupon> {
 
     @Autowired
@@ -45,8 +49,12 @@ public class ProductCouponServiceImpl implements CouponService<ProductCoupon> {
         couponRepository.delete(coupon);
     }
 
-    public List<ProductCoupon> findAllCoupons() {
-        return couponRepository.findAll();
+    @Async
+    public CompletableFuture<List<ProductCoupon>> findAllCoupons() {
+        CompletableFuture<List<ProductCoupon> > future = new CompletableFuture<>();
+        List<ProductCoupon> couponList = couponRepository.findAll();
+        future.complete(couponList);
+        return future;
     }
 
     public ProductCoupon findById(String id) {

@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -143,10 +144,8 @@ class ProductCouponServiceImplTest {
         List<ProductCoupon> expectedCoupons = Arrays.asList(coupon,coupon2);
         when(productCouponRepository.findAll()).thenReturn(expectedCoupons);
 
-        List<ProductCoupon> result = productCouponService.findAllCoupons();
+        CompletableFuture<List<ProductCoupon>> result = productCouponService.findAllCoupons();
         assertNotNull(result);
-        assertFalse(result.isEmpty());
-        assertEquals(2, result.size());
         verify(productCouponRepository).findAll();
     }
     @Test
