@@ -37,10 +37,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          PRODUCTION: ${{ secrets.PRODUCTION }}
           JDBC_DATABASE_PASSWORD: ${{ secrets.JDBC_DATABASE_PASSWORD }}
           JDBC_DATABASE_URL: ${{ secrets.JDBC_DATABASE_URL }}
           JDBC_DATABASE_USERNAME: ${{ secrets.JDBC_DATABASE_USERNAME }}
-          PRODUCTION: ${{ secrets.PRODUCTION }}
         run: ./gradlew build sonar --info
       - name: Build with Gradle
         run: |
@@ -82,6 +82,7 @@ jobs:
           ./gradlew test
           ./gradlew jacocoTestReport
         env:
+          PRODUCTION: ${{ secrets.PRODUCTION }}
           JDBC_DATABASE_PASSWORD: ${{ secrets.JDBC_DATABASE_PASSWORD }}
           JDBC_DATABASE_URL: ${{ secrets.JDBC_DATABASE_URL }}
           JDBC_DATABASE_USERNAME: ${{ secrets.JDBC_DATABASE_USERNAME }}
