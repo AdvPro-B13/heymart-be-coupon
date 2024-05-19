@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.concurrent.CompletableFuture;
 
 @RequestMapping("/default")
-public interface CouponOperations<T extends Coupon> {
+public interface CouponOperations {
     @PostMapping("/create")
     public CompletableFuture<ResponseEntity<Object>> createCoupon(
             @RequestBody CouponRequest request,

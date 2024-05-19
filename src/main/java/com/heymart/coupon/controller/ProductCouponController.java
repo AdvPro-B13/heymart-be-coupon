@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/product-coupon")
-public class ProductCouponController implements CouponOperations<ProductCoupon>{
+public class ProductCouponController implements CouponOperations{
     @Autowired
     private AuthServiceClient authServiceClient;
 
