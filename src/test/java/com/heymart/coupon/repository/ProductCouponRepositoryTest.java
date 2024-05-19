@@ -42,7 +42,8 @@ class ProductCouponRepositoryTest {
                 .setMaxDiscount(15)
                 .setSupermarketName("TestSupermarket")
                 .setIdProduct("123")
-                .build();ProductCoupon saved = repository.save(coupon);
+                .build();
+        ProductCoupon saved = repository.save(coupon);
         ProductCoupon found = repository.findById(saved.getId()).orElse(null);
         assertNotNull(found);
         assertEquals("TestSupermarket", found.getSupermarketName());

@@ -23,7 +23,7 @@ class TransactionCouponRepositoryTest {
     private final UUID randomId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
 
     @Test
-    public void testSaveTransactionCoupon() {
+    void testSaveTransactionCoupon() {
         TransactionCoupon coupon = new TransactionCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
