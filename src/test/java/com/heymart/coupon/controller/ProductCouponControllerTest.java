@@ -46,6 +46,7 @@ class ProductCouponControllerTest {
 
     private ProductCoupon coupon;
     private ProductCoupon coupon2;
+    private final String authorizationHeader = "Bearer valid-token";
     @BeforeEach
     void setup() {
         coupon = new ProductCouponBuilder()
@@ -81,7 +82,7 @@ class ProductCouponControllerTest {
     }
 
     @Test
-    void testCreateCoupon_WrongSupermarket() throws Exception {
+    void testCreateCoupon_WrongSupermarket() {
         CouponRequest request = new CouponRequest();
         request.setSupermarketName("Supermarket");
         request.setIdProduct("Product");
@@ -129,7 +130,7 @@ class ProductCouponControllerTest {
     }
     @Test
     void testFindAllCoupons_Authorized() throws Exception {
-        String authorizationHeader = "Bearer valid-token";
+
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         List<ProductCoupon> coupons = Arrays.asList(coupon, coupon2); // Mock some data
         given(couponService.findAllCoupons()).willReturn(coupons);
@@ -142,7 +143,6 @@ class ProductCouponControllerTest {
 
     @Test
     void testFindAllCoupons_Unauthorized() throws Exception {
-        String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(false);
         List<ProductCoupon> coupons = Arrays.asList(coupon, coupon2);
         given(couponService.findAllCoupons()).willReturn(coupons);
@@ -154,7 +154,6 @@ class ProductCouponControllerTest {
 
     @Test
     void testFindCouponById_Authorized() throws Exception {
-        String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         given(couponService.findById("1")).willReturn(coupon);
 
@@ -166,7 +165,6 @@ class ProductCouponControllerTest {
 
     @Test
     void testFindCouponById_Unauthorized() throws Exception {
-        String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(false);
         given(couponService.findById("1")).willReturn(coupon);
 
@@ -177,7 +175,6 @@ class ProductCouponControllerTest {
 
     @Test
     void testFindCouponById_NotFound() throws Exception {
-        String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         given(couponService.findById("1")).willThrow(new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
 
@@ -188,7 +185,6 @@ class ProductCouponControllerTest {
 
     @Test
     void testFindCouponByIdProduct_Authorized() throws Exception {
-        String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         given(productCouponOperation.findByIdProduct("1")).willReturn(coupon);
 
@@ -200,7 +196,6 @@ class ProductCouponControllerTest {
 
     @Test
     void testFindCouponByIdProduct_Unauthorized() throws Exception {
-        String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(false);
         given(productCouponOperation.findByIdProduct("1")).willReturn(coupon);
 
@@ -211,7 +206,6 @@ class ProductCouponControllerTest {
 
     @Test
     void testFindCouponByIdProduct_NotFound() throws Exception {
-        String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         given(productCouponOperation.findByIdProduct("1")).willThrow(new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
 
@@ -222,7 +216,6 @@ class ProductCouponControllerTest {
 
     @Test
     void testFindCouponsBySupermarketName_Authorized() throws Exception {
-        String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         List<ProductCoupon> coupons = Arrays.asList(coupon);
         given(couponService.findBySupermarketName("Supermarket")).willReturn(coupons);
@@ -235,7 +228,6 @@ class ProductCouponControllerTest {
 
     @Test
     void testFindCouponsBySupermarketName_Unauthorized() throws Exception {
-        String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(false);
         List<ProductCoupon> coupons = Arrays.asList(coupon);
         given(couponService.findBySupermarketName("Supermarket")).willReturn(coupons);

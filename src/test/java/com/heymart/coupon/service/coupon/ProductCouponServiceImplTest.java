@@ -88,7 +88,7 @@ class ProductCouponServiceImplTest {
         when(productCouponRepository.findById(UUID.fromString(request.getId()))).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            CompletableFuture<ProductCoupon> future = productCouponService.updateCoupon(request);
+            productCouponService.updateCoupon(request);
         });
         assertEquals("Coupon not found", exception.getMessage());
 
