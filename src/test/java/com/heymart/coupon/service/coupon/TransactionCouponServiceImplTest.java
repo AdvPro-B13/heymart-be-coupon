@@ -10,12 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -70,22 +66,19 @@ class TransactionCouponServiceImplTest {
 
         when(transactionCouponRepository.save(any(TransactionCoupon.class))).thenReturn(coupon);
 
-        CompletableFuture<TransactionCoupon> resultFuture = transactionCouponService.createCoupon(request);
-        TransactionCoupon result = resultFuture.get();
-
         coupon.setPercentDiscount(20);
 
         when(transactionCouponRepository.findById(randomId)).thenReturn(Optional.of(coupon));
 
-        resultFuture = transactionCouponService.updateCoupon(request);
-        result = resultFuture.get();
+        CompletableFuture<TransactionCoupon> resultFuture = transactionCouponService.updateCoupon(request);
+        TransactionCoupon result = resultFuture.get();
 
         assertNotNull(result);
         verify(transactionCouponRepository).save(coupon);
     }
 
     @Test
-    public void testUpdateNonExistingCoupon() throws ExecutionException, InterruptedException {
+    void testUpdateNonExistingCoupon() {
         CouponRequest request = new CouponRequest(randomId.toString(), 20, 10, 25, "Supermarket", "123", 0);
 
         when(transactionCouponRepository.findById(UUID.fromString(randomId.toString()))).thenReturn(Optional.empty());
@@ -118,7 +111,7 @@ class TransactionCouponServiceImplTest {
     }
 
     @Test
-    void deleteCoupon_shouldThrowRuntimeExceptionWhenCouponNotFound() throws ExecutionException, InterruptedException {
+    void deleteCoupon_shouldThrowRuntimeExceptionWhenCouponNotFound() {
         CouponRequest request = new CouponRequest(randomId.toString(), 10, 5, 15, "Supermarket", "123", 0);
 
         when(transactionCouponRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
@@ -157,7 +150,7 @@ class TransactionCouponServiceImplTest {
     }
 
     @Test
-    void testFindById_CouponExists() throws ExecutionException, InterruptedException {
+    void testFindById_CouponExists() {
         TransactionCoupon mockCoupon = new TransactionCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
@@ -174,7 +167,7 @@ class TransactionCouponServiceImplTest {
     }
 
     @Test
-    void testFindById_CouponDoesNotExist() throws ExecutionException, InterruptedException {
+    void testFindById_CouponDoesNotExist() {
         when(transactionCouponRepository.findById(randomId)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
@@ -194,14 +187,7 @@ class TransactionCouponServiceImplTest {
                 .setMinTransaction(5)
                 .build();
 
-        TransactionCoupon coupon2 = new TransactionCouponBuilder()
-                .setPercentDiscount(10)
-                .setFixedDiscount(5)
-                .setMaxDiscount(15)
-                .setSupermarketName("Supermarket 2")
-                .setMinTransaction(5)
-                .build();
-        List<TransactionCoupon> expectedCoupons = Arrays.asList(coupon);
+        List<TransactionCoupon> expectedCoupons = Collections.singletonList(coupon);
 
         when(transactionCouponRepository.findBySupermarketName(supermarketName)).thenReturn(expectedCoupons);
 
