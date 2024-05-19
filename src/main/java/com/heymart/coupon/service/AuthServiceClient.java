@@ -2,24 +2,26 @@ package com.heymart.coupon.service;
 import com.heymart.coupon.dto.SupermarketResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class AuthServiceClient {
     RestTemplate restTemplate = new RestTemplate();
     @Value("${auth.api}")
     String authServiceUrl;
-    public boolean verifyUserAuthorization(String action, String token) {
-        token = getTokenFromHeader(token);
-        if (token == null) {
-            return  false;
+    public boolean verifyUserAuthorization(String action, String authorizationHeader) {
+        if (authorizationHeader == null) {
+            return false;
         }
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + token);
+        headers.set("Authorization", authorizationHeader);
 
         String jsonBody = "{\"action\":\"" + action + "\"}";
 
@@ -34,19 +36,13 @@ public class AuthServiceClient {
             return false;
         }
     }
-    private String getTokenFromHeader(String authorizationHeader) {
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            return null;
-        }
-        return  authorizationHeader.substring(7);
-    }
     public boolean verifySupermarket(String token, String supermarketName) {
         if (token == null || supermarketName == null) {
             return false;
         }
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + token);
+        headers.set("Authorization", token);
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
@@ -61,7 +57,6 @@ public class AuthServiceClient {
             return supermarketName.equals(Objects.requireNonNull(response.getBody()).getSupermarketName());
         }
         catch(Exception e){
-            System.out.println(e);
             return false;
         }
     }

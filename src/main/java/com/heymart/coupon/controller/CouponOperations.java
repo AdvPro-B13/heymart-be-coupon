@@ -13,32 +13,33 @@ import java.util.concurrent.CompletableFuture;
 @RequestMapping("/default")
 public interface CouponOperations<T extends Coupon> {
     @PostMapping("/create")
-    public ResponseEntity<?> createCoupon(
+    public CompletableFuture<ResponseEntity<Object>> createCoupon(
             @RequestBody CouponRequest request,
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader
     );
     @GetMapping("/all")
-    public CompletableFuture<ResponseEntity<Object>> findAll(
+    public ResponseEntity<Object> findAll(
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader
     );
     @GetMapping("/id/{id}")
-    public ResponseEntity<?> findById(
+    public ResponseEntity<Object> findById(
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
             @PathVariable("id") String id
     );
     @GetMapping("/supermarket/{supermarketName}")
-    public ResponseEntity<?> findBySupermarketName(
+    public ResponseEntity<Object> findBySupermarketName(
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
             @PathVariable("supermarketName") String supermarketName
     );
     @PutMapping("/update")
-    public ResponseEntity<?> updateCoupon(
+    public CompletableFuture<ResponseEntity<Object>> updateCoupon(
             @RequestBody CouponRequest request,
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader
     );
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteCoupon(
+    public CompletableFuture<ResponseEntity<Object>> deleteCoupon(
             @RequestBody CouponRequest request,
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader
     );
+
 }

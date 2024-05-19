@@ -3,15 +3,12 @@ package com.heymart.coupon.service.coupon;
 import com.heymart.coupon.dto.CouponRequest;
 import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.builder.ProductCouponBuilder;
-import com.heymart.coupon.repository.CouponRepository;
 import com.heymart.coupon.repository.ProductCouponRepository;
-import com.heymart.coupon.service.coupon.ProductCouponServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +18,6 @@ import java.util.concurrent.CompletableFuture;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
 class ProductCouponServiceImplTest {
 
     @Mock
@@ -48,7 +44,9 @@ class ProductCouponServiceImplTest {
 
         when(productCouponRepository.save(any(ProductCoupon.class))).thenReturn(coupon);
 
-        ProductCoupon result = productCouponService.createCoupon(request);
+        CompletableFuture<ProductCoupon> resultFuture = productCouponService.createCoupon(request);
+        ProductCoupon result = resultFuture.join();
+
         assertNotNull(result);
         assertEquals(coupon, result);
         verify(productCouponRepository).save(any(ProductCoupon.class));
@@ -73,7 +71,9 @@ class ProductCouponServiceImplTest {
 
         when(productCouponRepository.findById(coupon.getId())).thenReturn(Optional.of(coupon));
 
-        ProductCoupon result = productCouponService.updateCoupon(request);
+        CompletableFuture<ProductCoupon> resultFuture = productCouponService.updateCoupon(request);
+        ProductCoupon result = resultFuture.join();
+
         assertNotNull(result);
         verify(productCouponRepository).save(coupon);
     }
@@ -85,7 +85,7 @@ class ProductCouponServiceImplTest {
         when(productCouponRepository.findById(request.getId())).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            productCouponService.updateCoupon(request);
+            productCouponService.updateCoupon(request).join();
         });
 
         assertEquals("Coupon not found", exception.getMessage());
@@ -93,7 +93,6 @@ class ProductCouponServiceImplTest {
         verify(productCouponRepository, times(1)).findById(request.getId());
         verify(productCouponRepository, never()).save(any(ProductCoupon.class));
     }
-
 
     @Test
     void deleteCoupon_shouldDeleteCoupon() {
@@ -106,7 +105,9 @@ class ProductCouponServiceImplTest {
                 .build();
 
         when(productCouponRepository.findById(coupon.getId())).thenReturn(Optional.of(coupon));
-        productCouponService.deleteCoupon(new CouponRequest(coupon.getId(),0,0,0,null,null,0));
+        CompletableFuture<Void> resultFuture = productCouponService.deleteCoupon(new CouponRequest(coupon.getId(),0,0,0,null,null,0));
+        resultFuture.join();
+
         verify(productCouponRepository).delete(coupon);
     }
 
@@ -117,7 +118,7 @@ class ProductCouponServiceImplTest {
         when(productCouponRepository.findById(anyString())).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            productCouponService.deleteCoupon(request);
+            productCouponService.deleteCoupon(request).join();
         });
 
         assertEquals("Coupon not found", exception.getMessage());
@@ -138,19 +139,20 @@ class ProductCouponServiceImplTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
+                .setSupermarketName("Supermarket 2")
                 .setIdProduct("123")
                 .build();
-        List<ProductCoupon> expectedCoupons = Arrays.asList(coupon,coupon2);
+        List<ProductCoupon> expectedCoupons = Arrays.asList(coupon, coupon2);
         when(productCouponRepository.findAll()).thenReturn(expectedCoupons);
 
-        CompletableFuture<List<ProductCoupon>> result = productCouponService.findAllCoupons();
+        List<ProductCoupon> result = productCouponService.findAllCoupons();
         assertNotNull(result);
+        assertEquals(expectedCoupons, result);
         verify(productCouponRepository).findAll();
     }
+
     @Test
     public void testFindById_CouponExists() {
-        // Setup
         String couponId = "123";
         ProductCoupon mockCoupon = new ProductCouponBuilder()
                 .setPercentDiscount(10)
@@ -161,28 +163,26 @@ class ProductCouponServiceImplTest {
                 .build();
         when(productCouponRepository.findById(couponId)).thenReturn(Optional.of(mockCoupon));
 
-        // Execute
         ProductCoupon result = productCouponService.findById(couponId);
 
-        // Verify
         assertNotNull(result);
         assertEquals(mockCoupon, result);
     }
 
     @Test
     public void testFindById_CouponDoesNotExist() {
-        // Setup
         String couponId = "unknown";
         when(productCouponRepository.findById(couponId)).thenReturn(Optional.empty());
 
-        // Execute
         Exception exception = assertThrows(RuntimeException.class, () -> {
             productCouponService.findById(couponId);
         });
+
+        assertEquals("Coupon not found", exception.getMessage());
     }
+
     @Test
     public void testFindBySupermarketName() {
-        // Mock data
         String supermarketName = "TestMart";
         ProductCoupon coupon = new ProductCouponBuilder()
                 .setPercentDiscount(10)
@@ -196,21 +196,20 @@ class ProductCouponServiceImplTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket 2")
+                .setSupermarketName("Supermarket")
                 .setIdProduct("123")
                 .build();
-        List<ProductCoupon> expectedCoupons = Arrays.asList(coupon);
 
-        // Stubbing the method call
+        List<ProductCoupon> expectedCoupons = Arrays.asList(coupon,coupon2);
+
         when(productCouponRepository.findBySupermarketName(supermarketName)).thenReturn(expectedCoupons);
 
-        // Calling the method under test
         List<ProductCoupon> actualCoupons = productCouponService.findBySupermarketName(supermarketName);
 
-        // Assertions
         assertEquals(expectedCoupons.size(), actualCoupons.size());
         assertEquals(expectedCoupons, actualCoupons);
     }
+
     @Test
     public void testFindByIdProduct_CouponExists() {
         String idProduct = "123";
@@ -224,22 +223,20 @@ class ProductCouponServiceImplTest {
         when(productCouponRepository.findByIdProduct(idProduct)).thenReturn(mockCoupon);
 
         ProductCoupon result = productCouponService.findByIdProduct(idProduct);
+
         assertNotNull(result);
         assertEquals(mockCoupon, result);
     }
+
     @Test
     public void testFindByIdProduct_NotFound() {
         String idProduct = "123";
-        ProductCoupon mockCoupon = new ProductCouponBuilder()
-                .setPercentDiscount(10)
-                .setFixedDiscount(5)
-                .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
-                .setIdProduct("123")
-                .build();
         when(productCouponRepository.findByIdProduct(idProduct)).thenReturn(null);
-        assertThrows(RuntimeException.class, () -> {
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
             productCouponService.findByIdProduct(idProduct);
         });
+
+        assertEquals("Coupon not found", exception.getMessage());
     }
 }

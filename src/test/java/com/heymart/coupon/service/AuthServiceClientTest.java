@@ -33,7 +33,7 @@ public class AuthServiceClientTest {
         ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.OK);
         when(restTemplate.postForEntity(anyString(), eq(entity), eq(String.class))).thenReturn(responseEntity);
 
-        boolean result = authServiceClient.verifyUserAuthorization("someAction", "validToken");
+        boolean result = authServiceClient.verifyUserAuthorization("someAction", "Bearer validToken");
         assertTrue(result);
     }
 
@@ -47,7 +47,7 @@ public class AuthServiceClientTest {
         ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.FORBIDDEN);
         when(restTemplate.postForEntity(anyString(), eq(entity), eq(String.class))).thenReturn(responseEntity);
 
-        boolean result = authServiceClient.verifyUserAuthorization("someAction", "invalidToken");
+        boolean result = authServiceClient.verifyUserAuthorization("someAction", "Bearer invalidToken");
         assertFalse(result);
     }
     @Test
@@ -65,22 +65,6 @@ public class AuthServiceClientTest {
     }
 
     @Test
-    public void testGetTokenFromHeader_Valid() {
-        String token = authServiceClient.getTokenFromHeader("Bearer validToken");
-        assertEquals("validToken", token);
-    }
-
-    @Test
-    public void testGetTokenFromHeader_Invalid() {
-        String token = authServiceClient.getTokenFromHeader("InvalidHeader");
-        assertNull(token);
-    }
-    @Test
-    public void testGetTokenFromHeader_Null() {
-        String token = authServiceClient.getTokenFromHeader(null);
-        assertNull(token);
-    }
-    @Test
     public void testVerifySupermarket_Successful() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -94,7 +78,7 @@ public class AuthServiceClientTest {
         when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(entity), eq(SupermarketResponse.class)))
                 .thenReturn(responseEntity);
 
-        boolean result = authServiceClient.verifySupermarket("validToken", "HeyMart");
+        boolean result = authServiceClient.verifySupermarket("Bearer validToken", "HeyMart");
         assertTrue(result);
     }
 

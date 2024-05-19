@@ -9,10 +9,10 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 public interface CouponService<T extends Coupon> {
-    public T createCoupon(CouponRequest request);
-    public T updateCoupon(CouponRequest request);
-    public void deleteCoupon(CouponRequest request);
-    public CompletableFuture<List<T>> findAllCoupons();
+    public CompletableFuture<T> createCoupon(CouponRequest request);
+    public CompletableFuture<T> updateCoupon(CouponRequest request);
+    public CompletableFuture<Void> deleteCoupon(CouponRequest request);
+    public List<T> findAllCoupons();
     public T findById(String id);
     public List<T> findBySupermarketName(String supermarketName);
 }
