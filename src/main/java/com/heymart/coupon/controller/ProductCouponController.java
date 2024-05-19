@@ -16,16 +16,22 @@ import java.util.concurrent.CompletableFuture;
 @RestController
 @RequestMapping("/product-coupon")
 public class ProductCouponController implements CouponOperations{
-    @Autowired
-    private AuthServiceClient authServiceClient;
+    private final AuthServiceClient authServiceClient;
+
+    private final CouponService<ProductCoupon> productCouponService;
+
+    private final ProductCouponOperation productCouponOperation;
 
     @Autowired
-    @Qualifier("productCouponService")
-    CouponService<ProductCoupon> productCouponService;
-
-    @Autowired
-    @Qualifier("productCouponService")
-    ProductCouponOperation productCouponOperation;
+    public ProductCouponController(
+            AuthServiceClient authServiceClient,
+            CouponService<ProductCoupon> productCouponService,
+            ProductCouponOperation productCouponOperation
+    ) {
+        this.authServiceClient = authServiceClient;
+        this.productCouponService = productCouponService;
+        this.productCouponOperation = productCouponOperation;
+    }
 
     @Override
     public CompletableFuture<ResponseEntity<Object>> createCoupon(

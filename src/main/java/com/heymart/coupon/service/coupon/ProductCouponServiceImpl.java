@@ -15,12 +15,14 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-@Qualifier("productCouponService")
 @EnableAsync
 public class ProductCouponServiceImpl implements CouponService<ProductCoupon>, ProductCouponOperation {
 
+    private final ProductCouponRepository couponRepository;
     @Autowired
-    private ProductCouponRepository couponRepository;
+    public ProductCouponServiceImpl(ProductCouponRepository couponRepository) {
+        this.couponRepository = couponRepository;
+    }
 
     @Async("asyncTaskExecutor")
     public CompletableFuture<ProductCoupon> createCoupon(CouponRequest request) {
