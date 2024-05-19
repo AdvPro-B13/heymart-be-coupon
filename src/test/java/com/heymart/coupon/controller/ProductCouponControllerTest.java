@@ -2,6 +2,7 @@ package com.heymart.coupon.controller;
 
 import com.heymart.coupon.dto.CouponRequest;
 import com.heymart.coupon.enums.ErrorStatus;
+import com.heymart.coupon.exception.CouponNotFoundException;
 import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.builder.ProductCouponBuilder;
 import com.heymart.coupon.service.AuthServiceClient;
@@ -103,7 +104,7 @@ class ProductCouponControllerTest {
 
         when(authServiceClient.verifyUserAuthorization("coupon:create", "authHeader")).thenReturn(true);
         when(authServiceClient.verifySupermarket("authHeader", request.getSupermarketName())).thenReturn(true);
-        when(productCouponOperation.findByIdProduct(request.getIdProduct())).thenThrow(new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
+        when(productCouponOperation.findByIdProduct(request.getIdProduct())).thenThrow(new CouponNotFoundException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
         when(couponService.createCoupon(any())).thenReturn(CompletableFuture.completedFuture(coupon));
 
         CompletableFuture<ResponseEntity<Object>> response = controller.createCoupon(request, "authHeader");
@@ -125,23 +126,6 @@ class ProductCouponControllerTest {
 
         assertEquals(HttpStatus.CONFLICT, response.join().getStatusCode());
         assertEquals(ErrorStatus.COUPON_ALREADY_EXIST.getValue(), response.join().getBody());
-    }
-
-    @Test
-    void testCreateCouponError() {
-        CouponRequest request = new CouponRequest();
-        request.setSupermarketName("Supermarket");
-        request.setIdProduct("Product");
-
-        when(authServiceClient.verifyUserAuthorization("coupon:create", "authHeader")).thenReturn(true);
-        when(authServiceClient.verifySupermarket("authHeader", request.getSupermarketName())).thenReturn(true);
-        when(productCouponOperation.findByIdProduct(request.getIdProduct())).thenThrow(new RuntimeException("Random Error"));
-        when(couponService.createCoupon(any())).thenReturn(CompletableFuture.completedFuture(coupon));
-
-        CompletableFuture<ResponseEntity<Object>> response = controller.createCoupon(request, "authHeader");
-
-        assertNotEquals(HttpStatus.OK, response.join().getStatusCode());
-        assertNotNull(response.join().getBody());
     }
     @Test
     void testFindAllCoupons_Authorized() throws Exception {

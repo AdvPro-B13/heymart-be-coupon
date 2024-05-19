@@ -3,6 +3,7 @@ package com.heymart.coupon.controller;
 import com.heymart.coupon.dto.CouponRequest;
 import com.heymart.coupon.enums.CouponAction;
 import com.heymart.coupon.enums.ErrorStatus;
+import com.heymart.coupon.exception.CouponNotFoundException;
 import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.service.AuthServiceClient;
 import com.heymart.coupon.service.coupon.CouponService;
@@ -48,11 +49,9 @@ public class ProductCouponController implements CouponOperations{
         }
         try {
             productCouponOperation.findByIdProduct(request.getIdProduct());
-        } catch (Exception e) {
-            if (e.getMessage().equals(ErrorStatus.COUPON_NOT_FOUND.getValue())) {
-                return productCouponService.createCoupon(request)
-                        .thenApply(ResponseEntity::ok);
-            }
+        } catch (CouponNotFoundException e) {
+            return productCouponService.createCoupon(request)
+                    .thenApply(ResponseEntity::ok);
         }
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorStatus.COUPON_ALREADY_EXIST.getValue()));
     }

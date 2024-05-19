@@ -2,6 +2,7 @@ package com.heymart.coupon.service.coupon;
 
 import com.heymart.coupon.dto.CouponRequest;
 import com.heymart.coupon.enums.ErrorStatus;
+import com.heymart.coupon.exception.CouponNotFoundException;
 import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.builder.ProductCouponBuilder;
 import com.heymart.coupon.repository.ProductCouponRepository;
@@ -50,7 +51,7 @@ public class ProductCouponServiceImpl implements CouponService<ProductCoupon>, P
     @Async("asyncTaskExecutor")
     public CompletableFuture<Void> deleteCoupon(CouponRequest request) {
         Optional<ProductCoupon> optional = couponRepository.findById(UUID.fromString(request.getId()));
-        ProductCoupon coupon = optional.orElseThrow(() -> new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
+        ProductCoupon coupon = optional.orElseThrow(() -> new CouponNotFoundException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
         couponRepository.delete(coupon);
         return CompletableFuture.completedFuture(null);
     }
@@ -61,7 +62,7 @@ public class ProductCouponServiceImpl implements CouponService<ProductCoupon>, P
 
     public ProductCoupon findById(String id) {
         Optional<ProductCoupon>optional = couponRepository.findById(UUID.fromString(id));
-        return optional.orElseThrow(() -> new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
+        return optional.orElseThrow(() -> new CouponNotFoundException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
     }
 
     public List<ProductCoupon> findBySupermarketName(String supermarketName) {
@@ -70,7 +71,7 @@ public class ProductCouponServiceImpl implements CouponService<ProductCoupon>, P
     public ProductCoupon findByIdProduct(String idProduct) {
         ProductCoupon coupon = couponRepository.findByIdProduct(idProduct);
         if (coupon == null) {
-            throw new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue());
+            throw new CouponNotFoundException(ErrorStatus.COUPON_NOT_FOUND.getValue());
         }
         return coupon;
     }
