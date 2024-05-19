@@ -44,7 +44,7 @@ public class AuthServiceClient {
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         try {
-            String url = authServiceUrl + "/user";;
+            String url = authServiceUrl + "/user";
             ResponseEntity<SupermarketResponse> response = restTemplate.exchange(
                     url,
                     HttpMethod.GET,

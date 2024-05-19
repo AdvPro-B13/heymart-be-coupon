@@ -56,7 +56,6 @@ public class ProductCouponServiceImpl implements CouponService<ProductCoupon>, P
     }
 
     public List<ProductCoupon> findAllCoupons() {
-        System.out.println(Thread.currentThread().getName());
         return couponRepository.findAll();
     }
 
