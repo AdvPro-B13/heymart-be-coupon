@@ -2,13 +2,10 @@ package com.heymart.coupon.service;
 import com.heymart.coupon.dto.SupermarketResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class AuthServiceClient {

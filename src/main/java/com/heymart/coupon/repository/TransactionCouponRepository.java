@@ -1,6 +1,5 @@
 package com.heymart.coupon.repository;
 
-import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.TransactionCoupon;
 import org.springframework.stereotype.Repository;
 

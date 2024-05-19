@@ -1,11 +1,8 @@
 package com.heymart.coupon.service.coupon;
 
 import com.heymart.coupon.dto.CouponRequest;
-import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.TransactionCoupon;
-import com.heymart.coupon.model.builder.ProductCouponBuilder;
 import com.heymart.coupon.model.builder.TransactionCouponBuilder;
-import com.heymart.coupon.repository.CouponRepository;
 import com.heymart.coupon.repository.TransactionCouponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
