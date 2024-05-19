@@ -83,9 +83,7 @@ class TransactionCouponServiceImplTest {
 
         when(transactionCouponRepository.findById(UUID.fromString(randomId.toString()))).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            transactionCouponService.updateCoupon(request);
-        });
+        Exception exception = assertThrows(RuntimeException.class, () -> transactionCouponService.updateCoupon(request));
         assertEquals(ErrorStatus.COUPON_NOT_FOUND.getValue(), exception.getMessage());
 
         verify(transactionCouponRepository, times(1)).findById(UUID.fromString(request.getId()));
@@ -116,9 +114,7 @@ class TransactionCouponServiceImplTest {
 
         when(transactionCouponRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            transactionCouponService.deleteCoupon(request);
-        });
+        Exception exception = assertThrows(RuntimeException.class, () -> transactionCouponService.deleteCoupon(request));
         assertEquals(ErrorStatus.COUPON_NOT_FOUND.getValue(), exception.getMessage());
 
         verify(transactionCouponRepository).findById(randomId);
@@ -170,9 +166,9 @@ class TransactionCouponServiceImplTest {
     void testFindById_CouponDoesNotExist() {
         when(transactionCouponRepository.findById(randomId)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            transactionCouponService.findById(randomId.toString());
-        });
+        Exception exception = assertThrows(RuntimeException.class, () ->
+            transactionCouponService.findById(randomId.toString())
+        );
         assertEquals(ErrorStatus.COUPON_NOT_FOUND.getValue(), exception.getMessage());
     }
 

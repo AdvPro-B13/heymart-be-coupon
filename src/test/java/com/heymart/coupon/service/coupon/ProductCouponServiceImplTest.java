@@ -87,9 +87,7 @@ class ProductCouponServiceImplTest {
 
         when(productCouponRepository.findById(UUID.fromString(request.getId()))).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            productCouponService.updateCoupon(request).join();
-        });
+        Exception exception = assertThrows(RuntimeException.class, () -> productCouponService.updateCoupon(request).join());
 
         assertEquals("Coupon not found", exception.getMessage());
 
@@ -120,9 +118,7 @@ class ProductCouponServiceImplTest {
 
         when(productCouponRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            productCouponService.deleteCoupon(request).join();
-        });
+        Exception exception = assertThrows(RuntimeException.class, () -> productCouponService.deleteCoupon(request).join());
 
         assertEquals(ErrorStatus.COUPON_NOT_FOUND.getValue(), exception.getMessage());
         verify(productCouponRepository).findById(randomId);
@@ -175,9 +171,7 @@ class ProductCouponServiceImplTest {
     void testFindById_CouponDoesNotExist() {
         when(productCouponRepository.findById(randomId)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            productCouponService.findById(randomId.toString());
-        });
+        Exception exception = assertThrows(RuntimeException.class, () -> productCouponService.findById(randomId.toString()));
 
         assertEquals(ErrorStatus.COUPON_NOT_FOUND.getValue(), exception.getMessage());
     }
@@ -234,9 +228,7 @@ class ProductCouponServiceImplTest {
         String idProduct = "123";
         when(productCouponRepository.findByIdProduct(idProduct)).thenReturn(null);
 
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            productCouponService.findByIdProduct(idProduct);
-        });
+        Exception exception = assertThrows(RuntimeException.class, () -> productCouponService.findByIdProduct(idProduct));
 
         assertEquals(ErrorStatus.COUPON_NOT_FOUND.getValue(), exception.getMessage());
     }
