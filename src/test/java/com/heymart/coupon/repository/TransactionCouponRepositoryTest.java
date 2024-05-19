@@ -13,7 +13,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-public class TransactionCouponRepositoryTest {
+class TransactionCouponRepositoryTest {
 
     @Autowired
     private TransactionCouponRepository repository;
@@ -33,7 +33,7 @@ public class TransactionCouponRepositoryTest {
     }
 
     @Test
-    public void testFindTransactionCouponById() {
+    void testFindTransactionCouponById() {
         TransactionCoupon coupon = new TransactionCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
@@ -47,7 +47,7 @@ public class TransactionCouponRepositoryTest {
     }
 
     @Test
-    public void testDeleteTransactionCoupon() {
+    void testDeleteTransactionCoupon() {
         TransactionCoupon coupon = new TransactionCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
@@ -60,19 +60,19 @@ public class TransactionCouponRepositoryTest {
     }
 
     @Test
-    public void testFindNonExistentTransactionCoupon() {
+    void testFindNonExistentTransactionCoupon() {
         Optional<TransactionCoupon> found = repository.findById("nonexistentId");
         assertTrue(found.isEmpty(), "No coupon should be found with a non-existent ID");
     }
 
     @Test
-    public void testDeleteNonExistentCoupon() {
+    void testDeleteNonExistentCoupon() {
         assertDoesNotThrow(() -> {
             repository.deleteById("nonexistentId");
         });
     }
     @Test
-    public void TestFindBySupermarketName() {
+    void TestFindBySupermarketName() {
         TransactionCoupon coupon = new TransactionCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)

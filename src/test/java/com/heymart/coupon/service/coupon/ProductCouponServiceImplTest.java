@@ -79,7 +79,7 @@ class ProductCouponServiceImplTest {
     }
 
     @Test
-    public void testUpdateNonExistingProductCoupon() {
+    void testUpdateNonExistingProductCoupon() {
         CouponRequest request = new CouponRequest("non-existing-id", 20, 10, 25, "Supermarket", "123", 0);
 
         when(productCouponRepository.findById(request.getId())).thenReturn(Optional.empty());
@@ -152,7 +152,7 @@ class ProductCouponServiceImplTest {
     }
 
     @Test
-    public void testFindById_CouponExists() {
+    void testFindById_CouponExists() {
         String couponId = "123";
         ProductCoupon mockCoupon = new ProductCouponBuilder()
                 .setPercentDiscount(10)
@@ -170,7 +170,7 @@ class ProductCouponServiceImplTest {
     }
 
     @Test
-    public void testFindById_CouponDoesNotExist() {
+    void testFindById_CouponDoesNotExist() {
         String couponId = "unknown";
         when(productCouponRepository.findById(couponId)).thenReturn(Optional.empty());
 
@@ -182,7 +182,7 @@ class ProductCouponServiceImplTest {
     }
 
     @Test
-    public void testFindBySupermarketName() {
+    void testFindBySupermarketName() {
         String supermarketName = "TestMart";
         ProductCoupon coupon = new ProductCouponBuilder()
                 .setPercentDiscount(10)
@@ -211,7 +211,7 @@ class ProductCouponServiceImplTest {
     }
 
     @Test
-    public void testFindByIdProduct_CouponExists() {
+    void testFindByIdProduct_CouponExists() {
         String idProduct = "123";
         ProductCoupon mockCoupon = new ProductCouponBuilder()
                 .setPercentDiscount(10)
@@ -229,7 +229,7 @@ class ProductCouponServiceImplTest {
     }
 
     @Test
-    public void testFindByIdProduct_NotFound() {
+    void testFindByIdProduct_NotFound() {
         String idProduct = "123";
         when(productCouponRepository.findByIdProduct(idProduct)).thenReturn(null);
 

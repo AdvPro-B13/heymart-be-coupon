@@ -13,13 +13,13 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-public class ProductCouponRepositoryTest {
+class ProductCouponRepositoryTest {
 
     @Autowired
     private ProductCouponRepository repository;
 
     @Test
-    public void testSaveProductCoupon() {
+    void testSaveProductCoupon() {
         ProductCoupon coupon = new ProductCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
@@ -33,7 +33,7 @@ public class ProductCouponRepositoryTest {
     }
 
     @Test
-    public void testFindProductCouponById() {
+    void testFindProductCouponById() {
         ProductCoupon coupon = new ProductCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
@@ -48,7 +48,7 @@ public class ProductCouponRepositoryTest {
     }
 
     @Test
-    public void testDeleteProductCoupon() {
+    void testDeleteProductCoupon() {
         ProductCoupon coupon = new ProductCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
@@ -61,20 +61,20 @@ public class ProductCouponRepositoryTest {
     }
 
     @Test
-    public void testFindNonExistentProductCoupon() {
+    void testFindNonExistentProductCoupon() {
         Optional<ProductCoupon> found = repository.findById("nonexistentId");
         assertTrue(found.isEmpty(), "No coupon should be found with a non-existent ID");
     }
 
     @Test
-    public void testDeleteNonExistentCoupon() {
+    void testDeleteNonExistentCoupon() {
         assertDoesNotThrow(() -> {
             repository.deleteById("nonexistentId");
         });
     }
 
     @Test
-    public void TestFindBySupermarketName() {
+    void TestFindBySupermarketName() {
         ProductCoupon coupon = new ProductCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
@@ -107,7 +107,7 @@ public class ProductCouponRepositoryTest {
         assertEquals(expectedCoupons, actualCoupons);
     }
     @Test
-    public void testFindByProductId() {
+    void testFindByProductId() {
         ProductCoupon coupon = new ProductCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
@@ -121,7 +121,7 @@ public class ProductCouponRepositoryTest {
         assertEquals("123", found.getIdProduct());
     }
     @Test
-    public void testFindByProductId_NotFound() {
+    void testFindByProductId_NotFound() {
         ProductCoupon found = repository.findByIdProduct("123");
         assertNull(found);
     }

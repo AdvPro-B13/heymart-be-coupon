@@ -154,7 +154,7 @@ class TransactionCouponServiceImplTest {
     }
 
     @Test
-    public void testFindById_CouponExists() throws ExecutionException, InterruptedException {
+    void testFindById_CouponExists() throws ExecutionException, InterruptedException {
         String couponId = "123";
         TransactionCoupon mockCoupon = new TransactionCouponBuilder()
                 .setPercentDiscount(10)
@@ -172,7 +172,7 @@ class TransactionCouponServiceImplTest {
     }
 
     @Test
-    public void testFindById_CouponDoesNotExist() throws ExecutionException, InterruptedException {
+    void testFindById_CouponDoesNotExist() throws ExecutionException, InterruptedException {
         String couponId = "unknown";
         when(transactionCouponRepository.findById(couponId)).thenReturn(Optional.empty());
 
@@ -183,7 +183,7 @@ class TransactionCouponServiceImplTest {
     }
 
     @Test
-    public void testFindBySupermarketName() {
+    void testFindBySupermarketName() {
         String supermarketName = "TestMart";
         TransactionCoupon coupon = new TransactionCouponBuilder()
                 .setPercentDiscount(10)

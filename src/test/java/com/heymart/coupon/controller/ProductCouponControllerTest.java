@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.*;
 
-public class ProductCouponControllerTest {
+class ProductCouponControllerTest {
     private MockMvc mockMvc;
 
     @Mock
@@ -46,7 +46,7 @@ public class ProductCouponControllerTest {
     private ProductCoupon coupon;
     private ProductCoupon coupon2;
     @BeforeEach
-    public void setup() {
+    void setup() {
         coupon = new ProductCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
@@ -66,7 +66,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testCreateCouponUnauthorizedUser() {
+    void testCreateCouponUnauthorizedUser() {
         CouponRequest request = new CouponRequest();
         request.setSupermarketName("Supermarket");
         request.setIdProduct("Product");
@@ -80,7 +80,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testCreateCoupon_WrongSupermarket() throws Exception {
+    void testCreateCoupon_WrongSupermarket() throws Exception {
         CouponRequest request = new CouponRequest();
         request.setSupermarketName("Supermarket");
         request.setIdProduct("Product");
@@ -96,7 +96,7 @@ public class ProductCouponControllerTest {
 
 
     @Test
-    public void testCreateCouponSuccess() {
+    void testCreateCouponSuccess() {
         CouponRequest request = new CouponRequest();
         request.setSupermarketName("Supermarket");
         request.setIdProduct("Product");
@@ -112,7 +112,7 @@ public class ProductCouponControllerTest {
         assertNotNull(response.join().getBody());
     }
     @Test
-    public void testCreateCouponAlreadyExists() {
+    void testCreateCouponAlreadyExists() {
         CouponRequest request = new CouponRequest();
         request.setSupermarketName("Supermarket");
         request.setIdProduct("Product");
@@ -128,7 +128,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testCreateCouponError() {
+    void testCreateCouponError() {
         CouponRequest request = new CouponRequest();
         request.setSupermarketName("Supermarket");
         request.setIdProduct("Product");
@@ -144,7 +144,7 @@ public class ProductCouponControllerTest {
         assertNotNull(response.join().getBody());
     }
     @Test
-    public void testFindAllCoupons_Authorized() throws Exception {
+    void testFindAllCoupons_Authorized() throws Exception {
         String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         List<ProductCoupon> coupons = Arrays.asList(coupon, coupon2); // Mock some data
@@ -157,7 +157,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testFindAllCoupons_Unauthorized() throws Exception {
+    void testFindAllCoupons_Unauthorized() throws Exception {
         String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(false);
         List<ProductCoupon> coupons = Arrays.asList(coupon, coupon2);
@@ -169,7 +169,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testFindCouponById_Authorized() throws Exception {
+    void testFindCouponById_Authorized() throws Exception {
         String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         given(couponService.findById("1")).willReturn(coupon);
@@ -181,7 +181,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testFindCouponById_Unauthorized() throws Exception {
+    void testFindCouponById_Unauthorized() throws Exception {
         String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(false);
         given(couponService.findById("1")).willReturn(coupon);
@@ -192,7 +192,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testFindCouponById_NotFound() throws Exception {
+    void testFindCouponById_NotFound() throws Exception {
         String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         given(couponService.findById("1")).willThrow(new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
@@ -203,7 +203,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testFindCouponByIdProduct_Authorized() throws Exception {
+    void testFindCouponByIdProduct_Authorized() throws Exception {
         String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         given(productCouponOperation.findByIdProduct("1")).willReturn(coupon);
@@ -215,7 +215,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testFindCouponByIdProduct_Unauthorized() throws Exception {
+    void testFindCouponByIdProduct_Unauthorized() throws Exception {
         String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(false);
         given(productCouponOperation.findByIdProduct("1")).willReturn(coupon);
@@ -226,7 +226,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testFindCouponByIdProduct_NotFound() throws Exception {
+    void testFindCouponByIdProduct_NotFound() throws Exception {
         String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         given(productCouponOperation.findByIdProduct("1")).willThrow(new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
@@ -237,7 +237,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testFindCouponsBySupermarketName_Authorized() throws Exception {
+    void testFindCouponsBySupermarketName_Authorized() throws Exception {
         String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         List<ProductCoupon> coupons = Arrays.asList(coupon);
@@ -250,7 +250,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testFindCouponsBySupermarketName_Unauthorized() throws Exception {
+    void testFindCouponsBySupermarketName_Unauthorized() throws Exception {
         String authorizationHeader = "Bearer valid-token";
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(false);
         List<ProductCoupon> coupons = Arrays.asList(coupon);
@@ -262,7 +262,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testUpdateCouponUnauthorizedUser() {
+    void testUpdateCouponUnauthorizedUser() {
         CouponRequest request = new CouponRequest();
         request.setId("1");
 
@@ -275,7 +275,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testUpdateCouponNotFound() {
+    void testUpdateCouponNotFound() {
         CouponRequest request = new CouponRequest();
         request.setId("1");
 
@@ -289,7 +289,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testUpdateCouponUnauthorizedSupermarket() {
+    void testUpdateCouponUnauthorizedSupermarket() {
         CouponRequest request = new CouponRequest();
         request.setId("1");
         when(authServiceClient.verifyUserAuthorization("coupon:update", "authHeader")).thenReturn(true);
@@ -303,7 +303,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testUpdateCouponSuccess() {
+    void testUpdateCouponSuccess() {
         CouponRequest request = new CouponRequest();
         request.setId("1");
 
@@ -319,7 +319,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testDeleteCouponUnauthorizedUser() {
+    void testDeleteCouponUnauthorizedUser() {
         CouponRequest request = new CouponRequest();
         request.setId("1");
 
@@ -332,7 +332,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testDeleteCouponNotFound() {
+    void testDeleteCouponNotFound() {
         CouponRequest request = new CouponRequest();
         request.setId("1");
 
@@ -346,7 +346,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testDeleteCouponUnauthorizedSupermarket() {
+    void testDeleteCouponUnauthorizedSupermarket() {
         CouponRequest request = new CouponRequest();
         request.setId("1");
 
@@ -361,7 +361,7 @@ public class ProductCouponControllerTest {
     }
 
     @Test
-    public void testDeleteCouponSuccess() {
+    void testDeleteCouponSuccess() {
         CouponRequest request = new CouponRequest();
         request.setId("1");
 

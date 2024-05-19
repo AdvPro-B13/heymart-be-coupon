@@ -10,7 +10,7 @@ import org.mockito.*;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
-public class AuthServiceClientTest {
+class AuthServiceClientTest {
 
     @InjectMocks
     AuthServiceClient authServiceClient;
@@ -19,12 +19,12 @@ public class AuthServiceClientTest {
     RestTemplate restTemplate;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testVerifyUserAuthorization_Successful() {
+    void testVerifyUserAuthorization_Successful() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer validToken");
@@ -38,7 +38,7 @@ public class AuthServiceClientTest {
     }
 
     @Test
-    public void testVerifyUserAuthorization_Failed() {
+    void testVerifyUserAuthorization_Failed() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer invalidToken");
@@ -51,13 +51,13 @@ public class AuthServiceClientTest {
         assertFalse(result);
     }
     @Test
-    public void testVerifyUserAuthorization_TokenNull() {
+    void testVerifyUserAuthorization_TokenNull() {
         boolean result = authServiceClient.verifyUserAuthorization("someAction", null);
         assertFalse(result);
     }
 
     @Test
-    public void testVerifyUserAuthorization_Exception() {
+    void testVerifyUserAuthorization_Exception() {
         when(restTemplate.postForEntity(anyString(), any(), eq(String.class))).thenThrow(new RuntimeException());
 
         boolean result = authServiceClient.verifyUserAuthorization("someAction", "anyToken");
@@ -65,7 +65,7 @@ public class AuthServiceClientTest {
     }
 
     @Test
-    public void testVerifySupermarket_Successful() {
+    void testVerifySupermarket_Successful() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer validToken");
@@ -83,7 +83,7 @@ public class AuthServiceClientTest {
     }
 
     @Test
-    public void testVerifySupermarket_Failed() {
+    void testVerifySupermarket_Failed() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer validToken");
@@ -100,13 +100,13 @@ public class AuthServiceClientTest {
         assertFalse(result);
     }
     @Test
-    public void testVerifySupermarket_NullTokenOrSupermarket() {
+    void testVerifySupermarket_NullTokenOrSupermarket() {
         assertFalse(authServiceClient.verifySupermarket("token", null));
         assertFalse(authServiceClient.verifySupermarket(null, "HeyMart"));
     }
 
     @Test
-    public void testVerifySupermarket_Exception() {
+    void testVerifySupermarket_Exception() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer anyToken");

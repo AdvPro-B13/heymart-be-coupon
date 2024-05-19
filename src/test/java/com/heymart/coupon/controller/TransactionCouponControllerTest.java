@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class TransactionCouponControllerTest {
+class TransactionCouponControllerTest {
 
     @InjectMocks
     private TransactionCouponController transactionCouponController;
@@ -53,7 +53,7 @@ public class TransactionCouponControllerTest {
     }
 
     @Test
-    public void testCreateCouponUnauthorizedUser() {
+    void testCreateCouponUnauthorizedUser() {
         CouponRequest request = new CouponRequest();
         when(authServiceClient.verifyUserAuthorization("coupon:create", "authHeader")).thenReturn(false);
 
@@ -64,7 +64,7 @@ public class TransactionCouponControllerTest {
     }
 
     @Test
-    public void testCreateCouponUnauthorizedSupermarket() {
+    void testCreateCouponUnauthorizedSupermarket() {
         CouponRequest request = new CouponRequest();
         when(authServiceClient.verifyUserAuthorization("coupon:create", "authHeader")).thenReturn(true);
         when(authServiceClient.verifySupermarket("authHeader", request.getSupermarketName())).thenReturn(false);
@@ -76,7 +76,7 @@ public class TransactionCouponControllerTest {
     }
 
     @Test
-    public void testCreateCouponSuccess() {
+    void testCreateCouponSuccess() {
         CouponRequest request = new CouponRequest();
 
         when(authServiceClient.verifyUserAuthorization("coupon:create", "authHeader")).thenReturn(true);
@@ -90,7 +90,7 @@ public class TransactionCouponControllerTest {
     }
 
     @Test
-    public void testFindAllCouponsUnauthorizedUser() {
+    void testFindAllCouponsUnauthorizedUser() {
         when(authServiceClient.verifyUserAuthorization("coupon:read", "authHeader")).thenReturn(false);
 
         ResponseEntity<Object> response = transactionCouponController.findAll("authHeader");
@@ -100,7 +100,7 @@ public class TransactionCouponControllerTest {
     }
 
     @Test
-    public void testFindAllCouponsSuccess() {
+    void testFindAllCouponsSuccess() {
         List<TransactionCoupon> coupons = Arrays.asList(coupon, coupon2);
 
         when(authServiceClient.verifyUserAuthorization("coupon:read", "authHeader")).thenReturn(true);
@@ -113,7 +113,7 @@ public class TransactionCouponControllerTest {
     }
 
     @Test
-    public void testFindCouponByIdUnauthorizedUser() {
+    void testFindCouponByIdUnauthorizedUser() {
         when(authServiceClient.verifyUserAuthorization("coupon:read", "authHeader")).thenReturn(false);
 
         ResponseEntity<Object> response = transactionCouponController.findById("authHeader", "couponId");
@@ -123,7 +123,7 @@ public class TransactionCouponControllerTest {
     }
 
     @Test
-    public void testFindCouponByIdNotFound() {
+    void testFindCouponByIdNotFound() {
         when(authServiceClient.verifyUserAuthorization("coupon:read", "authHeader")).thenReturn(true);
         when(transactionCouponService.findById("couponId")).thenThrow(new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
 
@@ -134,7 +134,7 @@ public class TransactionCouponControllerTest {
     }
 
     @Test
-    public void testFindCouponByIdSuccess() {
+    void testFindCouponByIdSuccess() {
         when(authServiceClient.verifyUserAuthorization("coupon:read", "authHeader")).thenReturn(true);
         when(transactionCouponService.findById("couponId")).thenReturn(coupon);
 
@@ -145,7 +145,7 @@ public class TransactionCouponControllerTest {
     }
 
     @Test
-    public void testFindCouponsBySupermarketNameUnauthorizedUser() {
+    void testFindCouponsBySupermarketNameUnauthorizedUser() {
         when(authServiceClient.verifyUserAuthorization("coupon:read", "authHeader")).thenReturn(false);
 
         ResponseEntity<Object> response = transactionCouponController.findBySupermarketName("authHeader", "supermarketName");
@@ -155,7 +155,7 @@ public class TransactionCouponControllerTest {
     }
 
     @Test
-    public void testFindCouponsBySupermarketNameSuccess() {
+    void testFindCouponsBySupermarketNameSuccess() {
         List<TransactionCoupon> coupons = Arrays.asList(coupon,coupon2);
 
         when(authServiceClient.verifyUserAuthorization("coupon:read", "authHeader")).thenReturn(true);
@@ -168,7 +168,7 @@ public class TransactionCouponControllerTest {
     }
 
     @Test
-    public void testUpdateCouponUnauthorizedUser() {
+    void testUpdateCouponUnauthorizedUser() {
         CouponRequest request = new CouponRequest();
         when(authServiceClient.verifyUserAuthorization("coupon:update", "authHeader")).thenReturn(false);
 
@@ -179,7 +179,7 @@ public class TransactionCouponControllerTest {
     }
 
     @Test
-    public void testUpdateCouponNotFound() {
+    void testUpdateCouponNotFound() {
         CouponRequest request = new CouponRequest();
         when(authServiceClient.verifyUserAuthorization("coupon:update", "authHeader")).thenReturn(true);
         when(transactionCouponService.findById(request.getId())).thenThrow(new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
@@ -191,7 +191,7 @@ public class TransactionCouponControllerTest {
     }
 
     @Test
-    public void testUpdateCouponUnauthorizedSupermarket() {
+    void testUpdateCouponUnauthorizedSupermarket() {
         CouponRequest request = new CouponRequest();
 
         when(authServiceClient.verifyUserAuthorization("coupon:update", "authHeader")).thenReturn(true);
@@ -205,7 +205,7 @@ public class TransactionCouponControllerTest {
     }
 
     @Test
-    public void testUpdateCouponSuccess() {
+    void testUpdateCouponSuccess() {
         CouponRequest request = new CouponRequest();
 
         when(authServiceClient.verifyUserAuthorization("coupon:update", "authHeader")).thenReturn(true);
@@ -220,7 +220,7 @@ public class TransactionCouponControllerTest {
     }
 
     @Test
-    public void testDeleteCouponUnauthorizedUser() {
+    void testDeleteCouponUnauthorizedUser() {
         CouponRequest request = new CouponRequest();
         when(authServiceClient.verifyUserAuthorization("coupon:delete", "authHeader")).thenReturn(false);
 
@@ -231,7 +231,7 @@ public class TransactionCouponControllerTest {
     }
 
     @Test
-    public void testDeleteCouponNotFound() {
+    void testDeleteCouponNotFound() {
         CouponRequest request = new CouponRequest();
         when(authServiceClient.verifyUserAuthorization("coupon:delete", "authHeader")).thenReturn(true);
         when(transactionCouponService.findById(request.getId())).thenThrow(new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
@@ -243,7 +243,7 @@ public class TransactionCouponControllerTest {
     }
 
     @Test
-    public void testDeleteCouponUnauthorizedSupermarket() {
+    void testDeleteCouponUnauthorizedSupermarket() {
         CouponRequest request = new CouponRequest();
 
         when(authServiceClient.verifyUserAuthorization("coupon:delete", "authHeader")).thenReturn(true);
@@ -257,7 +257,7 @@ public class TransactionCouponControllerTest {
     }
 
     @Test
-    public void testDeleteCouponSuccess() {
+    void testDeleteCouponSuccess() {
         CouponRequest request = new CouponRequest();
 
         when(authServiceClient.verifyUserAuthorization("coupon:delete", "authHeader")).thenReturn(true);
