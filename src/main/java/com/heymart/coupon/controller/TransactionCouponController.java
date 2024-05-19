@@ -1,6 +1,7 @@
 package com.heymart.coupon.controller;
 
 import com.heymart.coupon.dto.CouponRequest;
+import com.heymart.coupon.enums.CouponAction;
 import com.heymart.coupon.enums.ErrorStatus;
 import com.heymart.coupon.model.TransactionCoupon;
 import com.heymart.coupon.service.AuthServiceClient;
@@ -32,7 +33,9 @@ public class TransactionCouponController implements CouponOperations{
     public CompletableFuture<ResponseEntity<Object>> createCoupon(
             CouponRequest request, String authorizationHeader
     ) {
-        if (!authServiceClient.verifyUserAuthorization("coupon:create", authorizationHeader)) {
+        if (!authServiceClient.verifyUserAuthorization(
+                CouponAction.CREATE.getValue(), authorizationHeader)
+        ) {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue()));
         }
         if (!authServiceClient.verifySupermarket(authorizationHeader, request.getSupermarketName())) {
@@ -46,7 +49,9 @@ public class TransactionCouponController implements CouponOperations{
     public ResponseEntity<Object> findAll(
             String authorizationHeader
     ) {
-        if (!authServiceClient.verifyUserAuthorization("coupon:read", authorizationHeader)) {
+        if (!authServiceClient.verifyUserAuthorization(
+                CouponAction.READ.getValue(), authorizationHeader)
+        ) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue());
         }
         return ResponseEntity.ok(transactionCouponService.findAllCoupons());
@@ -56,7 +61,9 @@ public class TransactionCouponController implements CouponOperations{
     public ResponseEntity<Object> findById(
             String authorizationHeader, String id
     ) {
-        if (!authServiceClient.verifyUserAuthorization("coupon:read", authorizationHeader)) {
+        if (!authServiceClient.verifyUserAuthorization(
+                CouponAction.READ.getValue(), authorizationHeader)
+        ) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue());
         }
         try {
@@ -71,7 +78,9 @@ public class TransactionCouponController implements CouponOperations{
     public ResponseEntity<Object> findBySupermarketName(
             String authorizationHeader, String supermarketName
     ) {
-        if (!authServiceClient.verifyUserAuthorization("coupon:read", authorizationHeader)) {
+        if (!authServiceClient.verifyUserAuthorization(
+                CouponAction.READ.getValue(), authorizationHeader)
+        ) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue());
         }
         return ResponseEntity.ok(transactionCouponService.findBySupermarketName(supermarketName));
@@ -80,7 +89,9 @@ public class TransactionCouponController implements CouponOperations{
     public CompletableFuture<ResponseEntity<Object>> updateCoupon(
             CouponRequest request, String authorizationHeader
     ) {
-        if (!authServiceClient.verifyUserAuthorization("coupon:update", authorizationHeader)) {
+        if (!authServiceClient.verifyUserAuthorization(
+                CouponAction.UPDATE.getValue(), authorizationHeader)
+        ) {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue()));
         }
         try {
@@ -99,7 +110,9 @@ public class TransactionCouponController implements CouponOperations{
     public CompletableFuture<ResponseEntity<Object>> deleteCoupon(
             CouponRequest request, String authorizationHeader
     ) {
-        if (!authServiceClient.verifyUserAuthorization("coupon:delete", authorizationHeader)) {
+        if (!authServiceClient.verifyUserAuthorization(
+                CouponAction.DELETE.getValue(), authorizationHeader)
+        ) {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue()));
         }
         try {
