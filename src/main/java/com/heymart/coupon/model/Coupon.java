@@ -3,14 +3,18 @@ package com.heymart.coupon.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.util.UUID;
+
 @Getter
 @MappedSuperclass
 public abstract class Coupon {
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue
+    @UuidGenerator
     @Column(name = "id", updatable = false, nullable = false)
-    private String id;
+    private UUID id;
 
     @Column(name = "percent_discount", nullable = false)
     int percentDiscount;

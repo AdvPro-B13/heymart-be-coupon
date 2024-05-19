@@ -1,6 +1,7 @@
 package com.heymart.coupon.service.coupon;
 
 import com.heymart.coupon.dto.CouponRequest;
+import com.heymart.coupon.enums.ErrorStatus;
 import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.builder.ProductCouponBuilder;
 import com.heymart.coupon.repository.ProductCouponRepository;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -37,7 +39,7 @@ public class ProductCouponServiceImpl implements CouponService<ProductCoupon>, P
 
     @Async("asyncTaskExecutor")
     public CompletableFuture<ProductCoupon> updateCoupon(CouponRequest request) {
-        Optional<ProductCoupon> optional = couponRepository.findById(request.getId());
+        Optional<ProductCoupon> optional = couponRepository.findById(UUID.fromString(request.getId()));
         ProductCoupon coupon = optional.orElseThrow(() -> new RuntimeException("Coupon not found"));
         coupon.setPercentDiscount(request.getPercentDiscount());
         coupon.setFixedDiscount(request.getFixedDiscount());
@@ -47,8 +49,8 @@ public class ProductCouponServiceImpl implements CouponService<ProductCoupon>, P
 
     @Async("asyncTaskExecutor")
     public CompletableFuture<Void> deleteCoupon(CouponRequest request) {
-        Optional<ProductCoupon> optional = couponRepository.findById(request.getId());
-        ProductCoupon coupon = optional.orElseThrow(() -> new RuntimeException("Coupon not found"));
+        Optional<ProductCoupon> optional = couponRepository.findById(UUID.fromString(request.getId()));
+        ProductCoupon coupon = optional.orElseThrow(() -> new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
         couponRepository.delete(coupon);
         return CompletableFuture.completedFuture(null);
     }
@@ -59,8 +61,8 @@ public class ProductCouponServiceImpl implements CouponService<ProductCoupon>, P
     }
 
     public ProductCoupon findById(String id) {
-        Optional<ProductCoupon>optional = couponRepository.findById(id);
-        return optional.orElseThrow(() -> new RuntimeException("Coupon not found"));
+        Optional<ProductCoupon>optional = couponRepository.findById(UUID.fromString(id));
+        return optional.orElseThrow(() -> new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
     }
 
     public List<ProductCoupon> findBySupermarketName(String supermarketName) {
@@ -69,7 +71,7 @@ public class ProductCouponServiceImpl implements CouponService<ProductCoupon>, P
     public ProductCoupon findByIdProduct(String idProduct) {
         ProductCoupon coupon = couponRepository.findByIdProduct(idProduct);
         if (coupon == null) {
-            throw new RuntimeException("Coupon not found");
+            throw new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue());
         }
         return coupon;
     }

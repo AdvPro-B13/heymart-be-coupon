@@ -1,6 +1,7 @@
 package com.heymart.coupon.service.coupon;
 
 import com.heymart.coupon.dto.CouponRequest;
+import com.heymart.coupon.enums.ErrorStatus;
 import com.heymart.coupon.model.TransactionCoupon;
 import com.heymart.coupon.model.builder.TransactionCouponBuilder;
 import com.heymart.coupon.repository.TransactionCouponRepository;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -36,8 +38,8 @@ public class TransactionCouponServiceImpl implements CouponService<TransactionCo
 
     @Async("asyncTaskExecutor")
     public CompletableFuture<TransactionCoupon> updateCoupon(CouponRequest request) {
-        Optional<TransactionCoupon> optional = couponRepository.findById(request.getId());
-        TransactionCoupon coupon = optional.orElseThrow(() -> new RuntimeException("Coupon not found"));
+        Optional<TransactionCoupon> optional = couponRepository.findById(UUID.fromString(request.getId()));
+        TransactionCoupon coupon = optional.orElseThrow(() -> new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
         coupon.setPercentDiscount(request.getPercentDiscount());
         coupon.setFixedDiscount(request.getFixedDiscount());
         coupon.setMaxDiscount(request.getMaxDiscount());
@@ -47,8 +49,8 @@ public class TransactionCouponServiceImpl implements CouponService<TransactionCo
 
     @Async("asyncTaskExecutor")
     public CompletableFuture<Void> deleteCoupon(CouponRequest request) {
-        Optional<TransactionCoupon> optional = couponRepository.findById(request.getId());
-        TransactionCoupon coupon = optional.orElseThrow(() -> new RuntimeException("Coupon not found"));
+        Optional<TransactionCoupon> optional = couponRepository.findById(UUID.fromString(request.getId()));
+        TransactionCoupon coupon = optional.orElseThrow(() -> new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
         couponRepository.delete(coupon);
         return CompletableFuture.completedFuture(null);
     }
@@ -58,8 +60,8 @@ public class TransactionCouponServiceImpl implements CouponService<TransactionCo
     }
 
     public TransactionCoupon findById(String id) {
-        Optional<TransactionCoupon>optional = couponRepository.findById(id);
-        return optional.orElseThrow(() -> new RuntimeException("Coupon not found"));
+        Optional<TransactionCoupon>optional = couponRepository.findById(UUID.fromString(id));
+        return optional.orElseThrow(() -> new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
     }
 
     public List<TransactionCoupon> findBySupermarketName(String supermarketName) {

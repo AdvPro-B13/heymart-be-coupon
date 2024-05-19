@@ -1,6 +1,7 @@
 package com.heymart.coupon.service.coupon;
 
 import com.heymart.coupon.dto.CouponRequest;
+import com.heymart.coupon.enums.ErrorStatus;
 import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.builder.ProductCouponBuilder;
 import com.heymart.coupon.repository.ProductCouponRepository;
@@ -13,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,10 +27,11 @@ class ProductCouponServiceImplTest {
 
     @InjectMocks
     private ProductCouponServiceImpl productCouponService;
+    private final UUID randomId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -54,7 +57,7 @@ class ProductCouponServiceImplTest {
 
     @Test
     void updateCoupon_shouldUpdateCouponSuccessfully() {
-        CouponRequest request = new CouponRequest(null,10, 5, 15, "Supermarket", "123",0);
+        CouponRequest request = new CouponRequest(randomId.toString(),10, 5, 15, "Supermarket", "123",0);
         ProductCoupon coupon = new ProductCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
@@ -69,7 +72,7 @@ class ProductCouponServiceImplTest {
 
         coupon.setPercentDiscount(20);
 
-        when(productCouponRepository.findById(coupon.getId())).thenReturn(Optional.of(coupon));
+        when(productCouponRepository.findById(randomId)).thenReturn(Optional.of(coupon));
 
         CompletableFuture<ProductCoupon> resultFuture = productCouponService.updateCoupon(request);
         ProductCoupon result = resultFuture.join();
@@ -80,9 +83,9 @@ class ProductCouponServiceImplTest {
 
     @Test
     void testUpdateNonExistingProductCoupon() {
-        CouponRequest request = new CouponRequest("non-existing-id", 20, 10, 25, "Supermarket", "123", 0);
+        CouponRequest request = new CouponRequest(randomId.toString(), 20, 10, 25, "Supermarket", "123", 0);
 
-        when(productCouponRepository.findById(request.getId())).thenReturn(Optional.empty());
+        when(productCouponRepository.findById(UUID.fromString(request.getId()))).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
             productCouponService.updateCoupon(request).join();
@@ -90,7 +93,7 @@ class ProductCouponServiceImplTest {
 
         assertEquals("Coupon not found", exception.getMessage());
 
-        verify(productCouponRepository, times(1)).findById(request.getId());
+        verify(productCouponRepository, times(1)).findById(UUID.fromString(request.getId()));
         verify(productCouponRepository, never()).save(any(ProductCoupon.class));
     }
 
@@ -104,8 +107,8 @@ class ProductCouponServiceImplTest {
                 .setIdProduct("123")
                 .build();
 
-        when(productCouponRepository.findById(coupon.getId())).thenReturn(Optional.of(coupon));
-        CompletableFuture<Void> resultFuture = productCouponService.deleteCoupon(new CouponRequest(coupon.getId(),0,0,0,null,null,0));
+        when(productCouponRepository.findById(randomId)).thenReturn(Optional.of(coupon));
+        CompletableFuture<Void> resultFuture = productCouponService.deleteCoupon(new CouponRequest(randomId.toString(),0,0,0,null,null,0));
         resultFuture.join();
 
         verify(productCouponRepository).delete(coupon);
@@ -113,16 +116,16 @@ class ProductCouponServiceImplTest {
 
     @Test
     void deleteCoupon_shouldThrowRuntimeExceptionWhenCouponNotFound() {
-        CouponRequest request = new CouponRequest("nonexistent-id", 10, 5, 15, "Supermarket", "123", 0);
+        CouponRequest request = new CouponRequest(randomId.toString(), 10, 5, 15, "Supermarket", "123", 0);
 
-        when(productCouponRepository.findById(anyString())).thenReturn(Optional.empty());
+        when(productCouponRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
             productCouponService.deleteCoupon(request).join();
         });
 
-        assertEquals("Coupon not found", exception.getMessage());
-        verify(productCouponRepository).findById("nonexistent-id");
+        assertEquals(ErrorStatus.COUPON_NOT_FOUND.getValue(), exception.getMessage());
+        verify(productCouponRepository).findById(randomId);
     }
 
     @Test
@@ -153,7 +156,6 @@ class ProductCouponServiceImplTest {
 
     @Test
     void testFindById_CouponExists() {
-        String couponId = "123";
         ProductCoupon mockCoupon = new ProductCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
@@ -161,9 +163,9 @@ class ProductCouponServiceImplTest {
                 .setSupermarketName("Supermarket")
                 .setIdProduct("123")
                 .build();
-        when(productCouponRepository.findById(couponId)).thenReturn(Optional.of(mockCoupon));
+        when(productCouponRepository.findById(randomId)).thenReturn(Optional.of(mockCoupon));
 
-        ProductCoupon result = productCouponService.findById(couponId);
+        ProductCoupon result = productCouponService.findById(randomId.toString());
 
         assertNotNull(result);
         assertEquals(mockCoupon, result);
@@ -171,14 +173,13 @@ class ProductCouponServiceImplTest {
 
     @Test
     void testFindById_CouponDoesNotExist() {
-        String couponId = "unknown";
-        when(productCouponRepository.findById(couponId)).thenReturn(Optional.empty());
+        when(productCouponRepository.findById(randomId)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            productCouponService.findById(couponId);
+            productCouponService.findById(randomId.toString());
         });
 
-        assertEquals("Coupon not found", exception.getMessage());
+        assertEquals(ErrorStatus.COUPON_NOT_FOUND.getValue(), exception.getMessage());
     }
 
     @Test
@@ -237,6 +238,6 @@ class ProductCouponServiceImplTest {
             productCouponService.findByIdProduct(idProduct);
         });
 
-        assertEquals("Coupon not found", exception.getMessage());
+        assertEquals(ErrorStatus.COUPON_NOT_FOUND.getValue(), exception.getMessage());
     }
 }

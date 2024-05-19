@@ -1,6 +1,7 @@
 package com.heymart.coupon.service.coupon;
 
 import com.heymart.coupon.dto.CouponRequest;
+import com.heymart.coupon.enums.ErrorStatus;
 import com.heymart.coupon.model.TransactionCoupon;
 import com.heymart.coupon.model.builder.TransactionCouponBuilder;
 import com.heymart.coupon.repository.TransactionCouponRepository;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -27,10 +29,11 @@ class TransactionCouponServiceImplTest {
 
     @InjectMocks
     private TransactionCouponServiceImpl transactionCouponService;
+    private final UUID randomId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -56,7 +59,7 @@ class TransactionCouponServiceImplTest {
 
     @Test
     void updateCoupon_shouldUpdateCouponSuccessfully() throws ExecutionException, InterruptedException {
-        CouponRequest request = new CouponRequest(null, 10, 5, 15, "Supermarket", null, 50);
+        CouponRequest request = new CouponRequest(randomId.toString(), 10, 5, 15, "Supermarket", null, 50);
         TransactionCoupon coupon = new TransactionCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
@@ -72,7 +75,7 @@ class TransactionCouponServiceImplTest {
 
         coupon.setPercentDiscount(20);
 
-        when(transactionCouponRepository.findById(coupon.getId())).thenReturn(Optional.of(coupon));
+        when(transactionCouponRepository.findById(randomId)).thenReturn(Optional.of(coupon));
 
         resultFuture = transactionCouponService.updateCoupon(request);
         result = resultFuture.get();
@@ -83,16 +86,16 @@ class TransactionCouponServiceImplTest {
 
     @Test
     public void testUpdateNonExistingCoupon() throws ExecutionException, InterruptedException {
-        CouponRequest request = new CouponRequest("non-existing-id", 20, 10, 25, "Supermarket", "123", 0);
+        CouponRequest request = new CouponRequest(randomId.toString(), 20, 10, 25, "Supermarket", "123", 0);
 
-        when(transactionCouponRepository.findById(request.getId())).thenReturn(Optional.empty());
+        when(transactionCouponRepository.findById(UUID.fromString(randomId.toString()))).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
             transactionCouponService.updateCoupon(request);
         });
-        assertEquals("Coupon not found", exception.getMessage());
+        assertEquals(ErrorStatus.COUPON_NOT_FOUND.getValue(), exception.getMessage());
 
-        verify(transactionCouponRepository, times(1)).findById(request.getId());
+        verify(transactionCouponRepository, times(1)).findById(UUID.fromString(request.getId()));
         verify(transactionCouponRepository, never()).save(any(TransactionCoupon.class));
     }
 
@@ -106,9 +109,9 @@ class TransactionCouponServiceImplTest {
                 .setMinTransaction(50)
                 .build();
 
-        when(transactionCouponRepository.findById(coupon.getId())).thenReturn(Optional.of(coupon));
+        when(transactionCouponRepository.findById(randomId)).thenReturn(Optional.of(coupon));
 
-        CompletableFuture<Void> resultFuture = transactionCouponService.deleteCoupon(new CouponRequest(coupon.getId(), 0, 0, 0, null, null, 0));
+        CompletableFuture<Void> resultFuture = transactionCouponService.deleteCoupon(new CouponRequest(randomId.toString(), 0, 0, 0, null, null, 0));
         resultFuture.get();
 
         verify(transactionCouponRepository).delete(coupon);
@@ -116,16 +119,16 @@ class TransactionCouponServiceImplTest {
 
     @Test
     void deleteCoupon_shouldThrowRuntimeExceptionWhenCouponNotFound() throws ExecutionException, InterruptedException {
-        CouponRequest request = new CouponRequest("nonexistent-id", 10, 5, 15, "Supermarket", "123", 0);
+        CouponRequest request = new CouponRequest(randomId.toString(), 10, 5, 15, "Supermarket", "123", 0);
 
-        when(transactionCouponRepository.findById(anyString())).thenReturn(Optional.empty());
+        when(transactionCouponRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
             transactionCouponService.deleteCoupon(request);
         });
-        assertEquals("Coupon not found", exception.getMessage());
+        assertEquals(ErrorStatus.COUPON_NOT_FOUND.getValue(), exception.getMessage());
 
-        verify(transactionCouponRepository).findById("nonexistent-id");
+        verify(transactionCouponRepository).findById(randomId);
     }
 
     @Test
@@ -155,7 +158,6 @@ class TransactionCouponServiceImplTest {
 
     @Test
     void testFindById_CouponExists() throws ExecutionException, InterruptedException {
-        String couponId = "123";
         TransactionCoupon mockCoupon = new TransactionCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
@@ -163,9 +165,9 @@ class TransactionCouponServiceImplTest {
                 .setSupermarketName("Supermarket")
                 .setMinTransaction(50)
                 .build();
-        when(transactionCouponRepository.findById(couponId)).thenReturn(Optional.of(mockCoupon));
+        when(transactionCouponRepository.findById(randomId)).thenReturn(Optional.of(mockCoupon));
 
-        TransactionCoupon result = transactionCouponService.findById(couponId);
+        TransactionCoupon result = transactionCouponService.findById(randomId.toString());
 
         assertNotNull(result);
         assertEquals(mockCoupon, result);
@@ -173,13 +175,12 @@ class TransactionCouponServiceImplTest {
 
     @Test
     void testFindById_CouponDoesNotExist() throws ExecutionException, InterruptedException {
-        String couponId = "unknown";
-        when(transactionCouponRepository.findById(couponId)).thenReturn(Optional.empty());
+        when(transactionCouponRepository.findById(randomId)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            transactionCouponService.findById(couponId);
+            transactionCouponService.findById(randomId.toString());
         });
-        assertEquals("Coupon not found", exception.getMessage());
+        assertEquals(ErrorStatus.COUPON_NOT_FOUND.getValue(), exception.getMessage());
     }
 
     @Test

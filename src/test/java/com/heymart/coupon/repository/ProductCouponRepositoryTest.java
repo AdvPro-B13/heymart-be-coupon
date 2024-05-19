@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,14 +18,15 @@ class ProductCouponRepositoryTest {
 
     @Autowired
     private ProductCouponRepository repository;
-
+    private final String supermarketName = "supermarketName";
+    private final UUID randomId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
     @Test
     void testSaveProductCoupon() {
         ProductCoupon coupon = new ProductCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
+                .setSupermarketName(supermarketName)
                 .setIdProduct("123")
                 .build();
         ProductCoupon saved = repository.save(coupon);
@@ -53,7 +55,7 @@ class ProductCouponRepositoryTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
+                .setSupermarketName(supermarketName)
                 .setIdProduct("123")
                 .build();ProductCoupon saved = repository.save(coupon);
         repository.delete(saved);
@@ -62,14 +64,14 @@ class ProductCouponRepositoryTest {
 
     @Test
     void testFindNonExistentProductCoupon() {
-        Optional<ProductCoupon> found = repository.findById("nonexistentId");
+        Optional<ProductCoupon> found = repository.findById(randomId);
         assertTrue(found.isEmpty(), "No coupon should be found with a non-existent ID");
     }
 
     @Test
     void testDeleteNonExistentCoupon() {
         assertDoesNotThrow(() -> {
-            repository.deleteById("nonexistentId");
+            repository.deleteById(randomId);
         });
     }
 
@@ -79,14 +81,14 @@ class ProductCouponRepositoryTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
+                .setSupermarketName(supermarketName)
                 .setIdProduct("123")
                 .build();
         ProductCoupon coupon2 = new ProductCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
+                .setSupermarketName(supermarketName)
                 .setIdProduct("124")
                 .build();
         ProductCoupon coupon3 = new ProductCouponBuilder()
@@ -101,7 +103,7 @@ class ProductCouponRepositoryTest {
         repository.save(coupon3);
         List<ProductCoupon> expectedCoupons = Arrays.asList(coupon, coupon2);
 
-        List<ProductCoupon> actualCoupons = repository.findBySupermarketName("Supermarket");
+        List<ProductCoupon> actualCoupons = repository.findBySupermarketName(supermarketName);
 
         assertEquals(expectedCoupons.size(), actualCoupons.size());
         assertEquals(expectedCoupons, actualCoupons);
@@ -112,17 +114,17 @@ class ProductCouponRepositoryTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("TestSupermarket")
+                .setSupermarketName(supermarketName)
                 .setIdProduct("123")
                 .build();ProductCoupon saved = repository.save(coupon);
         ProductCoupon found = repository.findByIdProduct("123");
         assertNotNull(found);
-        assertEquals("TestSupermarket", found.getSupermarketName());
+        assertEquals(supermarketName, found.getSupermarketName());
         assertEquals("123", found.getIdProduct());
     }
     @Test
     void testFindByProductId_NotFound() {
-        ProductCoupon found = repository.findByIdProduct("123");
+        ProductCoupon found = repository.findByIdProduct(randomId.toString());
         assertNull(found);
     }
 }

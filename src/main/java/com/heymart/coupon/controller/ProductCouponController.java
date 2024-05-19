@@ -100,7 +100,6 @@ public class ProductCouponController implements CouponOperations{
             ProductCoupon coupon = productCouponOperation.findByIdProduct(idProduct);
             return ResponseEntity.ok(coupon);
         } catch (Exception e) {
-            System.out.println(e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorStatus.COUPON_NOT_FOUND.getValue());
         }
 
