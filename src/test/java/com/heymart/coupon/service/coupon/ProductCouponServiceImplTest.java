@@ -87,8 +87,9 @@ class ProductCouponServiceImplTest {
 
         when(productCouponRepository.findById(UUID.fromString(request.getId()))).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(RuntimeException.class, () -> productCouponService.updateCoupon(request).join());
-
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            CompletableFuture<ProductCoupon> future = productCouponService.updateCoupon(request);
+        });
         assertEquals("Coupon not found", exception.getMessage());
 
         verify(productCouponRepository, times(1)).findById(UUID.fromString(request.getId()));
@@ -118,7 +119,9 @@ class ProductCouponServiceImplTest {
 
         when(productCouponRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(RuntimeException.class, () -> productCouponService.deleteCoupon(request).join());
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            productCouponService.deleteCoupon(request);
+        });
 
         assertEquals(ErrorStatus.COUPON_NOT_FOUND.getValue(), exception.getMessage());
         verify(productCouponRepository).findById(randomId);
@@ -171,7 +174,10 @@ class ProductCouponServiceImplTest {
     void testFindById_CouponDoesNotExist() {
         when(productCouponRepository.findById(randomId)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(RuntimeException.class, () -> productCouponService.findById(randomId.toString()));
+        String randomIdString = randomId.toString();
+        Exception exception = assertThrows(RuntimeException.class, () ->
+                productCouponService.findById(randomIdString)
+        );
 
         assertEquals(ErrorStatus.COUPON_NOT_FOUND.getValue(), exception.getMessage());
     }

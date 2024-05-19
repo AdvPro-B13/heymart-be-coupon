@@ -165,9 +165,9 @@ class TransactionCouponServiceImplTest {
     @Test
     void testFindById_CouponDoesNotExist() {
         when(transactionCouponRepository.findById(randomId)).thenReturn(Optional.empty());
-
+        String randomIdString = randomId.toString();
         Exception exception = assertThrows(RuntimeException.class, () ->
-            transactionCouponService.findById(randomId.toString())
+            transactionCouponService.findById(randomIdString)
         );
         assertEquals(ErrorStatus.COUPON_NOT_FOUND.getValue(), exception.getMessage());
     }
