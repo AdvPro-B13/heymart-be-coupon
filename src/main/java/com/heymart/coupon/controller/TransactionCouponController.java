@@ -1,6 +1,7 @@
 package com.heymart.coupon.controller;
 
 import com.heymart.coupon.dto.CouponRequest;
+import com.heymart.coupon.enums.ErrorStatus;
 import com.heymart.coupon.model.TransactionCoupon;
 import com.heymart.coupon.service.AuthServiceClient;
 import com.heymart.coupon.service.coupon.CouponService;
@@ -32,10 +33,10 @@ public class TransactionCouponController implements CouponOperations{
             CouponRequest request, String authorizationHeader
     ) {
         if (!authServiceClient.verifyUserAuthorization("coupon:create", authorizationHeader)) {
-            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized"));
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue()));
         }
         if (!authServiceClient.verifySupermarket(authorizationHeader, request.getSupermarketName())) {
-            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized"));
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue()));
         }
         return transactionCouponService.createCoupon(request)
                 .thenApply(ResponseEntity::ok);
@@ -46,7 +47,7 @@ public class TransactionCouponController implements CouponOperations{
             String authorizationHeader
     ) {
         if (!authServiceClient.verifyUserAuthorization("coupon:read", authorizationHeader)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue());
         }
         return ResponseEntity.ok(transactionCouponService.findAllCoupons());
     }
@@ -56,13 +57,13 @@ public class TransactionCouponController implements CouponOperations{
             String authorizationHeader, String id
     ) {
         if (!authServiceClient.verifyUserAuthorization("coupon:read", authorizationHeader)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue());
         }
         try {
             TransactionCoupon coupon = transactionCouponService.findById(id);
             return ResponseEntity.ok(coupon);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Coupon not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorStatus.COUPON_NOT_FOUND.getValue());
         }
     }
 
@@ -71,7 +72,7 @@ public class TransactionCouponController implements CouponOperations{
             String authorizationHeader, String supermarketName
     ) {
         if (!authServiceClient.verifyUserAuthorization("coupon:read", authorizationHeader)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue());
         }
         return ResponseEntity.ok(transactionCouponService.findBySupermarketName(supermarketName));
     }
@@ -80,15 +81,15 @@ public class TransactionCouponController implements CouponOperations{
             CouponRequest request, String authorizationHeader
     ) {
         if (!authServiceClient.verifyUserAuthorization("coupon:update", authorizationHeader)) {
-            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized"));
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue()));
         }
         try {
             TransactionCoupon coupon = transactionCouponService.findById(request.getId());
             if (!authServiceClient.verifySupermarket(authorizationHeader, coupon.getSupermarketName())) {
-                return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized"));
+                return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue()));
             }
         } catch (Exception e) {
-            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Coupon not found"));
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorStatus.COUPON_NOT_FOUND.getValue()));
         }
         return transactionCouponService.updateCoupon(request)
                 .thenApply(ResponseEntity::ok);
@@ -99,17 +100,17 @@ public class TransactionCouponController implements CouponOperations{
             CouponRequest request, String authorizationHeader
     ) {
         if (!authServiceClient.verifyUserAuthorization("coupon:delete", authorizationHeader)) {
-            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized"));
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue()));
         }
         try {
             TransactionCoupon coupon = transactionCouponService.findById(request.getId());
             if (!authServiceClient.verifySupermarket(authorizationHeader, coupon.getSupermarketName())) {
-                return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized"));
+                return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue()));
             }
             return transactionCouponService.deleteCoupon(request)
                     .thenApply(voidResult -> ResponseEntity.status(HttpStatus.NO_CONTENT).build());
         } catch (Exception e) {
-            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Coupon not found"));
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorStatus.COUPON_NOT_FOUND.getValue()));
         }
     }
 }
