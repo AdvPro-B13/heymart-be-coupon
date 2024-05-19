@@ -1,7 +1,6 @@
 package com.heymart.coupon.controller;
 
 import com.heymart.coupon.dto.CouponRequest;
-import com.heymart.coupon.model.Coupon;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

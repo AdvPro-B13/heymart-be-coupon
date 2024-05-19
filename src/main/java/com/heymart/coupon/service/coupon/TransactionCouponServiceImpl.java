@@ -5,7 +5,6 @@ import com.heymart.coupon.model.TransactionCoupon;
 import com.heymart.coupon.model.builder.TransactionCouponBuilder;
 import com.heymart.coupon.repository.TransactionCouponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
