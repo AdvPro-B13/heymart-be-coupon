@@ -1,5 +1,13 @@
 package com.heymart.coupon.service;
-import com.heymart.coupon.dto.SupermarketResponse;
+import com.heymart.coupon.dto.UserResponse;
+import com.heymart.coupon.enums.ErrorStatus;
+import com.heymart.coupon.exception.CouponAlreadyUsedException;
+import com.heymart.coupon.exception.CouponNotFoundException;
+import com.heymart.coupon.model.ProductCoupon;
+import com.heymart.coupon.model.TransactionCoupon;
+import com.heymart.coupon.model.UsedCoupon;
+import com.heymart.coupon.repository.UsedCouponRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -12,8 +20,15 @@ public class UserServiceClient {
     RestTemplate restTemplate = new RestTemplate();
     @Value("${user.api}")
     String userServiceUrl;
-    public boolean verifySupermarket(String token, String supermarketName) {
-        if (token == null || supermarketName == null) {
+    private final UsedCouponRepository usedCouponRepository;
+    @Autowired
+    public UserServiceClient(UsedCouponRepository usedCouponRepository, RestTemplate restTemplate) {
+        this.usedCouponRepository = usedCouponRepository;
+        this.restTemplate = restTemplate;
+    }
+
+    public boolean verifySupermarket(String token, String supermarketId) {
+        if (token == null || supermarketId == null) {
             return false;
         }
         HttpHeaders headers = new HttpHeaders();
@@ -21,19 +36,43 @@ public class UserServiceClient {
         headers.set("Authorization", token);
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
-
         try {
             String url = userServiceUrl + "/get";
-            ResponseEntity<SupermarketResponse> response = restTemplate.exchange(
+            ResponseEntity<UserResponse> response = restTemplate.exchange(
                     url,
                     HttpMethod.GET,
                     entity,
-                    SupermarketResponse.class
+                    UserResponse.class
             );
-            return supermarketName.equals(Objects.requireNonNull(response.getBody()).getSupermarketName());
+            return supermarketId.equals(Objects.requireNonNull(response.getBody()).getSupermarketId());
         }
         catch(Exception e){
+            System.out.println(e);
             return false;
         }
+    }
+    public UsedCoupon useCoupon(String token, TransactionCoupon coupon) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", token);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        String url = userServiceUrl + "/get";
+        UserResponse response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                entity,
+                UserResponse.class
+        ).getBody();
+
+        assert response != null;
+        Long userId = response.getId();
+        boolean isExist = usedCouponRepository.existsByUserIdAndCoupon(userId, coupon);
+        if (isExist) {
+            throw new CouponAlreadyUsedException(ErrorStatus.COUPON_ALREADY_USED.getValue());
+        }
+        UsedCoupon usedCoupon = new UsedCoupon(coupon, userId, coupon.getSupermarketId());
+        return usedCouponRepository.save(usedCoupon);
     }
 }
