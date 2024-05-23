@@ -21,7 +21,7 @@ class ProductCouponTest {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new ProductCoupon(0, 0, 15, "Supermarket", "123")
         );
-        assertEquals(ex.getMessage(),"Percent discount and Fixed discount cannot both be zero");
+        assertEquals("Percent discount and Fixed discount cannot both be zero",ex.getMessage());
     }
     @Test
     void negativePercentDiscountShouldThrow() {

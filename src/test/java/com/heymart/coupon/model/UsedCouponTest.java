@@ -1,15 +1,13 @@
 package com.heymart.coupon.model;
-import com.heymart.coupon.model.Coupon;
-import com.heymart.coupon.model.UsedCoupon;
 import com.heymart.coupon.model.builder.TransactionCouponBuilder;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UsedCouponTest {
+class UsedCouponTest {
 
     @Test
-    public void testUsedCouponConstructorAndGetters() {
+    void testUsedCouponConstructorAndGetters() {
         TransactionCoupon coupon = new TransactionCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
@@ -29,7 +27,7 @@ public class UsedCouponTest {
     }
 
     @Test
-    public void testUsedCouponNoArgsConstructor() {
+    void testUsedCouponNoArgsConstructor() {
         UsedCoupon usedCoupon = new UsedCoupon();
         assertNotNull(usedCoupon);
     }
