@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TransactionCouponRepositoryTest {
 
     @Autowired
-    private TransactionCouponRepository repository;
+    private CouponRepository<TransactionCoupon> repository;
 
     private final String supermarketId = "Supermarket";
     private final UUID randomId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
