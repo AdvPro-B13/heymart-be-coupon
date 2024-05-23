@@ -1,5 +1,6 @@
 package com.heymart.coupon.service;
 
+import com.heymart.coupon.dto.UserResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,6 +17,8 @@ class AuthServiceClientTest {
 
     @InjectMocks
     AuthServiceClient authServiceClient;
+    @InjectMocks
+    UserServiceClient userServiceClient;
 
     @Mock
     RestTemplate restTemplate;
