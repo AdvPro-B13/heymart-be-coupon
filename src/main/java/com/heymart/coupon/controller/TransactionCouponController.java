@@ -3,6 +3,7 @@ package com.heymart.coupon.controller;
 import com.heymart.coupon.dto.CouponRequest;
 import com.heymart.coupon.enums.CouponAction;
 import com.heymart.coupon.enums.ErrorStatus;
+import com.heymart.coupon.exception.CouponAlreadyUsedException;
 import com.heymart.coupon.exception.CouponNotFoundException;
 import com.heymart.coupon.model.TransactionCoupon;
 import com.heymart.coupon.service.AuthServiceClient;
@@ -11,13 +12,12 @@ import com.heymart.coupon.service.coupon.CouponService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-@RequestMapping("/transaction-coupon")
+@RequestMapping("/api/transaction-coupon")
 public class TransactionCouponController implements CouponOperations{
     private final AuthServiceClient authServiceClient;
     private final UserServiceClient userServiceClient;
@@ -124,4 +124,25 @@ public class TransactionCouponController implements CouponOperations{
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorStatus.COUPON_NOT_FOUND.getValue()));
         }
     }
+    @PostMapping("/use")
+    public ResponseEntity<Object> useCoupon(
+            @RequestBody CouponRequest request,
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader
+    ) {
+        System.out.println("konz");
+        if (!authServiceClient.verifyUserAuthorization( CouponAction.READ.getValue(), authorizationHeader)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue());
+        }
+        try {
+            System.out.println(request.getId());
+            TransactionCoupon coupon = transactionCouponService.findById(request.getId());
+            System.out.println("konz");
+            return ResponseEntity.ok().body(userServiceClient.useCoupon(authorizationHeader, coupon));
+        } catch (CouponNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorStatus.COUPON_NOT_FOUND.getValue());
+        } catch (CouponAlreadyUsedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorStatus.COUPON_ALREADY_USED.getValue());
+        }
+    }
+
 }

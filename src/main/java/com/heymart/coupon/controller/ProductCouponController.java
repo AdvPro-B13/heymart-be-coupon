@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-@RequestMapping("/product-coupon")
+@RequestMapping("/api/product-coupon")
 public class ProductCouponController implements CouponOperations{
     private final AuthServiceClient authServiceClient;
     private final UserServiceClient userServiceClient;
