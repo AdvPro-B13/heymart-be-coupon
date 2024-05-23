@@ -140,7 +140,7 @@ class ProductCouponControllerTest {
         List<ProductCoupon> coupons = Arrays.asList(coupon, coupon2); // Mock some data
         given(couponService.findAllCoupons()).willReturn(coupons);
 
-        mockMvc.perform(get("/product-coupon/all")
+        mockMvc.perform(get("/api/product-coupon/all")
                         .header("Authorization", "Bearer valid-token"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2))); // Assert that two coupons are returned
@@ -152,7 +152,7 @@ class ProductCouponControllerTest {
         List<ProductCoupon> coupons = Arrays.asList(coupon, coupon2);
         given(couponService.findAllCoupons()).willReturn(coupons);
 
-        mockMvc.perform(get("/product-coupon/all")
+        mockMvc.perform(get("/api/product-coupon/all")
                         .header("Authorization", "Bearer valid-token"))
                 .andExpect(status().isUnauthorized());
     }
@@ -162,7 +162,7 @@ class ProductCouponControllerTest {
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         given(couponService.findById("1")).willReturn(coupon);
 
-        mockMvc.perform(get("/product-coupon/id/1")
+        mockMvc.perform(get("/api/product-coupon/id/1")
                         .header("Authorization", "Bearer valid-token"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.maxDiscount", is(15)));
@@ -173,7 +173,7 @@ class ProductCouponControllerTest {
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(false);
         given(couponService.findById("1")).willReturn(coupon);
 
-        mockMvc.perform(get("/product-coupon/id/1")
+        mockMvc.perform(get("/api/product-coupon/id/1")
                         .header("Authorization", "Bearer valid-token"))
                 .andExpect(status().isUnauthorized());
     }
@@ -183,7 +183,7 @@ class ProductCouponControllerTest {
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         given(couponService.findById("1")).willThrow(new CouponNotFoundException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
 
-        mockMvc.perform(get("/product-coupon/id/1")
+        mockMvc.perform(get("/api/product-coupon/id/1")
                         .header("Authorization", "Bearer valid-token"))
                 .andExpect(status().isNotFound());
     }
@@ -193,7 +193,7 @@ class ProductCouponControllerTest {
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         given(productCouponOperation.findByIdProduct("1")).willReturn(coupon);
 
-        mockMvc.perform(get("/product-coupon/id-product/1")
+        mockMvc.perform(get("/api/product-coupon/id-product/1")
                         .header("Authorization", "Bearer valid-token"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.maxDiscount", is(15)));
@@ -204,7 +204,7 @@ class ProductCouponControllerTest {
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(false);
         given(productCouponOperation.findByIdProduct("1")).willReturn(coupon);
 
-        mockMvc.perform(get("/product-coupon/id-product/1")
+        mockMvc.perform(get("/api/product-coupon/id-product/1")
                         .header("Authorization", "Bearer valid-token"))
                 .andExpect(status().isUnauthorized());
     }
@@ -214,7 +214,7 @@ class ProductCouponControllerTest {
         given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         given(productCouponOperation.findByIdProduct("1")).willThrow(new CouponNotFoundException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
 
-        mockMvc.perform(get("/product-coupon/id-product/1")
+        mockMvc.perform(get("/api/product-coupon/id-product/1")
                         .header("Authorization", "Bearer valid-token"))
                 .andExpect(status().isNotFound());
     }
@@ -225,7 +225,7 @@ class ProductCouponControllerTest {
         List<ProductCoupon> coupons = Arrays.asList(coupon);
         given(couponService.findBySupermarketId("Supermarket")).willReturn(coupons);
 
-        mockMvc.perform(get("/product-coupon/supermarket/Supermarket")
+        mockMvc.perform(get("/api/product-coupon/supermarket/Supermarket")
                         .header("Authorization", "Bearer valid-token"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
@@ -237,7 +237,7 @@ class ProductCouponControllerTest {
         List<ProductCoupon> coupons = Arrays.asList(coupon);
         given(couponService.findBySupermarketId("Supermarket")).willReturn(coupons);
 
-        mockMvc.perform(get("/product-coupon/supermarket/Supermarket")
+        mockMvc.perform(get("/api/product-coupon/supermarket/Supermarket")
                         .header("Authorization", "Bearer valid-token"))
                 .andExpect(status().isUnauthorized());
     }

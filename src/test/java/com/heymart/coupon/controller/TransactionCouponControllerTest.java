@@ -2,8 +2,10 @@ package com.heymart.coupon.controller;
 
 import com.heymart.coupon.dto.CouponRequest;
 import com.heymart.coupon.enums.ErrorStatus;
+import com.heymart.coupon.exception.CouponAlreadyUsedException;
 import com.heymart.coupon.exception.CouponNotFoundException;
 import com.heymart.coupon.model.TransactionCoupon;
+import com.heymart.coupon.model.UsedCoupon;
 import com.heymart.coupon.model.builder.TransactionCouponBuilder;
 import com.heymart.coupon.service.AuthServiceClient;
 import com.heymart.coupon.service.UserServiceClient;
@@ -14,20 +16,27 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class TransactionCouponControllerTest {
 
     @InjectMocks
     private TransactionCouponController transactionCouponController;
-
+    private MockMvc mockMvc;
     @Mock
     private AuthServiceClient authServiceClient;
     @Mock
@@ -55,6 +64,7 @@ class TransactionCouponControllerTest {
                 .setMinTransaction(5)
                 .build();
         MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(transactionCouponController).build();
     }
 
     @Test
@@ -273,5 +283,57 @@ class TransactionCouponControllerTest {
         CompletableFuture<ResponseEntity<Object>> response = transactionCouponController.deleteCoupon(request, "authHeader");
 
         assertEquals(HttpStatus.NO_CONTENT, response.join().getStatusCode());
+    }
+
+    @Test
+    void testUseCoupon_Unauthorized() throws Exception {
+        when(authServiceClient.verifyUserAuthorization(anyString(), anyString())).thenReturn(false);
+
+        mockMvc.perform(post("/api/transaction-coupon/use")
+                        .header("Authorization", "Bearer token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{ \"id\": \"1\" }"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testUseCoupon_CouponNotFound() throws Exception {
+        when(authServiceClient.verifyUserAuthorization(anyString(), anyString())).thenReturn(true);
+        when(transactionCouponService.findById("1")).thenThrow(new CouponNotFoundException(ErrorStatus.COUPON_ALREADY_USED.getValue()));
+
+        mockMvc.perform(post("/api/transaction-coupon/use")
+                        .header("Authorization", "Bearer token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{ \"id\": \"1\" }"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testUseCoupon_CouponAlreadyUsed() throws Exception {
+        when(authServiceClient.verifyUserAuthorization(anyString(), anyString())).thenReturn(true);
+        when(transactionCouponService.findById("1")).thenReturn(coupon);
+        when(userServiceClient.useCoupon(anyString(), eq(coupon))).thenThrow(new CouponAlreadyUsedException(ErrorStatus.COUPON_ALREADY_USED.getValue()));
+
+        mockMvc.perform(post("/api/transaction-coupon/use")
+                        .header("Authorization", "Bearer token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{ \"id\": \"1\" }"))
+                .andExpect(status().isForbidden())
+                .andExpect(result -> assertEquals(ErrorStatus.COUPON_ALREADY_USED.getValue(), result.getResponse().getContentAsString()));
+    }
+
+
+    @Test
+    void testUseCoupon_Success() throws Exception {
+        when(authServiceClient.verifyUserAuthorization(anyString(), anyString())).thenReturn(true);
+        UsedCoupon usedCoupon = new UsedCoupon();
+        when(transactionCouponService.findById("1")).thenReturn(coupon);
+        when(userServiceClient.useCoupon(anyString(), eq(coupon))).thenReturn(usedCoupon);
+
+        mockMvc.perform(post("/api/transaction-coupon/use")
+                        .header("Authorization", "Bearer token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{ \"id\": \"1\" }"))
+                .andExpect(status().isOk());
     }
 }
