@@ -1,11 +1,8 @@
-global:
-  scrape_interval: 60s
-remote_write:
-  - url: https://prometheus-prod-37-prod-ap-southeast-1.grafana.net/api/prom/push
-    basic_auth:
-      username: 1587893
-      password: glc_kkuratolodon
 scrape_configs:
-  - job_name: node
+  - job_name: 'spring_boot_app'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 3s
     static_configs:
-      - targets: ["35.240.170.2"]
+      - targets: ['35.240.170.2']
+        labels:
+          application: 'Coupon'
