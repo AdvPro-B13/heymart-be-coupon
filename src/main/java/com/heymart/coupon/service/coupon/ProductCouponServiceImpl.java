@@ -26,8 +26,7 @@ public class ProductCouponServiceImpl implements CouponService<ProductCoupon>, P
         this.couponRepository = couponRepository;
     }
 
-    @Async("asyncTaskExecutor")
-    public CompletableFuture<ProductCoupon> createCoupon(CouponRequest request) {
+    public ProductCoupon createCoupon(CouponRequest request) {
         ProductCoupon coupon = new ProductCouponBuilder()
                 .setPercentDiscount(request.getPercentDiscount())
                 .setFixedDiscount(request.getFixedDiscount())
@@ -35,17 +34,16 @@ public class ProductCouponServiceImpl implements CouponService<ProductCoupon>, P
                 .setSupermarketName(request.getSupermarketName())
                 .setIdProduct(request.getIdProduct())
                 .build();
-        return CompletableFuture.completedFuture(couponRepository.save(coupon));
+        return couponRepository.save(coupon);
     }
 
-    @Async("asyncTaskExecutor")
-    public CompletableFuture<ProductCoupon> updateCoupon(CouponRequest request) {
+    public ProductCoupon updateCoupon(CouponRequest request) {
         Optional<ProductCoupon> optional = couponRepository.findById(UUID.fromString(request.getId()));
-        ProductCoupon coupon = optional.orElseThrow(() -> new RuntimeException("Coupon not found"));
+        ProductCoupon coupon = optional.orElseThrow(() -> new CouponNotFoundException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
         coupon.setPercentDiscount(request.getPercentDiscount());
         coupon.setFixedDiscount(request.getFixedDiscount());
         coupon.setMaxDiscount(request.getMaxDiscount());
-        return CompletableFuture.completedFuture(couponRepository.save(coupon));
+        return couponRepository.save(coupon);
     }
 
     @Async("asyncTaskExecutor")

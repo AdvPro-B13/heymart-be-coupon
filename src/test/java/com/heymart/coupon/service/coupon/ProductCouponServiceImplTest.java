@@ -47,8 +47,7 @@ class ProductCouponServiceImplTest {
 
         when(productCouponRepository.save(any(ProductCoupon.class))).thenReturn(coupon);
 
-        CompletableFuture<ProductCoupon> resultFuture = productCouponService.createCoupon(request);
-        ProductCoupon result = resultFuture.join();
+        ProductCoupon result = productCouponService.createCoupon(request);
 
         assertNotNull(result);
         assertEquals(coupon, result);
@@ -74,8 +73,7 @@ class ProductCouponServiceImplTest {
 
         when(productCouponRepository.findById(randomId)).thenReturn(Optional.of(coupon));
 
-        CompletableFuture<ProductCoupon> resultFuture = productCouponService.updateCoupon(request);
-        ProductCoupon result = resultFuture.join();
+        ProductCoupon result = productCouponService.updateCoupon(request);
 
         assertNotNull(result);
         verify(productCouponRepository).save(coupon);
@@ -90,7 +88,7 @@ class ProductCouponServiceImplTest {
         Exception exception = assertThrows(RuntimeException.class, () -> {
             productCouponService.updateCoupon(request);
         });
-        assertEquals("Coupon not found", exception.getMessage());
+        assertEquals(ErrorStatus.COUPON_NOT_FOUND.getValue(), exception.getMessage());
 
         verify(productCouponRepository, times(1)).findById(UUID.fromString(request.getId()));
         verify(productCouponRepository, never()).save(any(ProductCoupon.class));

@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture;
 @RequestMapping("/default")
 public interface CouponOperations {
     @PostMapping("/create")
-    public CompletableFuture<ResponseEntity<Object>> createCoupon(
+    public ResponseEntity<Object> createCoupon(
             @RequestBody CouponRequest request,
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader
     );
@@ -28,7 +28,7 @@ public interface CouponOperations {
             @PathVariable("supermarketName") String supermarketName
     );
     @PutMapping("/update")
-    public CompletableFuture<ResponseEntity<Object>> updateCoupon(
+    public ResponseEntity<Object> updateCoupon(
             @RequestBody CouponRequest request,
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader
     );

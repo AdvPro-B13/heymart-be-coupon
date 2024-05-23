@@ -45,8 +45,7 @@ class TransactionCouponServiceImplTest {
 
         when(transactionCouponRepository.save(any(TransactionCoupon.class))).thenReturn(coupon);
 
-        CompletableFuture<TransactionCoupon> resultFuture = transactionCouponService.createCoupon(request);
-        TransactionCoupon result = resultFuture.get();
+        TransactionCoupon result = transactionCouponService.createCoupon(request);
 
         assertNotNull(result);
         assertEquals(coupon, result);
@@ -70,8 +69,7 @@ class TransactionCouponServiceImplTest {
 
         when(transactionCouponRepository.findById(randomId)).thenReturn(Optional.of(coupon));
 
-        CompletableFuture<TransactionCoupon> resultFuture = transactionCouponService.updateCoupon(request);
-        TransactionCoupon result = resultFuture.get();
+        TransactionCoupon result = transactionCouponService.updateCoupon(request);
 
         assertNotNull(result);
         verify(transactionCouponRepository).save(coupon);

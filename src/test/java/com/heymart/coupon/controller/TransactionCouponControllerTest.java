@@ -1,9 +1,11 @@
 package com.heymart.coupon.controller;
 import com.heymart.coupon.dto.CouponRequest;
 import com.heymart.coupon.enums.ErrorStatus;
+import com.heymart.coupon.exception.CouponNotFoundException;
 import com.heymart.coupon.model.TransactionCoupon;
 import com.heymart.coupon.model.builder.TransactionCouponBuilder;
 import com.heymart.coupon.service.AuthServiceClient;
+import com.heymart.coupon.service.UserServiceClient;
 import com.heymart.coupon.service.coupon.CouponService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +29,8 @@ class TransactionCouponControllerTest {
 
     @Mock
     private AuthServiceClient authServiceClient;
+    @Mock
+    private UserServiceClient userServiceClient;
 
     @Mock
     private CouponService<TransactionCoupon> transactionCouponService;
@@ -57,22 +61,22 @@ class TransactionCouponControllerTest {
         CouponRequest request = new CouponRequest();
         when(authServiceClient.verifyUserAuthorization("coupon:create", "authHeader")).thenReturn(false);
 
-        CompletableFuture<ResponseEntity<Object>> response = transactionCouponController.createCoupon(request, "authHeader");
+        ResponseEntity<Object> response = transactionCouponController.createCoupon(request, "authHeader");
 
-        assertEquals(HttpStatus.UNAUTHORIZED, response.join().getStatusCode());
-        assertEquals(ErrorStatus.UNAUTHORIZED.getValue(), response.join().getBody());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals(ErrorStatus.UNAUTHORIZED.getValue(), response.getBody());
     }
 
     @Test
     void testCreateCouponUnauthorizedSupermarket() {
         CouponRequest request = new CouponRequest();
         when(authServiceClient.verifyUserAuthorization("coupon:create", "authHeader")).thenReturn(true);
-        when(authServiceClient.verifySupermarket("authHeader", request.getSupermarketName())).thenReturn(false);
+        when(userServiceClient.verifySupermarket("authHeader", request.getSupermarketName())).thenReturn(false);
 
-        CompletableFuture<ResponseEntity<Object>> response = transactionCouponController.createCoupon(request, "authHeader");
+        ResponseEntity<Object> response = transactionCouponController.createCoupon(request, "authHeader");
 
-        assertEquals(HttpStatus.UNAUTHORIZED, response.join().getStatusCode());
-        assertEquals(ErrorStatus.UNAUTHORIZED.getValue(), response.join().getBody());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals(ErrorStatus.UNAUTHORIZED.getValue(), response.getBody());
     }
 
     @Test
@@ -80,13 +84,13 @@ class TransactionCouponControllerTest {
         CouponRequest request = new CouponRequest();
 
         when(authServiceClient.verifyUserAuthorization("coupon:create", "authHeader")).thenReturn(true);
-        when(authServiceClient.verifySupermarket("authHeader", request.getSupermarketName())).thenReturn(true);
-        when(transactionCouponService.createCoupon(request)).thenReturn(CompletableFuture.completedFuture(coupon));
+        when(userServiceClient.verifySupermarket("authHeader", request.getSupermarketName())).thenReturn(true);
+        when(transactionCouponService.createCoupon(request)).thenReturn(coupon);
 
-        CompletableFuture<ResponseEntity<Object>> response = transactionCouponController.createCoupon(request, "authHeader");
+        ResponseEntity<Object> response = transactionCouponController.createCoupon(request, "authHeader");
 
-        assertEquals(HttpStatus.OK, response.join().getStatusCode());
-        assertEquals(coupon, response.join().getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(coupon, response.getBody());
     }
 
     @Test
@@ -125,7 +129,7 @@ class TransactionCouponControllerTest {
     @Test
     void testFindCouponByIdNotFound() {
         when(authServiceClient.verifyUserAuthorization("coupon:read", "authHeader")).thenReturn(true);
-        when(transactionCouponService.findById("couponId")).thenThrow(new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
+        when(transactionCouponService.findById("couponId")).thenThrow(new CouponNotFoundException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
 
         ResponseEntity<Object> response = transactionCouponController.findById("authHeader", "couponId");
 
@@ -172,22 +176,22 @@ class TransactionCouponControllerTest {
         CouponRequest request = new CouponRequest();
         when(authServiceClient.verifyUserAuthorization("coupon:update", "authHeader")).thenReturn(false);
 
-        CompletableFuture<ResponseEntity<Object>> response = transactionCouponController.updateCoupon(request, "authHeader");
+        ResponseEntity<Object> response = transactionCouponController.updateCoupon(request, "authHeader");
 
-        assertEquals(HttpStatus.UNAUTHORIZED, response.join().getStatusCode());
-        assertEquals(ErrorStatus.UNAUTHORIZED.getValue(), response.join().getBody());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals(ErrorStatus.UNAUTHORIZED.getValue(), response.getBody());
     }
 
     @Test
     void testUpdateCouponNotFound() {
         CouponRequest request = new CouponRequest();
         when(authServiceClient.verifyUserAuthorization("coupon:update", "authHeader")).thenReturn(true);
-        when(transactionCouponService.findById(request.getId())).thenThrow(new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
+        when(transactionCouponService.findById(request.getId())).thenThrow(new CouponNotFoundException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
 
-        CompletableFuture<ResponseEntity<Object>> response = transactionCouponController.updateCoupon(request, "authHeader");
+        ResponseEntity<Object> response = transactionCouponController.updateCoupon(request, "authHeader");
 
-        assertEquals(HttpStatus.NOT_FOUND, response.join().getStatusCode());
-        assertEquals(ErrorStatus.COUPON_NOT_FOUND.getValue(), response.join().getBody());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(ErrorStatus.COUPON_NOT_FOUND.getValue(), response.getBody());
     }
 
     @Test
@@ -196,12 +200,12 @@ class TransactionCouponControllerTest {
 
         when(authServiceClient.verifyUserAuthorization("coupon:update", "authHeader")).thenReturn(true);
         when(transactionCouponService.findById(request.getId())).thenReturn(coupon);
-        when(authServiceClient.verifySupermarket("authHeader", coupon.getSupermarketName())).thenReturn(false);
+        when(userServiceClient.verifySupermarket("authHeader", coupon.getSupermarketName())).thenReturn(false);
 
-        CompletableFuture<ResponseEntity<Object>> response = transactionCouponController.updateCoupon(request, "authHeader");
+        ResponseEntity<Object> response = transactionCouponController.updateCoupon(request, "authHeader");
 
-        assertEquals(HttpStatus.UNAUTHORIZED, response.join().getStatusCode());
-        assertEquals(ErrorStatus.UNAUTHORIZED.getValue(), response.join().getBody());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals(ErrorStatus.UNAUTHORIZED.getValue(), response.getBody());
     }
 
     @Test
@@ -210,13 +214,13 @@ class TransactionCouponControllerTest {
 
         when(authServiceClient.verifyUserAuthorization("coupon:update", "authHeader")).thenReturn(true);
         when(transactionCouponService.findById(request.getId())).thenReturn(coupon);
-        when(authServiceClient.verifySupermarket("authHeader", coupon.getSupermarketName())).thenReturn(true);
-        when(transactionCouponService.updateCoupon(request)).thenReturn(CompletableFuture.completedFuture(coupon));
+        when(userServiceClient.verifySupermarket("authHeader", coupon.getSupermarketName())).thenReturn(true);
+        when(transactionCouponService.updateCoupon(request)).thenReturn(coupon);
 
-        CompletableFuture<ResponseEntity<Object>> response = transactionCouponController.updateCoupon(request, "authHeader");
+        ResponseEntity<Object> response = transactionCouponController.updateCoupon(request, "authHeader");
 
-        assertEquals(HttpStatus.OK, response.join().getStatusCode());
-        assertEquals(coupon, response.join().getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(coupon, response.getBody());
     }
 
     @Test
@@ -234,7 +238,7 @@ class TransactionCouponControllerTest {
     void testDeleteCouponNotFound() {
         CouponRequest request = new CouponRequest();
         when(authServiceClient.verifyUserAuthorization("coupon:delete", "authHeader")).thenReturn(true);
-        when(transactionCouponService.findById(request.getId())).thenThrow(new RuntimeException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
+        when(transactionCouponService.findById(request.getId())).thenThrow(new CouponNotFoundException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
 
         CompletableFuture<ResponseEntity<Object>> response = transactionCouponController.deleteCoupon(request, "authHeader");
 
@@ -248,7 +252,7 @@ class TransactionCouponControllerTest {
 
         when(authServiceClient.verifyUserAuthorization("coupon:delete", "authHeader")).thenReturn(true);
         when(transactionCouponService.findById(request.getId())).thenReturn(coupon);
-        when(authServiceClient.verifySupermarket("authHeader", coupon.getSupermarketName())).thenReturn(false);
+        when(userServiceClient.verifySupermarket("authHeader", coupon.getSupermarketName())).thenReturn(false);
 
         CompletableFuture<ResponseEntity<Object>> response = transactionCouponController.deleteCoupon(request, "authHeader");
 
@@ -262,7 +266,7 @@ class TransactionCouponControllerTest {
 
         when(authServiceClient.verifyUserAuthorization("coupon:delete", "authHeader")).thenReturn(true);
         when(transactionCouponService.findById(request.getId())).thenReturn(coupon);
-        when(authServiceClient.verifySupermarket("authHeader", coupon.getSupermarketName())).thenReturn(true);
+        when(userServiceClient.verifySupermarket("authHeader", coupon.getSupermarketName())).thenReturn(true);
         when(transactionCouponService.deleteCoupon(request)).thenReturn(CompletableFuture.completedFuture(null));
 
         CompletableFuture<ResponseEntity<Object>> response = transactionCouponController.deleteCoupon(request, "authHeader");
