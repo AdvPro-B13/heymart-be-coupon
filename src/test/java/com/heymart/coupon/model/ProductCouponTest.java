@@ -15,7 +15,13 @@ class ProductCouponTest {
         assertEquals("Supermarket", coupon.getSupermarketName());
         assertEquals("123", coupon.getIdProduct());
     }
-
+    @Test
+    void zeroPercentDiscountAndFixedDiscount() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                new ProductCoupon(0, 0, 15, "Supermarket", "123")
+        );
+        assertEquals(ex.getMessage(),"Percent discount and Fixed discount cannot both be zero");
+    }
     @Test
     void negativePercentDiscountShouldThrow() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->

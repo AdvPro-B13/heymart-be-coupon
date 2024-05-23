@@ -7,7 +7,8 @@ import org.hibernate.annotations.UuidGenerator;
 import java.util.UUID;
 
 @Getter
-@MappedSuperclass
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Coupon {
     @Id
     @GeneratedValue
@@ -27,9 +28,12 @@ public abstract class Coupon {
     @Column(name = "supermarket_name", nullable = false)
     String supermarketName;
 
-    protected Coupon() {
-    }
+    protected Coupon() {}
     protected Coupon(int percentDiscount, int fixedDiscount, int maxDiscount, String supermarketName) {
+        if (percentDiscount == 0 && fixedDiscount == 0) {
+            throw new IllegalArgumentException("Percent discount and Fixed discount cannot both be zero");
+        }
+
         if (percentDiscount<0) {
             throw new IllegalArgumentException("Percent discount cannot be negative");
         } else {
