@@ -45,7 +45,7 @@ public class ProductCouponController implements CouponOperations{
         if (!authServiceClient.verifyUserAuthorization(CouponAction.CREATE.getValue(), authorizationHeader)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue());
         }
-        if (!userServiceClient.verifySupermarket(authorizationHeader, request.getSupermarketName())) {
+        if (!userServiceClient.verifySupermarket(authorizationHeader, request.getSupermarketId())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue());
         }
         try {
@@ -104,15 +104,15 @@ public class ProductCouponController implements CouponOperations{
     }
 
     @Override
-    public ResponseEntity<Object> findBySupermarketName(
-            String authorizationHeader, String supermarketName
+    public ResponseEntity<Object> findBySupermarketId(
+            String authorizationHeader, String supermarketId
     ) {
         if (!authServiceClient.verifyUserAuthorization(
                 CouponAction.READ.getValue(), authorizationHeader)
         ) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue());
         }
-        return ResponseEntity.ok(productCouponService.findBySupermarketName(supermarketName));
+        return ResponseEntity.ok(productCouponService.findBySupermarketId(supermarketId));
     }
 
     @Override
@@ -124,7 +124,7 @@ public class ProductCouponController implements CouponOperations{
         }
         try {
             ProductCoupon coupon = productCouponService.findById(request.getId());
-            if (!userServiceClient.verifySupermarket(authorizationHeader, coupon.getSupermarketName())) {
+            if (!userServiceClient.verifySupermarket(authorizationHeader, coupon.getSupermarketId())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue());
             }
         } catch (CouponNotFoundException e) {
@@ -144,7 +144,7 @@ public class ProductCouponController implements CouponOperations{
         }
         try {
             ProductCoupon coupon = productCouponService.findById(request.getId());
-            if (!userServiceClient.verifySupermarket(authorizationHeader, coupon.getSupermarketName())) {
+            if (!userServiceClient.verifySupermarket(authorizationHeader, coupon.getSupermarketId())) {
                 return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue()));
             }
             return productCouponService.deleteCoupon(request)

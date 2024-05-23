@@ -2,6 +2,7 @@ package com.heymart.coupon.model.builder;
 
 import com.heymart.coupon.model.TransactionCoupon;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TransactionCouponBuilderTest {
@@ -12,7 +13,7 @@ class TransactionCouponBuilderTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(20)
-                .setSupermarketName("Supermarket")
+                .setSupermarketId("Supermarket")
                 .setMinTransaction(50);
 
         TransactionCoupon coupon = builder.build();
@@ -20,7 +21,7 @@ class TransactionCouponBuilderTest {
         assertEquals(10, coupon.getPercentDiscount());
         assertEquals(5, coupon.getFixedDiscount());
         assertEquals(20, coupon.getMaxDiscount());
-        assertEquals("Supermarket", coupon.getSupermarketName());
+        assertEquals("Supermarket", coupon.getSupermarketId());
         assertEquals(50, coupon.getMinTransaction());
     }
 
@@ -30,7 +31,7 @@ class TransactionCouponBuilderTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(20)
-                .setSupermarketName("Supermarket")
+                .setSupermarketId("Supermarket")
                 .setMinTransaction(-1);
 
         assertThrows(IllegalArgumentException.class, builder::build);

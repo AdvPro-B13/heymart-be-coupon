@@ -41,7 +41,7 @@ class ProductCouponServiceImplTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
+                .setSupermarketId("Supermarket")
                 .setIdProduct("123")
                 .build();
 
@@ -61,7 +61,7 @@ class ProductCouponServiceImplTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
+                .setSupermarketId("Supermarket")
                 .setIdProduct("123")
                 .build();
 
@@ -100,7 +100,7 @@ class ProductCouponServiceImplTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
+                .setSupermarketId("Supermarket")
                 .setIdProduct("123")
                 .build();
 
@@ -131,7 +131,7 @@ class ProductCouponServiceImplTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
+                .setSupermarketId("Supermarket")
                 .setIdProduct("123")
                 .build();
 
@@ -139,7 +139,7 @@ class ProductCouponServiceImplTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket 2")
+                .setSupermarketId("Supermarket 2")
                 .setIdProduct("123")
                 .build();
         List<ProductCoupon> expectedCoupons = Arrays.asList(coupon, coupon2);
@@ -157,7 +157,7 @@ class ProductCouponServiceImplTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
+                .setSupermarketId("Supermarket")
                 .setIdProduct("123")
                 .build();
         when(productCouponRepository.findById(randomId)).thenReturn(Optional.of(mockCoupon));
@@ -181,13 +181,13 @@ class ProductCouponServiceImplTest {
     }
 
     @Test
-    void testFindBySupermarketName() {
-        String supermarketName = "TestMart";
+    void testFindBySupermarketId() {
+        String supermarketId = "TestMart";
         ProductCoupon coupon = new ProductCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
+                .setSupermarketId("Supermarket")
                 .setIdProduct("123")
                 .build();
 
@@ -195,15 +195,15 @@ class ProductCouponServiceImplTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
+                .setSupermarketId("Supermarket")
                 .setIdProduct("123")
                 .build();
 
         List<ProductCoupon> expectedCoupons = Arrays.asList(coupon,coupon2);
 
-        when(productCouponRepository.findBySupermarketName(supermarketName)).thenReturn(expectedCoupons);
+        when(productCouponRepository.findBySupermarketId(supermarketId)).thenReturn(expectedCoupons);
 
-        List<ProductCoupon> actualCoupons = productCouponService.findBySupermarketName(supermarketName);
+        List<ProductCoupon> actualCoupons = productCouponService.findBySupermarketId(supermarketId);
 
         assertEquals(expectedCoupons.size(), actualCoupons.size());
         assertEquals(expectedCoupons, actualCoupons);
@@ -216,7 +216,7 @@ class ProductCouponServiceImplTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
+                .setSupermarketId("Supermarket")
                 .setIdProduct("123")
                 .build();
         when(productCouponRepository.findByIdProduct(idProduct)).thenReturn(mockCoupon);

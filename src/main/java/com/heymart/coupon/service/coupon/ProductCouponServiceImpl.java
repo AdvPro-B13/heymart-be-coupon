@@ -31,7 +31,7 @@ public class ProductCouponServiceImpl implements CouponService<ProductCoupon>, P
                 .setPercentDiscount(request.getPercentDiscount())
                 .setFixedDiscount(request.getFixedDiscount())
                 .setMaxDiscount(request.getMaxDiscount())
-                .setSupermarketName(request.getSupermarketName())
+                .setSupermarketId(request.getSupermarketId())
                 .setIdProduct(request.getIdProduct())
                 .build();
         return couponRepository.save(coupon);
@@ -63,8 +63,8 @@ public class ProductCouponServiceImpl implements CouponService<ProductCoupon>, P
         return optional.orElseThrow(() -> new CouponNotFoundException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
     }
 
-    public List<ProductCoupon> findBySupermarketName(String supermarketName) {
-        return couponRepository.findBySupermarketName(supermarketName);
+    public List<ProductCoupon> findBySupermarketId(String supermarketId) {
+        return couponRepository.findBySupermarketId(supermarketId);
     }
     public ProductCoupon findByIdProduct(String idProduct) {
         ProductCoupon coupon = couponRepository.findByIdProduct(idProduct);

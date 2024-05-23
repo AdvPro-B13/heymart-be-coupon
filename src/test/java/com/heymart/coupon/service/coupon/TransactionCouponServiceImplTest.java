@@ -39,7 +39,7 @@ class TransactionCouponServiceImplTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
+                .setSupermarketId("Supermarket")
                 .setMinTransaction(50)
                 .build();
 
@@ -59,7 +59,7 @@ class TransactionCouponServiceImplTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
+                .setSupermarketId("Supermarket")
                 .setMinTransaction(50)
                 .build();
 
@@ -94,7 +94,7 @@ class TransactionCouponServiceImplTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
+                .setSupermarketId("Supermarket")
                 .setMinTransaction(50)
                 .build();
 
@@ -124,7 +124,7 @@ class TransactionCouponServiceImplTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
+                .setSupermarketId("Supermarket")
                 .setMinTransaction(50)
                 .build();
 
@@ -132,7 +132,7 @@ class TransactionCouponServiceImplTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
+                .setSupermarketId("Supermarket")
                 .setMinTransaction(50)
                 .build();
         List<TransactionCoupon> expectedCoupons = Arrays.asList(coupon, coupon2);
@@ -149,7 +149,7 @@ class TransactionCouponServiceImplTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName("Supermarket")
+                .setSupermarketId("Supermarket")
                 .setMinTransaction(50)
                 .build();
         when(transactionCouponRepository.findById(randomId)).thenReturn(Optional.of(mockCoupon));
@@ -171,21 +171,21 @@ class TransactionCouponServiceImplTest {
     }
 
     @Test
-    void testFindBySupermarketName() {
-        String supermarketName = "TestMart";
+    void testFindBySupermarketId() {
+        String supermarketId = "TestMart";
         TransactionCoupon coupon = new TransactionCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName(supermarketName)
+                .setSupermarketId(supermarketId)
                 .setMinTransaction(5)
                 .build();
 
         List<TransactionCoupon> expectedCoupons = Collections.singletonList(coupon);
 
-        when(transactionCouponRepository.findBySupermarketName(supermarketName)).thenReturn(expectedCoupons);
+        when(transactionCouponRepository.findBySupermarketId(supermarketId)).thenReturn(expectedCoupons);
 
-        List<TransactionCoupon> actualCoupons = transactionCouponService.findBySupermarketName(supermarketName);
+        List<TransactionCoupon> actualCoupons = transactionCouponService.findBySupermarketId(supermarketId);
 
         assertEquals(expectedCoupons.size(), actualCoupons.size());
         assertEquals(expectedCoupons, actualCoupons);

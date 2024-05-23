@@ -22,10 +22,10 @@ public interface CouponOperations {
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
             @PathVariable("id") String id
     );
-    @GetMapping("/supermarket/{supermarketName}")
-    public ResponseEntity<Object> findBySupermarketName(
+    @GetMapping("/supermarket/{supermarketId}")
+    public ResponseEntity<Object> findBySupermarketId(
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
-            @PathVariable("supermarketName") String supermarketName
+            @PathVariable("supermarketId") String supermarketName
     );
     @PutMapping("/update")
     public ResponseEntity<Object> updateCoupon(

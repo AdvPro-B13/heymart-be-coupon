@@ -16,6 +16,6 @@ public class ProductCouponBuilder extends CouponBuilder<ProductCouponBuilder> {
     }
 
     public ProductCoupon build() {
-        return new ProductCoupon(percentDiscount, fixedDiscount, maxDiscount, supermarketName, idProduct);
+        return new ProductCoupon(percentDiscount, fixedDiscount, maxDiscount, supermarketId, idProduct);
     }
 }

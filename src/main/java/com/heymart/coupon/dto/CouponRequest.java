@@ -14,7 +14,7 @@ public class CouponRequest {
     private int percentDiscount;
     private int fixedDiscount;
     private int maxDiscount;
-    private String supermarketName;
+    private String supermarketId;
     private String idProduct;
     private int minTransaction;
 }

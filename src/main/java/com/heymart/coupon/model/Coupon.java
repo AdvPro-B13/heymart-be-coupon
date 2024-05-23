@@ -2,12 +2,14 @@ package com.heymart.coupon.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
 
 @Getter
 @Entity
+@NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Coupon {
     @Id
@@ -25,11 +27,10 @@ public abstract class Coupon {
     @Column(name = "max_discount", nullable = false)
     int maxDiscount;
 
-    @Column(name = "supermarket_name", nullable = false)
-    String supermarketName;
+    @Column(name = "supermarket_id", nullable = false)
+    String supermarketId;
 
-    protected Coupon() {}
-    protected Coupon(int percentDiscount, int fixedDiscount, int maxDiscount, String supermarketName) {
+    protected Coupon(int percentDiscount, int fixedDiscount, int maxDiscount, String supermarketId) {
         if (percentDiscount == 0 && fixedDiscount == 0) {
             throw new IllegalArgumentException("Percent discount and Fixed discount cannot both be zero");
         }
@@ -52,10 +53,10 @@ public abstract class Coupon {
             this.maxDiscount = maxDiscount;
         }
 
-        if (supermarketName == null || supermarketName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Supermarket name cannot be empty");
+        if (supermarketId == null || supermarketId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Supermarket Id cannot be empty");
         } else {
-            this.supermarketName = supermarketName;
+            this.supermarketId = supermarketId;
         }
     }
     public void setPercentDiscount(int percentDiscount) {

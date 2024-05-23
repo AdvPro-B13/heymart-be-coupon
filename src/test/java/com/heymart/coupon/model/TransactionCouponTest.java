@@ -1,6 +1,7 @@
 package com.heymart.coupon.model;
 
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TransactionCouponTest {
@@ -12,7 +13,7 @@ class TransactionCouponTest {
         assertEquals(10, coupon.getPercentDiscount());
         assertEquals(5, coupon.getFixedDiscount());
         assertEquals(20, coupon.getMaxDiscount());
-        assertEquals("Supermarket", coupon.getSupermarketName());
+        assertEquals("Supermarket", coupon.getSupermarketId());
         assertEquals(50, coupon.getMinTransaction());
     }
 
@@ -41,11 +42,11 @@ class TransactionCouponTest {
     }
 
     @Test
-    void nullSupermarketNameShouldThrow() {
+    void nullSupermarketIdShouldThrow() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 new TransactionCoupon(10, 5, 15, null, 50)
         );
-        assertTrue(ex.getMessage().contains("Supermarket name cannot be empty"));
+        assertTrue(ex.getMessage().contains("Supermarket Id cannot be empty"));
     }
 
     @Test

@@ -16,6 +16,6 @@ public class TransactionCouponBuilder extends CouponBuilder<TransactionCouponBui
     }
 
     public TransactionCoupon build() {
-        return new TransactionCoupon(percentDiscount, fixedDiscount, maxDiscount, supermarketName, minTransaction);
+        return new TransactionCoupon(percentDiscount, fixedDiscount, maxDiscount, supermarketId, minTransaction);
     }
 }

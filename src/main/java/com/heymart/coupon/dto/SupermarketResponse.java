@@ -11,4 +11,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SupermarketResponse {
     private String supermarketName;
+
 }

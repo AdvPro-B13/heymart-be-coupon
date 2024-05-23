@@ -30,7 +30,7 @@ public class TransactionCouponServiceImpl implements CouponService<TransactionCo
                 .setPercentDiscount(request.getPercentDiscount())
                 .setFixedDiscount(request.getFixedDiscount())
                 .setMaxDiscount(request.getMaxDiscount())
-                .setSupermarketName(request.getSupermarketName())
+                .setSupermarketId(request.getSupermarketId())
                 .setMinTransaction(request.getMinTransaction())
                 .build();
         return couponRepository.save(coupon);
@@ -63,7 +63,7 @@ public class TransactionCouponServiceImpl implements CouponService<TransactionCo
         return optional.orElseThrow(() -> new CouponNotFoundException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
     }
 
-    public List<TransactionCoupon> findBySupermarketName(String supermarketName) {
-        return couponRepository.findBySupermarketName(supermarketName);
+    public List<TransactionCoupon> findBySupermarketId(String supermarketId) {
+        return couponRepository.findBySupermarketId(supermarketId);
     }
 }

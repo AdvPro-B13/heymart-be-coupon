@@ -19,7 +19,7 @@ class TransactionCouponRepositoryTest {
     @Autowired
     private TransactionCouponRepository repository;
 
-    private final String supermarketName = "Supermarket";
+    private final String supermarketId = "Supermarket";
     private final UUID randomId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
 
     @Test
@@ -28,7 +28,7 @@ class TransactionCouponRepositoryTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(20)
-                .setSupermarketName(supermarketName)
+                .setSupermarketId(supermarketId)
                 .setMinTransaction(50)
                 .build();
         TransactionCoupon saved = repository.save(coupon);
@@ -42,7 +42,7 @@ class TransactionCouponRepositoryTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(20)
-                .setSupermarketName(supermarketName)
+                .setSupermarketId(supermarketId)
                 .setMinTransaction(50)
                 .build();TransactionCoupon saved = repository.save(coupon);
         TransactionCoupon found = repository.findById(saved.getId()).orElse(null);
@@ -56,7 +56,7 @@ class TransactionCouponRepositoryTest {
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(20)
-                .setSupermarketName(supermarketName)
+                .setSupermarketId(supermarketId)
                 .setMinTransaction(50)
                 .build();TransactionCoupon saved = repository.save(coupon);
         repository.delete(saved);
@@ -76,26 +76,26 @@ class TransactionCouponRepositoryTest {
         });
     }
     @Test
-    void TestFindBySupermarketName() {
+    void TestFindBySupermarketId() {
         TransactionCoupon coupon = new TransactionCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName(supermarketName)
+                .setSupermarketId(supermarketId)
                 .setMinTransaction(0)
                 .build();
         TransactionCoupon coupon2 = new TransactionCouponBuilder()
                 .setPercentDiscount(10)
                 .setFixedDiscount(5)
                 .setMaxDiscount(15)
-                .setSupermarketName(supermarketName)
+                .setSupermarketId(supermarketId)
                 .setMinTransaction(0)
                 .build();
         repository.save(coupon);
         repository.save(coupon2);
         List<TransactionCoupon> expectedCoupons = Arrays.asList(coupon, coupon2);
 
-        List<TransactionCoupon> actualCoupons = repository.findBySupermarketName(supermarketName);
+        List<TransactionCoupon> actualCoupons = repository.findBySupermarketId(supermarketId);
 
         assertEquals(expectedCoupons.size(), actualCoupons.size());
         assertEquals(expectedCoupons, actualCoupons);

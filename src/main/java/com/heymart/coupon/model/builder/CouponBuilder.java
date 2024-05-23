@@ -4,7 +4,7 @@ public abstract class CouponBuilder<T extends CouponBuilder<T>> {
     protected int percentDiscount;
     protected int fixedDiscount;
     protected int maxDiscount;
-    protected String supermarketName;
+    protected String supermarketId;
 
     public T setPercentDiscount(int percentDiscount) {
         this.percentDiscount = percentDiscount;
@@ -21,8 +21,8 @@ public abstract class CouponBuilder<T extends CouponBuilder<T>> {
         return self();
     }
 
-    public T setSupermarketName(String supermarketName) {
-        this.supermarketName = supermarketName;
+    public T setSupermarketId(String supermarketId) {
+        this.supermarketId = supermarketId;
         return self();
     }
 
