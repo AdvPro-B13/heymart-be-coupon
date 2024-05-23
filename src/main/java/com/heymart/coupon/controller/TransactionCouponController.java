@@ -129,14 +129,11 @@ public class TransactionCouponController implements CouponOperations{
             @RequestBody CouponRequest request,
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader
     ) {
-        System.out.println("konz");
         if (!authServiceClient.verifyUserAuthorization( CouponAction.READ.getValue(), authorizationHeader)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue());
         }
         try {
-            System.out.println(request.getId());
             TransactionCoupon coupon = transactionCouponService.findById(request.getId());
-            System.out.println("konz");
             return ResponseEntity.ok().body(userServiceClient.useCoupon(authorizationHeader, coupon));
         } catch (CouponNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorStatus.COUPON_NOT_FOUND.getValue());

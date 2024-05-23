@@ -47,7 +47,6 @@ public class UserServiceClient {
             return supermarketId.equals(Objects.requireNonNull(response.getBody()).getSupermarketId());
         }
         catch(Exception e){
-            System.out.println(e);
             return false;
         }
     }
