@@ -17,11 +17,15 @@ public class UsedCoupon {
     @JoinColumn(name = "coupon_id", nullable = false)
     private Coupon coupon;
 
-    @Column(name = "username_id", nullable = false)
-    private String usernameId;
-    public UsedCoupon(Coupon coupon, String usernameId) {
-        this.coupon = coupon;
-        this.usernameId = usernameId;
-    }
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
+    @Column(name = "supermarket_id", nullable = false)
+    private String supermarketId;
+
+    public UsedCoupon(Coupon coupon, Long userId, String supermarketId) {
+        this.coupon = coupon;
+        this.userId = userId;
+        this.supermarketId = supermarketId;
+    }
 }
