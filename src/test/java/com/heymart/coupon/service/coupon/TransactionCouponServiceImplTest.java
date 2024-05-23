@@ -33,7 +33,7 @@ class TransactionCouponServiceImplTest {
     }
 
     @Test
-    void createCoupon_shouldCreateCouponSuccessfully() throws ExecutionException, InterruptedException {
+    void createCoupon_shouldCreateCouponSuccessfully() {
         CouponRequest request = new CouponRequest(null, 10, 5, 15, "Supermarket", null, 50);
         TransactionCoupon coupon = new TransactionCouponBuilder()
                 .setPercentDiscount(10)
@@ -53,7 +53,7 @@ class TransactionCouponServiceImplTest {
     }
 
     @Test
-    void updateCoupon_shouldUpdateCouponSuccessfully() throws ExecutionException, InterruptedException {
+    void updateCoupon_shouldUpdateCouponSuccessfully() {
         CouponRequest request = new CouponRequest(randomId.toString(), 10, 5, 15, "Supermarket", null, 50);
         TransactionCoupon coupon = new TransactionCouponBuilder()
                 .setPercentDiscount(10)
