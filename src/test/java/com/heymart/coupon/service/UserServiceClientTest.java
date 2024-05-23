@@ -125,7 +125,6 @@ class UserServiceClientTest {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer validToken");
-        HttpEntity<String> entity = new HttpEntity<>(headers);
 
         UserResponse supermarketResponse = new UserResponse();
         supermarketResponse.setSupermarketId("HeyMart");
