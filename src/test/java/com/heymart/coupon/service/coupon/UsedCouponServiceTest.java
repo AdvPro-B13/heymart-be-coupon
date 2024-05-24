@@ -41,14 +41,12 @@ class UsedCouponServiceTest {
         UUID couponId = UUID.fromString(request.getId());
         UsedCoupon usedCoupon = new UsedCoupon();
         List<UsedCoupon> usedCoupons = Arrays.asList(usedCoupon);
-
-        when(usedCouponRepository.findByCouponId(couponId)).thenReturn(usedCoupons);
+;
 
         CompletableFuture<Void> future = usedCouponService.deleteUsedCouponsByCouponId(request);
 
         assertTrue(future.isDone());
-        verify(usedCouponRepository, times(1)).findByCouponId(couponId);
-        verify(usedCouponRepository, times(1)).deleteAll(usedCoupons);
+        verify(usedCouponRepository, times(1)).deleteByCouponId(couponId);
     }
 
     @Test
@@ -57,12 +55,11 @@ class UsedCouponServiceTest {
         request.setId("c0a8012b-68e6-42d9-b99e-4f318a25e3a0");
         UUID couponId = UUID.fromString(request.getId());
 
-        when(usedCouponRepository.findByCouponId(couponId)).thenReturn(Collections.emptyList());
 
         CompletableFuture<Void> future = usedCouponService.deleteUsedCouponsByCouponId(request);
 
         assertTrue(future.isDone());
-        verify(usedCouponRepository, times(1)).findByCouponId(couponId);
+        verify(usedCouponRepository, times(1)).deleteByCouponId(couponId);
         verify(usedCouponRepository, never()).deleteAll(any());
     }
 }

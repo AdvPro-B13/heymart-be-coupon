@@ -5,6 +5,7 @@ import com.heymart.coupon.enums.ErrorStatus;
 import com.heymart.coupon.model.TransactionCoupon;
 import com.heymart.coupon.model.builder.TransactionCouponBuilder;
 import com.heymart.coupon.repository.CouponRepository;
+import com.heymart.coupon.repository.TransactionCouponRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -21,7 +22,7 @@ import static org.mockito.Mockito.*;
 class TransactionCouponServiceImplTest {
 
     @Mock
-    private CouponRepository<TransactionCoupon> transactionCouponRepository;
+    private TransactionCouponRepository transactionCouponRepository;
 
     @InjectMocks
     private TransactionCouponServiceImpl transactionCouponService;

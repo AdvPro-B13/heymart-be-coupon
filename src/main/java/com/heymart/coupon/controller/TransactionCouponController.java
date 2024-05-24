@@ -148,6 +148,7 @@ public class TransactionCouponController implements CouponOperations{
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue());
         }
         try {
+
             TransactionCoupon coupon = transactionCouponService.findById(request.getId());
             return ResponseEntity.ok().body(userServiceClient.useCoupon(authorizationHeader, coupon.getId()));
         } catch (CouponNotFoundException e) {

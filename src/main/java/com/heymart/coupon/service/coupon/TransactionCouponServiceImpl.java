@@ -6,6 +6,7 @@ import com.heymart.coupon.exception.CouponNotFoundException;
 import com.heymart.coupon.model.TransactionCoupon;
 import com.heymart.coupon.model.builder.TransactionCouponBuilder;
 import com.heymart.coupon.repository.CouponRepository;
+import com.heymart.coupon.repository.TransactionCouponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -20,9 +21,9 @@ import java.util.concurrent.CompletableFuture;
 @EnableAsync
 public class TransactionCouponServiceImpl implements CouponService<TransactionCoupon>{
 
-    private final CouponRepository<TransactionCoupon> couponRepository;
+    private final TransactionCouponRepository couponRepository;
     @Autowired
-    public TransactionCouponServiceImpl(CouponRepository<TransactionCoupon> couponRepository) {
+    public TransactionCouponServiceImpl(TransactionCouponRepository couponRepository) {
         this.couponRepository = couponRepository;
     }
     public TransactionCoupon createCoupon(CouponRequest request) {
