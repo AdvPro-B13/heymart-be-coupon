@@ -42,12 +42,12 @@ public class UsedCouponServiceTest {
         UsedCoupon usedCoupon = new UsedCoupon();
         List<UsedCoupon> usedCoupons = Arrays.asList(usedCoupon);
 
-        when(usedCouponRepository.findByCoupon_Id(couponId)).thenReturn(usedCoupons);
+        when(usedCouponRepository.findByCouponId(couponId)).thenReturn(usedCoupons);
 
         CompletableFuture<Void> future = usedCouponService.deleteUsedCouponsByCouponId(request);
 
         assertTrue(future.isDone());
-        verify(usedCouponRepository, times(1)).findByCoupon_Id(couponId);
+        verify(usedCouponRepository, times(1)).findByCouponId(couponId);
         verify(usedCouponRepository, times(1)).deleteAll(usedCoupons);
     }
 
@@ -57,12 +57,12 @@ public class UsedCouponServiceTest {
         request.setId("c0a8012b-68e6-42d9-b99e-4f318a25e3a0");
         UUID couponId = UUID.fromString(request.getId());
 
-        when(usedCouponRepository.findByCoupon_Id(couponId)).thenReturn(Collections.emptyList());
+        when(usedCouponRepository.findByCouponId(couponId)).thenReturn(Collections.emptyList());
 
         CompletableFuture<Void> future = usedCouponService.deleteUsedCouponsByCouponId(request);
 
         assertTrue(future.isDone());
-        verify(usedCouponRepository, times(1)).findByCoupon_Id(couponId);
+        verify(usedCouponRepository, times(1)).findByCouponId(couponId);
         verify(usedCouponRepository, never()).deleteAll(any());
     }
 }

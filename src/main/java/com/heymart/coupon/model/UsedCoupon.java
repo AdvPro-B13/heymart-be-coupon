@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -13,15 +15,14 @@ public class UsedCoupon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "coupon_id", nullable = false)
-    private Coupon coupon;
+    @Column(name = "coupon_id", nullable = false)
+    private UUID couponId;
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    public UsedCoupon(Coupon coupon, Long userId) {
-        this.coupon = coupon;
+    public UsedCoupon(UUID couponId, Long userId) {
+        this.couponId = couponId;
         this.userId = userId;
     }
 }

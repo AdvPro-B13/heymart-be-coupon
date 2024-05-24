@@ -11,6 +11,6 @@ import java.util.UUID;
 
 @Repository
 public interface UsedCouponRepository extends JpaRepository<UsedCoupon, Long> {
-    boolean existsByUserIdAndCoupon(Long userId, Coupon coupon);
-    List<UsedCoupon> findByCoupon_Id(UUID coupon);
+    boolean existsByUserIdAndCouponId(Long userId, UUID couponId);
+    List<UsedCoupon> findByCouponId(UUID coupon);
 }

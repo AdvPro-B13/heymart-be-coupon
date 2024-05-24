@@ -14,6 +14,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -29,7 +31,7 @@ class UserServiceClientImplTest {
     private UserServiceClientImpl userServiceClientImpl;
 
     private TransactionCoupon coupon;
-
+    private UUID couponId;
     @BeforeEach
     void setUp() {
         coupon = new TransactionCouponBuilder()
@@ -39,6 +41,7 @@ class UserServiceClientImplTest {
                 .setSupermarketId("SUPERMARKET123")
                 .setMinTransaction(50)
                 .build();
+        couponId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
         MockitoAnnotations.openMocks(this);
     }
 
@@ -58,14 +61,14 @@ class UserServiceClientImplTest {
                 eq(UserResponse.class)
         )).thenReturn(responseEntity);
 
-        when(usedCouponRepository.existsByUserIdAndCoupon(1L, coupon)).thenReturn(false);
+        when(usedCouponRepository.existsByUserIdAndCouponId(1L, couponId)).thenReturn(false);
         when(usedCouponRepository.save(any(UsedCoupon.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        UsedCoupon result = userServiceClientImpl.useCoupon(token, coupon);
+        UsedCoupon result = userServiceClientImpl.useCoupon(token, couponId);
 
         assertNotNull(result);
         assertEquals(1L, result.getUserId());
-        assertEquals(coupon, result.getCoupon());
+        assertEquals(couponId, result.getCouponId());
 
         verify(restTemplate, times(1)).exchange(
                 anyString(),
@@ -73,7 +76,7 @@ class UserServiceClientImplTest {
                 any(HttpEntity.class),
                 eq(UserResponse.class)
         );
-        verify(usedCouponRepository, times(1)).existsByUserIdAndCoupon(1L, coupon);
+        verify(usedCouponRepository, times(1)).existsByUserIdAndCouponId(1L, couponId);
         verify(usedCouponRepository, times(1)).save(any(UsedCoupon.class));
     }
 
@@ -94,11 +97,11 @@ class UserServiceClientImplTest {
                 eq(UserResponse.class)
         )).thenReturn(responseEntity);
 
-        when(usedCouponRepository.existsByUserIdAndCoupon(1L, coupon)).thenReturn(true);
+        when(usedCouponRepository.existsByUserIdAndCouponId(1L, couponId)).thenReturn(true);
 
         // Act & Assert
         assertThrows(CouponAlreadyUsedException.class, () -> {
-            userServiceClientImpl.useCoupon(token, coupon);
+            userServiceClientImpl.useCoupon(token, couponId);
         });
 
         verify(restTemplate, times(1)).exchange(
@@ -107,7 +110,7 @@ class UserServiceClientImplTest {
                 any(HttpEntity.class),
                 eq(UserResponse.class)
         );
-        verify(usedCouponRepository, times(1)).existsByUserIdAndCoupon(1L, coupon);
+        verify(usedCouponRepository, times(1)).existsByUserIdAndCouponId(1L, couponId);
         verify(usedCouponRepository, never()).save(any(UsedCoupon.class));
     }
     @Test
@@ -175,7 +178,7 @@ class UserServiceClientImplTest {
         )).thenReturn(responseEntity);
 
         assertThrows(AssertionError.class, () -> {
-            userServiceClientImpl.useCoupon(token, coupon);
+            userServiceClientImpl.useCoupon(token, couponId);
         });
 
         verify(restTemplate, times(1)).exchange(
@@ -184,7 +187,7 @@ class UserServiceClientImplTest {
                 any(HttpEntity.class),
                 eq(UserResponse.class)
         );
-        verify(usedCouponRepository, never()).existsByUserIdAndCoupon(anyLong(), any(TransactionCoupon.class));
+        verify(usedCouponRepository, never()).existsByUserIdAndCouponId(anyLong(), any(UUID.class));
         verify(usedCouponRepository, never()).save(any(UsedCoupon.class));
     }
 

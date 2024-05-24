@@ -348,7 +348,7 @@ class TransactionCouponControllerTest {
     void testUseCoupon_CouponAlreadyUsed() throws Exception {
         when(authServiceClientImpl.verifyUserAuthorization(anyString(), anyString())).thenReturn(true);
         when(transactionCouponService.findById("1")).thenReturn(coupon);
-        when(userServiceClientImpl.useCoupon(anyString(), eq(coupon))).thenThrow(new CouponAlreadyUsedException(ErrorStatus.COUPON_ALREADY_USED.getValue()));
+        when(userServiceClientImpl.useCoupon(anyString(), eq(coupon.getId()))).thenThrow(new CouponAlreadyUsedException(ErrorStatus.COUPON_ALREADY_USED.getValue()));
 
         mockMvc.perform(post("/api/transaction-coupon/use")
                         .header("Authorization", "Bearer token")
@@ -364,7 +364,7 @@ class TransactionCouponControllerTest {
         when(authServiceClientImpl.verifyUserAuthorization(anyString(), anyString())).thenReturn(true);
         UsedCoupon usedCoupon = new UsedCoupon();
         when(transactionCouponService.findById("1")).thenReturn(coupon);
-        when(userServiceClientImpl.useCoupon(anyString(), eq(coupon))).thenReturn(usedCoupon);
+        when(userServiceClientImpl.useCoupon(anyString(), eq(coupon.getId()))).thenReturn(usedCoupon);
 
         mockMvc.perform(post("/api/transaction-coupon/use")
                         .header("Authorization", "Bearer token")

@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -23,7 +24,7 @@ public class UsedCouponServiceImpl implements UsedCouponService {
     @Async("asyncTaskExecutor")
     public CompletableFuture<Void> deleteUsedCouponsByCouponId(CouponRequest request) {
         UUID couponId = UUID.fromString(request.getId());
-        List<UsedCoupon> usedCoupons = usedCouponRepository.findByCoupon_Id(couponId);
+        List<UsedCoupon> usedCoupons = usedCouponRepository.findByCouponId(couponId);
 
         if (!usedCoupons.isEmpty()) {
             usedCouponRepository.deleteAll(usedCoupons);

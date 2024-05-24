@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class UserServiceClientImpl implements UserServiceClient {
@@ -48,7 +49,7 @@ public class UserServiceClientImpl implements UserServiceClient {
             return false;
         }
     }
-    public UsedCoupon useCoupon(String token, TransactionCoupon coupon) {
+    public UsedCoupon useCoupon(String token, UUID couponId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", token);
@@ -65,11 +66,11 @@ public class UserServiceClientImpl implements UserServiceClient {
 
         assert response != null;
         Long userId = response.getId();
-        boolean isExist = usedCouponRepository.existsByUserIdAndCoupon(userId, coupon);
+        boolean isExist = usedCouponRepository.existsByUserIdAndCouponId(userId, couponId);
         if (isExist) {
             throw new CouponAlreadyUsedException(ErrorStatus.COUPON_ALREADY_USED.getValue());
         }
-        UsedCoupon usedCoupon = new UsedCoupon(coupon, userId);
+        UsedCoupon usedCoupon = new UsedCoupon(couponId, userId);
         return usedCouponRepository.save(usedCoupon);
     }
 }
