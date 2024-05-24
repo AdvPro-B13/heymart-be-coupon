@@ -5,8 +5,8 @@ import com.heymart.coupon.enums.ErrorStatus;
 import com.heymart.coupon.exception.CouponNotFoundException;
 import com.heymart.coupon.model.ProductCoupon;
 import com.heymart.coupon.model.builder.ProductCouponBuilder;
-import com.heymart.coupon.service.AuthServiceClient;
-import com.heymart.coupon.service.UserServiceClient;
+import com.heymart.coupon.service.AuthServiceClientImpl;
+import com.heymart.coupon.service.UserServiceClientImpl;
 import com.heymart.coupon.service.coupon.CouponService;
 import com.heymart.coupon.service.coupon.ProductCouponOperation;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,9 +36,9 @@ class ProductCouponControllerTest {
     private MockMvc mockMvc;
 
     @Mock
-    private AuthServiceClient authServiceClient;
+    private AuthServiceClientImpl authServiceClientImpl;
     @Mock
-    private UserServiceClient userServiceClient;
+    private UserServiceClientImpl userServiceClientImpl;
 
     @Mock
     private CouponService<ProductCoupon> couponService;
@@ -78,7 +78,7 @@ class ProductCouponControllerTest {
         request.setSupermarketId("Supermarket");
         request.setIdProduct("Product");
 
-        when(authServiceClient.verifyUserAuthorization(any(), any())).thenReturn(false);
+        when(authServiceClientImpl.verifyUserAuthorization(any(), any())).thenReturn(false);
 
         ResponseEntity<Object> response = controller.createCoupon(request, "authHeader");
 
@@ -92,8 +92,8 @@ class ProductCouponControllerTest {
         request.setSupermarketId("Supermarket");
         request.setIdProduct("Product");
 
-        when(authServiceClient.verifyUserAuthorization(any(), any())).thenReturn(true);
-        when(userServiceClient.verifySupermarket(any(), any())).thenReturn(false);
+        when(authServiceClientImpl.verifyUserAuthorization(any(), any())).thenReturn(true);
+        when(userServiceClientImpl.verifySupermarket(any(), any())).thenReturn(false);
 
         ResponseEntity<Object> response = controller.createCoupon(request, "authHeader");
 
@@ -108,8 +108,8 @@ class ProductCouponControllerTest {
         request.setSupermarketId("Supermarket");
         request.setIdProduct("Product");
 
-        when(authServiceClient.verifyUserAuthorization("coupon:create", "authHeader")).thenReturn(true);
-        when(userServiceClient.verifySupermarket("authHeader", request.getSupermarketId())).thenReturn(true);
+        when(authServiceClientImpl.verifyUserAuthorization("coupon:create", "authHeader")).thenReturn(true);
+        when(userServiceClientImpl.verifySupermarket("authHeader", request.getSupermarketId())).thenReturn(true);
         when(productCouponOperation.findByIdProduct(request.getIdProduct())).thenThrow(new CouponNotFoundException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
         when(couponService.createCoupon(any())).thenReturn(coupon);
 
@@ -124,8 +124,8 @@ class ProductCouponControllerTest {
         request.setSupermarketId("Supermarket");
         request.setIdProduct("Product");
 
-        when(authServiceClient.verifyUserAuthorization("coupon:create", "authHeader")).thenReturn(true);
-        when(userServiceClient.verifySupermarket("authHeader", request.getSupermarketId())).thenReturn(true);
+        when(authServiceClientImpl.verifyUserAuthorization("coupon:create", "authHeader")).thenReturn(true);
+        when(userServiceClientImpl.verifySupermarket("authHeader", request.getSupermarketId())).thenReturn(true);
         when(productCouponOperation.findByIdProduct(request.getIdProduct())).thenReturn(coupon);
 
         ResponseEntity<Object> response = controller.createCoupon(request, "authHeader");
@@ -136,7 +136,7 @@ class ProductCouponControllerTest {
     @Test
     void testFindAllCoupons_Authorized() throws Exception {
 
-        given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
+        given(authServiceClientImpl.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         List<ProductCoupon> coupons = Arrays.asList(coupon, coupon2); // Mock some data
         given(couponService.findAllCoupons()).willReturn(coupons);
 
@@ -148,7 +148,7 @@ class ProductCouponControllerTest {
 
     @Test
     void testFindAllCoupons_Unauthorized() throws Exception {
-        given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(false);
+        given(authServiceClientImpl.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(false);
         List<ProductCoupon> coupons = Arrays.asList(coupon, coupon2);
         given(couponService.findAllCoupons()).willReturn(coupons);
 
@@ -159,7 +159,7 @@ class ProductCouponControllerTest {
 
     @Test
     void testFindCouponById_Authorized() throws Exception {
-        given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
+        given(authServiceClientImpl.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         given(couponService.findById("1")).willReturn(coupon);
 
         mockMvc.perform(get("/api/product-coupon/id/1")
@@ -170,7 +170,7 @@ class ProductCouponControllerTest {
 
     @Test
     void testFindCouponById_Unauthorized() throws Exception {
-        given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(false);
+        given(authServiceClientImpl.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(false);
         given(couponService.findById("1")).willReturn(coupon);
 
         mockMvc.perform(get("/api/product-coupon/id/1")
@@ -180,7 +180,7 @@ class ProductCouponControllerTest {
 
     @Test
     void testFindCouponById_NotFound() throws Exception {
-        given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
+        given(authServiceClientImpl.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         given(couponService.findById("1")).willThrow(new CouponNotFoundException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
 
         mockMvc.perform(get("/api/product-coupon/id/1")
@@ -190,7 +190,7 @@ class ProductCouponControllerTest {
 
     @Test
     void testFindCouponByIdProduct_Authorized() throws Exception {
-        given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
+        given(authServiceClientImpl.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         given(productCouponOperation.findByIdProduct("1")).willReturn(coupon);
 
         mockMvc.perform(get("/api/product-coupon/id-product/1")
@@ -201,7 +201,7 @@ class ProductCouponControllerTest {
 
     @Test
     void testFindCouponByIdProduct_Unauthorized() throws Exception {
-        given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(false);
+        given(authServiceClientImpl.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(false);
         given(productCouponOperation.findByIdProduct("1")).willReturn(coupon);
 
         mockMvc.perform(get("/api/product-coupon/id-product/1")
@@ -211,7 +211,7 @@ class ProductCouponControllerTest {
 
     @Test
     void testFindCouponByIdProduct_NotFound() throws Exception {
-        given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
+        given(authServiceClientImpl.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         given(productCouponOperation.findByIdProduct("1")).willThrow(new CouponNotFoundException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
 
         mockMvc.perform(get("/api/product-coupon/id-product/1")
@@ -221,7 +221,7 @@ class ProductCouponControllerTest {
 
     @Test
     void testFindCouponsBySupermarketId_Authorized() throws Exception {
-        given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
+        given(authServiceClientImpl.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(true);
         List<ProductCoupon> coupons = Arrays.asList(coupon);
         given(couponService.findBySupermarketId("Supermarket")).willReturn(coupons);
 
@@ -233,7 +233,7 @@ class ProductCouponControllerTest {
 
     @Test
     void testFindCouponsBySupermarketId_Unauthorized() throws Exception {
-        given(authServiceClient.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(false);
+        given(authServiceClientImpl.verifyUserAuthorization("coupon:read", "Bearer valid-token")).willReturn(false);
         List<ProductCoupon> coupons = Arrays.asList(coupon);
         given(couponService.findBySupermarketId("Supermarket")).willReturn(coupons);
 
@@ -247,7 +247,7 @@ class ProductCouponControllerTest {
         CouponRequest request = new CouponRequest();
         request.setId("1");
 
-        when(authServiceClient.verifyUserAuthorization("coupon:update", "authHeader")).thenReturn(false);
+        when(authServiceClientImpl.verifyUserAuthorization("coupon:update", "authHeader")).thenReturn(false);
 
         ResponseEntity<Object> response = controller.updateCoupon(request, "authHeader");
 
@@ -260,7 +260,7 @@ class ProductCouponControllerTest {
         CouponRequest request = new CouponRequest();
         request.setId("1");
 
-        when(authServiceClient.verifyUserAuthorization("coupon:update", "authHeader")).thenReturn(true);
+        when(authServiceClientImpl.verifyUserAuthorization("coupon:update", "authHeader")).thenReturn(true);
         when(couponService.findById(request.getId())).thenThrow(new CouponNotFoundException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
 
         ResponseEntity<Object> response = controller.updateCoupon(request, "authHeader");
@@ -273,9 +273,9 @@ class ProductCouponControllerTest {
     void testUpdateCouponUnauthorizedSupermarket() {
         CouponRequest request = new CouponRequest();
         request.setId("1");
-        when(authServiceClient.verifyUserAuthorization("coupon:update", "authHeader")).thenReturn(true);
+        when(authServiceClientImpl.verifyUserAuthorization("coupon:update", "authHeader")).thenReturn(true);
         when(couponService.findById(request.getId())).thenReturn(coupon);
-        when(userServiceClient.verifySupermarket("authHeader", coupon.getSupermarketId())).thenReturn(false);
+        when(userServiceClientImpl.verifySupermarket("authHeader", coupon.getSupermarketId())).thenReturn(false);
 
         ResponseEntity<Object> response = controller.updateCoupon(request, "authHeader");
 
@@ -288,9 +288,9 @@ class ProductCouponControllerTest {
         CouponRequest request = new CouponRequest();
         request.setId("1");
 
-        when(authServiceClient.verifyUserAuthorization("coupon:update", "authHeader")).thenReturn(true);
+        when(authServiceClientImpl.verifyUserAuthorization("coupon:update", "authHeader")).thenReturn(true);
         when(couponService.findById(request.getId())).thenReturn(coupon);
-        when(userServiceClient.verifySupermarket("authHeader", coupon.getSupermarketId())).thenReturn(true);
+        when(userServiceClientImpl.verifySupermarket("authHeader", coupon.getSupermarketId())).thenReturn(true);
         when(couponService.updateCoupon(any())).thenReturn(coupon);
 
         ResponseEntity<Object> response = controller.updateCoupon(request, "authHeader");
@@ -304,7 +304,7 @@ class ProductCouponControllerTest {
         CouponRequest request = new CouponRequest();
         request.setId("1");
 
-        when(authServiceClient.verifyUserAuthorization("coupon:delete", "authHeader")).thenReturn(false);
+        when(authServiceClientImpl.verifyUserAuthorization("coupon:delete", "authHeader")).thenReturn(false);
 
         CompletableFuture<ResponseEntity<Object>> response = controller.deleteCoupon(request, "authHeader");
 
@@ -317,7 +317,7 @@ class ProductCouponControllerTest {
         CouponRequest request = new CouponRequest();
         request.setId("1");
 
-        when(authServiceClient.verifyUserAuthorization("coupon:delete", "authHeader")).thenReturn(true);
+        when(authServiceClientImpl.verifyUserAuthorization("coupon:delete", "authHeader")).thenReturn(true);
         when(couponService.findById(request.getId())).thenThrow(new CouponNotFoundException(ErrorStatus.COUPON_NOT_FOUND.getValue()));
 
         CompletableFuture<ResponseEntity<Object>> response = controller.deleteCoupon(request, "authHeader");
@@ -331,9 +331,9 @@ class ProductCouponControllerTest {
         CouponRequest request = new CouponRequest();
         request.setId("1");
 
-        when(authServiceClient.verifyUserAuthorization("coupon:delete", "authHeader")).thenReturn(true);
+        when(authServiceClientImpl.verifyUserAuthorization("coupon:delete", "authHeader")).thenReturn(true);
         when(couponService.findById(request.getId())).thenReturn(coupon);
-        when(userServiceClient.verifySupermarket("authHeader", coupon.getSupermarketId())).thenReturn(false);
+        when(userServiceClientImpl.verifySupermarket("authHeader", coupon.getSupermarketId())).thenReturn(false);
 
         CompletableFuture<ResponseEntity<Object>> response = controller.deleteCoupon(request, "authHeader");
 
@@ -346,9 +346,9 @@ class ProductCouponControllerTest {
         CouponRequest request = new CouponRequest();
         request.setId("1");
 
-        when(authServiceClient.verifyUserAuthorization("coupon:delete", "authHeader")).thenReturn(true);
+        when(authServiceClientImpl.verifyUserAuthorization("coupon:delete", "authHeader")).thenReturn(true);
         when(couponService.findById(request.getId())).thenReturn(coupon);
-        when(userServiceClient.verifySupermarket("authHeader", coupon.getSupermarketId())).thenReturn(true);
+        when(userServiceClientImpl.verifySupermarket("authHeader", coupon.getSupermarketId())).thenReturn(true);
         when(couponService.deleteCoupon(any())).thenReturn(CompletableFuture.completedFuture(null));
 
         CompletableFuture<ResponseEntity<Object>> response = controller.deleteCoupon(request, "authHeader");

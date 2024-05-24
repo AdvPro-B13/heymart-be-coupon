@@ -12,12 +12,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-class AuthServiceClientTest {
+class AuthServiceClientImplTest {
 
     @InjectMocks
-    AuthServiceClient authServiceClient;
+    AuthServiceClientImpl authServiceClientImpl;
     @InjectMocks
-    UserServiceClient userServiceClient;
+    UserServiceClientImpl userServiceClientImpl;
 
     @Mock
     RestTemplate restTemplate;
@@ -37,7 +37,7 @@ class AuthServiceClientTest {
         ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.OK);
         when(restTemplate.postForEntity(anyString(), eq(entity), eq(String.class))).thenReturn(responseEntity);
 
-        boolean result = authServiceClient.verifyUserAuthorization("someAction", "Bearer validToken");
+        boolean result = authServiceClientImpl.verifyUserAuthorization("someAction", "Bearer validToken");
         assertTrue(result);
     }
 
@@ -51,12 +51,12 @@ class AuthServiceClientTest {
         ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.FORBIDDEN);
         when(restTemplate.postForEntity(anyString(), eq(entity), eq(String.class))).thenReturn(responseEntity);
 
-        boolean result = authServiceClient.verifyUserAuthorization("someAction", "Bearer invalidToken");
+        boolean result = authServiceClientImpl.verifyUserAuthorization("someAction", "Bearer invalidToken");
         assertFalse(result);
     }
     @Test
     void testVerifyUserAuthorization_TokenNull() {
-        boolean result = authServiceClient.verifyUserAuthorization("someAction", null);
+        boolean result = authServiceClientImpl.verifyUserAuthorization("someAction", null);
         assertFalse(result);
     }
 
@@ -64,7 +64,7 @@ class AuthServiceClientTest {
     void testVerifyUserAuthorization_Exception() {
         when(restTemplate.postForEntity(anyString(), any(), eq(String.class))).thenThrow(new RuntimeException());
 
-        boolean result = authServiceClient.verifyUserAuthorization("someAction", "anyToken");
+        boolean result = authServiceClientImpl.verifyUserAuthorization("someAction", "anyToken");
         assertFalse(result);
     }
 }

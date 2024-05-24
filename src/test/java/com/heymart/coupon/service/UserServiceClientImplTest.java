@@ -8,25 +8,16 @@ import com.heymart.coupon.model.builder.TransactionCouponBuilder;
 import com.heymart.coupon.repository.UsedCouponRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.*;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-class UserServiceClientTest {
+class UserServiceClientImplTest {
 
     @Mock
     private RestTemplate restTemplate;
@@ -35,7 +26,7 @@ class UserServiceClientTest {
     private UsedCouponRepository usedCouponRepository;
 
     @InjectMocks
-    private UserServiceClient userServiceClient;
+    private UserServiceClientImpl userServiceClientImpl;
 
     private TransactionCoupon coupon;
 
@@ -70,7 +61,7 @@ class UserServiceClientTest {
         when(usedCouponRepository.existsByUserIdAndCoupon(1L, coupon)).thenReturn(false);
         when(usedCouponRepository.save(any(UsedCoupon.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        UsedCoupon result = userServiceClient.useCoupon(token, coupon);
+        UsedCoupon result = userServiceClientImpl.useCoupon(token, coupon);
 
         assertNotNull(result);
         assertEquals(1L, result.getUserId());
@@ -108,7 +99,7 @@ class UserServiceClientTest {
 
         // Act & Assert
         assertThrows(CouponAlreadyUsedException.class, () -> {
-            userServiceClient.useCoupon(token, coupon);
+            userServiceClientImpl.useCoupon(token, coupon);
         });
 
         verify(restTemplate, times(1)).exchange(
@@ -133,7 +124,7 @@ class UserServiceClientTest {
         when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(UserResponse.class)))
                 .thenReturn(responseEntity);
 
-        boolean result = userServiceClient.verifySupermarket("Bearer validToken", "HeyMart");
+        boolean result = userServiceClientImpl.verifySupermarket("Bearer validToken", "HeyMart");
         assertTrue(result);
     }
     @Test
@@ -150,13 +141,13 @@ class UserServiceClientTest {
         when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(entity), eq(UserResponse.class)))
                 .thenReturn(responseEntity);
 
-        boolean result = userServiceClient.verifySupermarket("validToken", "HeyMart");
+        boolean result = userServiceClientImpl.verifySupermarket("validToken", "HeyMart");
         assertFalse(result);
     }
     @Test
     void testVerifySupermarket_NullTokenOrSupermarket() {
-        assertFalse(userServiceClient.verifySupermarket("token", null));
-        assertFalse(userServiceClient.verifySupermarket(null, "HeyMart"));
+        assertFalse(userServiceClientImpl.verifySupermarket("token", null));
+        assertFalse(userServiceClientImpl.verifySupermarket(null, "HeyMart"));
     }
 
     @Test
@@ -169,7 +160,7 @@ class UserServiceClientTest {
         when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(entity), eq(UserResponse.class)))
                 .thenThrow(new RuntimeException());
 
-        boolean result = userServiceClient.verifySupermarket("anyToken", "HeyMart");
+        boolean result = userServiceClientImpl.verifySupermarket("anyToken", "HeyMart");
         assertFalse(result);
     }
     @Test
@@ -185,7 +176,7 @@ class UserServiceClientTest {
         )).thenReturn(responseEntity);
 
         assertThrows(AssertionError.class, () -> {
-            userServiceClient.useCoupon(token, coupon);
+            userServiceClientImpl.useCoupon(token, coupon);
         });
 
         verify(restTemplate, times(1)).exchange(
