@@ -20,7 +20,7 @@ public class UsedCouponServiceImpl implements UsedCouponService {
     public UsedCouponServiceImpl(UsedCouponRepository usedCouponRepository) {
         this.usedCouponRepository = usedCouponRepository;
     }
-    @Async
+    @Async("asyncTaskExecutor")
     public CompletableFuture<Void> deleteUsedCouponsByCouponId(CouponRequest request) {
         UUID couponId = UUID.fromString(request.getId());
         List<UsedCoupon> usedCoupons = usedCouponRepository.findByCoupon_Id(couponId);
