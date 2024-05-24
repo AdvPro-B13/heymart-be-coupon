@@ -1,6 +1,6 @@
 package com.heymart.coupon.service.coupon;
 
-import com.heymart.coupon.dto.CouponRequest;
+import  com.heymart.coupon.dto.CouponRequest;
 import com.heymart.coupon.enums.ErrorStatus;
 import com.heymart.coupon.exception.CouponNotFoundException;
 import com.heymart.coupon.model.TransactionCoupon;
