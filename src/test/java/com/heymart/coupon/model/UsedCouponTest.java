@@ -1,5 +1,4 @@
 package com.heymart.coupon.model;
-import com.heymart.coupon.model.builder.TransactionCouponBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;

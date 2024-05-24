@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @EnableAsync
-public class UsedCouponServiceTest {
+class UsedCouponServiceTest {
 
     @Mock
     private UsedCouponRepository usedCouponRepository;
@@ -30,12 +30,12 @@ public class UsedCouponServiceTest {
     private UsedCouponServiceImpl usedCouponService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testDeleteUsedCouponsByCouponIdWhenCouponsExist() {
+    void testDeleteUsedCouponsByCouponIdWhenCouponsExist() {
         CouponRequest request = new CouponRequest();
         request.setId("c0a8012b-68e6-42d9-b99e-4f318a25e3a0");
         UUID couponId = UUID.fromString(request.getId());
@@ -52,7 +52,7 @@ public class UsedCouponServiceTest {
     }
 
     @Test
-    public void testDeleteUsedCouponsByCouponIdWhenCouponsDoNotExist() {
+    void testDeleteUsedCouponsByCouponIdWhenCouponsDoNotExist() {
         CouponRequest request = new CouponRequest();
         request.setId("c0a8012b-68e6-42d9-b99e-4f318a25e3a0");
         UUID couponId = UUID.fromString(request.getId());
