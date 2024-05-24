@@ -10,6 +10,7 @@ import com.heymart.coupon.model.builder.TransactionCouponBuilder;
 import com.heymart.coupon.service.AuthServiceClientImpl;
 import com.heymart.coupon.service.UserServiceClientImpl;
 import com.heymart.coupon.service.coupon.CouponService;
+import com.heymart.coupon.service.coupon.UsedCouponService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -41,6 +42,8 @@ class TransactionCouponControllerTest {
     private AuthServiceClientImpl authServiceClientImpl;
     @Mock
     private UserServiceClientImpl userServiceClientImpl;
+    @Mock
+    private UsedCouponService usedCouponService;
 
     @Mock
     private CouponService<TransactionCoupon> transactionCouponService;
@@ -279,10 +282,43 @@ class TransactionCouponControllerTest {
         when(transactionCouponService.findById(request.getId())).thenReturn(coupon);
         when(userServiceClientImpl.verifySupermarket("authHeader", coupon.getSupermarketId())).thenReturn(true);
         when(transactionCouponService.deleteCoupon(request)).thenReturn(CompletableFuture.completedFuture(null));
+        when(usedCouponService.deleteUsedCouponsByCouponId(request)).thenReturn(CompletableFuture.completedFuture(null));
 
         CompletableFuture<ResponseEntity<Object>> response = transactionCouponController.deleteCoupon(request, "authHeader");
 
-        assertEquals(HttpStatus.NO_CONTENT, response.join().getStatusCode());
+        assertEquals(HttpStatus.OK, response.join().getStatusCode());
+    }
+    @Test
+    void testDeleteCouponInternalServerError() {
+        CouponRequest request = new CouponRequest();
+        request.setId("test-id");
+
+        when(authServiceClientImpl.verifyUserAuthorization("coupon:delete", "authHeader")).thenReturn(true);
+        when(transactionCouponService.findById(request.getId())).thenReturn(coupon);
+        when(userServiceClientImpl.verifySupermarket("authHeader", coupon.getSupermarketId())).thenReturn(true);
+        when(transactionCouponService.deleteCoupon(request)).thenReturn(CompletableFuture.failedFuture(new RuntimeException("Unexpected error")));
+        when(usedCouponService.deleteUsedCouponsByCouponId(request)).thenReturn(CompletableFuture.completedFuture(null));
+
+        CompletableFuture<ResponseEntity<Object>> response = transactionCouponController.deleteCoupon(request, "authHeader");
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.join().getStatusCode());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.join().getBody());
+    }
+    @Test
+    void testDeleteCouponNotFoundInExceptionally() {
+        CouponRequest request = new CouponRequest();
+        request.setId("test-id");
+
+        when(authServiceClientImpl.verifyUserAuthorization("coupon:delete", "authHeader")).thenReturn(true);
+        when(transactionCouponService.findById(request.getId())).thenReturn(coupon);
+        when(userServiceClientImpl.verifySupermarket("authHeader", coupon.getSupermarketId())).thenReturn(true);
+        when(transactionCouponService.deleteCoupon(request)).thenReturn(CompletableFuture.failedFuture(new CouponNotFoundException("Coupon not found")));
+        when(usedCouponService.deleteUsedCouponsByCouponId(request)).thenReturn(CompletableFuture.completedFuture(null));
+
+        CompletableFuture<ResponseEntity<Object>> response = transactionCouponController.deleteCoupon(request, "authHeader");
+
+        assertEquals(HttpStatus.NOT_FOUND, response.join().getStatusCode());
+        assertEquals(ErrorStatus.COUPON_NOT_FOUND.getValue(), response.join().getBody());
     }
 
     @Test

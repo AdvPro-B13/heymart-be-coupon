@@ -66,7 +66,6 @@ class UserServiceClientImplTest {
         assertNotNull(result);
         assertEquals(1L, result.getUserId());
         assertEquals(coupon, result.getCoupon());
-        assertEquals("SUPERMARKET123", result.getSupermarketId());
 
         verify(restTemplate, times(1)).exchange(
                 anyString(),

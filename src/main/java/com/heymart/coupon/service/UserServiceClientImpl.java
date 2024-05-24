@@ -69,7 +69,7 @@ public class UserServiceClientImpl implements UserServiceClient {
         if (isExist) {
             throw new CouponAlreadyUsedException(ErrorStatus.COUPON_ALREADY_USED.getValue());
         }
-        UsedCoupon usedCoupon = new UsedCoupon(coupon, userId, coupon.getSupermarketId());
+        UsedCoupon usedCoupon = new UsedCoupon(coupon, userId);
         return usedCouponRepository.save(usedCoupon);
     }
 }

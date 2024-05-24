@@ -9,6 +9,7 @@ import com.heymart.coupon.model.TransactionCoupon;
 import com.heymart.coupon.service.AuthServiceClient;
 import com.heymart.coupon.service.UserServiceClient;
 import com.heymart.coupon.service.coupon.CouponService;
+import com.heymart.coupon.service.coupon.UsedCouponService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,16 +23,19 @@ public class TransactionCouponController implements CouponOperations{
     private final AuthServiceClient authServiceClient;
     private final UserServiceClient userServiceClient;
     private final CouponService<TransactionCoupon> transactionCouponService;
+    private final UsedCouponService usedCouponService;
 
     @Autowired
     public TransactionCouponController(
             AuthServiceClient authServiceClient,
             CouponService<TransactionCoupon> transactionCouponService,
-            UserServiceClient userServiceClient
+            UserServiceClient userServiceClient,
+            UsedCouponService usedCouponService
     ) {
         this.authServiceClient = authServiceClient;
         this.transactionCouponService = transactionCouponService;
         this.userServiceClient = userServiceClient;
+        this.usedCouponService = usedCouponService;
     }
     @Override
     public ResponseEntity<Object> createCoupon(
@@ -106,7 +110,7 @@ public class TransactionCouponController implements CouponOperations{
 
     @Override
     public CompletableFuture<ResponseEntity<Object>> deleteCoupon(
-            CouponRequest request, String authorizationHeader
+            @RequestBody CouponRequest request, String authorizationHeader
     ) {
         if (!authServiceClient.verifyUserAuthorization(
                 CouponAction.DELETE.getValue(), authorizationHeader)
@@ -118,8 +122,19 @@ public class TransactionCouponController implements CouponOperations{
             if (!userServiceClient.verifySupermarket(authorizationHeader, coupon.getSupermarketId())) {
                 return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue()));
             }
+            CompletableFuture<Void> deleteUsedCouponsFuture = usedCouponService.deleteUsedCouponsByCouponId(request);
+
             return transactionCouponService.deleteCoupon(request)
-                    .thenApply(voidResult -> ResponseEntity.status(HttpStatus.NO_CONTENT).build());
+                    .thenCombine(deleteUsedCouponsFuture, (voidResult, usedCouponsResult) ->
+                            ResponseEntity.status(HttpStatus.OK).build()
+                    )
+                    .exceptionally(ex -> {
+                        if (ex.getCause() instanceof CouponNotFoundException) {
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorStatus.COUPON_NOT_FOUND.getValue());
+                        } else {
+                            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                        }
+                    });
         } catch (CouponNotFoundException e) {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorStatus.COUPON_NOT_FOUND.getValue()));
         }

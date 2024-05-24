@@ -18,12 +18,11 @@ class UsedCouponTest {
         Long userId = 1L;
         String supermarketId = "SUPERMARKET123";
 
-        UsedCoupon usedCoupon = new UsedCoupon(coupon, userId, supermarketId);
+        UsedCoupon usedCoupon = new UsedCoupon(coupon, userId);
         assertNull(usedCoupon.getId());
         assertNotNull(usedCoupon);
         assertEquals(coupon, usedCoupon.getCoupon());
         assertEquals(userId, usedCoupon.getUserId());
-        assertEquals(supermarketId, usedCoupon.getSupermarketId());
     }
 
     @Test
