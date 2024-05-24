@@ -1,45 +1,59 @@
 package com.heymart.coupon.model;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.heymart.coupon.model.*;
-import org.junit.jupiter.api.Test;
+class TransactionCouponTest {
 
-public class TransactionCouponTest {
-    @BeforeEach
-    void setUp() {
-    }
     @Test
-    void testCreateCouponNegativeAmount() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new TransactionCoupon("id",-10,10,0,"Indomaret",0);
-        });
-        assertThrows(IllegalArgumentException.class, () -> {
-            new TransactionCoupon("id",10,-10,0,"Indomaret",0);
-        });
-        assertThrows(IllegalArgumentException.class, () -> {
-            new TransactionCoupon("id",10,10,-10,"Indomaret",0);
-        });
-        assertThrows(IllegalArgumentException.class, () -> {
-            new TransactionCoupon("id",10,10,0,"Indomaret",-10);
-        });
+    void validTransactionCoupon() {
+        TransactionCoupon coupon = new TransactionCoupon(10, 5, 20, "Supermarket", 50);
+        assertNotNull(coupon);
+        assertEquals(10, coupon.getPercentDiscount());
+        assertEquals(5, coupon.getFixedDiscount());
+        assertEquals(20, coupon.getMaxDiscount());
+        assertEquals("Supermarket", coupon.getSupermarketId());
+        assertEquals(50, coupon.getMinTransaction());
     }
+
     @Test
-    void testCreateCouponWithMaxLessThanFixed() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new TransactionCoupon("id",10,10,5,"Indomaret",0);
-        });
+    void negativePercentDiscountShouldThrow() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                new TransactionCoupon(-1, 5, 15, "Supermarket", 50)
+        );
+        assertTrue(ex.getMessage().contains("Percent discount cannot be negative"));
     }
+
     @Test
-    void testCreateCouponSuccess() {
-        TransactionCoupon tCoupon = new TransactionCoupon("id",10,15,20,"Indomaret",0);
-        assertNotNull(tCoupon.id);
-        assertEquals(tCoupon.percentDiscount, 10);
-        assertEquals(tCoupon.fixedDiscount, 15);
-        assertEquals(tCoupon.maxDiscount, 20);
-        assertEquals(tCoupon.supermarket, "Indomaret");
-        assertEquals(tCoupon.minTransaction, 0);
+    void negativeFixedDiscountShouldThrow() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                new TransactionCoupon(10, -5, 15, "Supermarket", 50)
+        );
+        assertTrue(ex.getMessage().contains("Fixed discount cannot be negative"));
+    }
+
+    @Test
+    void maxDiscountLessThanFixedDiscountShouldThrow() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                new TransactionCoupon(10, 20, 15, "Supermarket", 50)
+        );
+        assertTrue(ex.getMessage().contains("Max discount must be greater than or equal to fixed discount"));
+    }
+
+    @Test
+    void nullSupermarketIdShouldThrow() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                new TransactionCoupon(10, 5, 15, null, 50)
+        );
+        assertTrue(ex.getMessage().contains("Supermarket Id cannot be empty"));
+    }
+
+    @Test
+    void negativeMinTransactionShouldThrow() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                new TransactionCoupon(10, 5, 20, "Supermarket", -1)
+        );
+        assertTrue(ex.getMessage().contains("Minimum transaction cannot be negative"));
     }
 }

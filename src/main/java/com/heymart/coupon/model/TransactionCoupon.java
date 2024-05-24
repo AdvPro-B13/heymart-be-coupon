@@ -1,28 +1,33 @@
 package com.heymart.coupon.model;
 
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Getter;
+@Getter
+@Entity
+@Table(name = "TransactionCoupon")
 public class TransactionCoupon extends Coupon {
-    int minTransaction;
-    public TransactionCoupon(String id, int percentDiscount, int fixedDiscount,
-                             int maxDiscount, String supermarket, int minTransaction) {
-        this.id = id;
-        this.supermarket = supermarket;
 
-        if (percentDiscount<0) {
-            throw new IllegalArgumentException();
-        } else {
-            this.percentDiscount = percentDiscount;
-        }
-        if (fixedDiscount<0 || fixedDiscount >= maxDiscount) {
-            throw new IllegalArgumentException();
-        } else {
-            this.fixedDiscount = fixedDiscount;
-            this.maxDiscount = maxDiscount;
-        }
+    @Column(name = "min_transaction", nullable = false)
+    private int minTransaction;
 
+    protected TransactionCoupon() {
+        super();
+    }
+
+    public TransactionCoupon(int percentDiscount, int fixedDiscount,
+                             int maxDiscount, String supermarketName, int minTransaction) {
+        super(percentDiscount, fixedDiscount, maxDiscount, supermarketName);
         if (minTransaction<0) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Minimum transaction cannot be negative");
         } else {
             this.minTransaction = minTransaction;
         }
+    }
+
+    public void setMinTransaction(int minTransaction) {
+        this.minTransaction = minTransaction;
     }
 }

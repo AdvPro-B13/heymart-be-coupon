@@ -1,24 +1,29 @@
 package com.heymart.coupon.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Getter;
+
+@Getter
+@Entity
+@Table(name = "ProductCoupon")
 public class ProductCoupon extends Coupon {
-    String product;
-    public ProductCoupon(String id, int percentDiscount, int fixedDiscount,
-                             int maxDiscount, String supermarket, String product) {
-        this.id = id;
-        this.supermarket = supermarket;
-        this.product = product;
 
-        if (percentDiscount<0) {
-            throw new IllegalArgumentException();
-        } else {
-            this.percentDiscount = percentDiscount;
-        }
+    @Column(name = "id_product", nullable = false, unique = true)
+    private String idProduct;
 
-        if (fixedDiscount<0 || fixedDiscount >= maxDiscount) {
-            throw new IllegalArgumentException();
+    protected ProductCoupon() {
+        super();
+    }
+
+    public ProductCoupon(int percentDiscount, int fixedDiscount,
+                             int maxDiscount, String supermarketName, String idProduct) {
+        super(percentDiscount, fixedDiscount, maxDiscount, supermarketName);
+        if (idProduct == null || idProduct.trim().isEmpty()) {
+            throw new IllegalArgumentException("Product ID cannot be empty");
         } else {
-            this.fixedDiscount = fixedDiscount;
-            this.maxDiscount = maxDiscount;
+            this.idProduct = idProduct;
         }
     }
 }
