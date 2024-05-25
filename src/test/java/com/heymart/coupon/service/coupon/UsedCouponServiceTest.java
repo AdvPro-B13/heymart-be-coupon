@@ -39,8 +39,6 @@ class UsedCouponServiceTest {
         request.setId("c0a8012b-68e6-42d9-b99e-4f318a25e3a0");
         UUID couponId = UUID.fromString(request.getId());
         UsedCoupon usedCoupon = new UsedCoupon();
-        List<UsedCoupon> usedCoupons = Arrays.asList(usedCoupon);
-;
 
         CompletableFuture<Void> future = usedCouponService.deleteUsedCouponsByCouponId(request);
 
