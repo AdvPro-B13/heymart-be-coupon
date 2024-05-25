@@ -37,6 +37,8 @@ public abstract class Coupon {
 
         if (percentDiscount<0) {
             throw new IllegalArgumentException("Percent discount cannot be negative");
+        } else if (percentDiscount>100) {
+            throw new IllegalArgumentException("Percent discount cannot be more than 100");
         } else {
             this.percentDiscount = percentDiscount;
         }

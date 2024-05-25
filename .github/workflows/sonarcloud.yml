@@ -39,4 +39,4 @@ jobs:
           JDBC_DATABASE_PASSWORD: ${{ secrets.JDBC_DATABASE_PASSWORD }}
           JDBC_DATABASE_URL: ${{ secrets.JDBC_DATABASE_URL }}
           JDBC_DATABASE_USERNAME: ${{ secrets.JDBC_DATABASE_USERNAME }}
-        run: ./gradlew build sonar --info
+        run: ./gradlew build sonar --info -Dsonar.exclusions=**/*Application**,**/dto/**,**/enums/**,**/config/**
