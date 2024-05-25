@@ -1,7 +1,6 @@
 package com.heymart.coupon.service.coupon;
 
 import com.heymart.coupon.dto.CouponRequest;
-import com.heymart.coupon.model.UsedCoupon;
 import com.heymart.coupon.repository.UsedCouponRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,8 +9,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -38,7 +35,6 @@ class UsedCouponServiceTest {
         CouponRequest request = new CouponRequest();
         request.setId("c0a8012b-68e6-42d9-b99e-4f318a25e3a0");
         UUID couponId = UUID.fromString(request.getId());
-        UsedCoupon usedCoupon = new UsedCoupon();
 
         CompletableFuture<Void> future = usedCouponService.deleteUsedCouponsByCouponId(request);
 
