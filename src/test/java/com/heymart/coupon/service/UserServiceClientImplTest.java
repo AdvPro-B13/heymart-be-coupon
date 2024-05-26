@@ -1,7 +1,6 @@
 package com.heymart.coupon.service;
 
 import com.heymart.coupon.dto.UserResponse;
-import com.heymart.coupon.exception.CouponAlreadyUsedException;
 import com.heymart.coupon.model.TransactionCoupon;
 import com.heymart.coupon.model.UsedCoupon;
 import com.heymart.coupon.model.builder.TransactionCouponBuilder;

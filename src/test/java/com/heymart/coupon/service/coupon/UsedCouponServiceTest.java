@@ -1,7 +1,6 @@
 package com.heymart.coupon.service.coupon;
 
 import com.heymart.coupon.dto.CouponRequest;
-import com.heymart.coupon.dto.UserResponse;
 import com.heymart.coupon.exception.CouponAlreadyUsedException;
 import com.heymart.coupon.model.TransactionCoupon;
 import com.heymart.coupon.model.UsedCoupon;
@@ -12,10 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.util.Arrays;
