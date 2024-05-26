@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -40,5 +41,8 @@ public class UsedCouponServiceImpl implements UsedCouponService {
         }
         UsedCoupon usedCoupon = new UsedCoupon(coupon.getId(), coupon.getSupermarketId(), userId);
         return usedCouponRepository.save(usedCoupon);
+    }
+    public List<UsedCoupon> getUsedCouponBySupermarket(String supermarketId, Long userId) {
+        return usedCouponRepository.findBySupermarketIdAndUserId(supermarketId, userId);
     }
 }

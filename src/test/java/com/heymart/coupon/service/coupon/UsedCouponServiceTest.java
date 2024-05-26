@@ -18,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -97,5 +99,25 @@ class UsedCouponServiceTest {
 
         verify(usedCouponRepository, times(1)).existsByUserIdAndCouponId(any(), any());
         verify(usedCouponRepository, times(1)).save(any(UsedCoupon.class));
+    }
+
+    @Test
+    public void testGetUsedCouponBySupermarket() {
+        // Setup
+        String supermarketId = "someSupermarket";
+        Long userId = 1L;
+        List<UsedCoupon> mockCoupons = Arrays.asList(
+                new UsedCoupon(UUID.randomUUID(), supermarketId, userId),
+                new UsedCoupon(UUID.randomUUID(), supermarketId, userId)
+        );
+
+        when(usedCouponRepository.findBySupermarketIdAndUserId(supermarketId, userId)).thenReturn(mockCoupons);
+
+        // Execute
+        List<UsedCoupon> coupons = usedCouponService.getUsedCouponBySupermarket(supermarketId, userId);
+
+        // Verify
+        assertEquals(2, coupons.size());
+        verify(usedCouponRepository, times(1)).findBySupermarketIdAndUserId(supermarketId, userId);
     }
 }
