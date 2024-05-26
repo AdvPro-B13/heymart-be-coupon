@@ -48,7 +48,7 @@ public class UserServiceClientImpl implements UserServiceClient {
             return false;
         }
     }
-    public UsedCoupon useCoupon(String token, UUID couponId) {
+    public Long getUserId(String token) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", token);
@@ -62,14 +62,7 @@ public class UserServiceClientImpl implements UserServiceClient {
                 entity,
                 UserResponse.class
         ).getBody();
-
         assert response != null;
-        Long userId = response.getId();
-        boolean isExist = usedCouponRepository.existsByUserIdAndCouponId(userId, couponId);
-        if (isExist) {
-            throw new CouponAlreadyUsedException(ErrorStatus.COUPON_ALREADY_USED.getValue());
-        }
-        UsedCoupon usedCoupon = new UsedCoupon(couponId, userId);
-        return usedCouponRepository.save(usedCoupon);
+        return response.getId();
     }
 }

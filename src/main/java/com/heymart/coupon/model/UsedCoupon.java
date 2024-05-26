@@ -18,11 +18,15 @@ public class UsedCoupon {
     @Column(name = "coupon_id", nullable = false)
     private UUID couponId;
 
+    @Column(name = "supermarket_id", nullable = false)
+    private String supermarketId;
+
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    public UsedCoupon(UUID couponId, Long userId) {
+    public UsedCoupon(UUID couponId, String supermarketId, Long userId) {
         this.couponId = couponId;
+        this.supermarketId = supermarketId;
         this.userId = userId;
     }
 }

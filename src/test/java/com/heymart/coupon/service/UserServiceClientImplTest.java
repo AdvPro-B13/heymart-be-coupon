@@ -64,11 +64,10 @@ class UserServiceClientImplTest {
         when(usedCouponRepository.existsByUserIdAndCouponId(1L, couponId)).thenReturn(false);
         when(usedCouponRepository.save(any(UsedCoupon.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        UsedCoupon result = userServiceClientImpl.useCoupon(token, couponId);
+        Long result = userServiceClientImpl.getUserId(token);
 
         assertNotNull(result);
-        assertEquals(1L, result.getUserId());
-        assertEquals(couponId, result.getCouponId());
+        assertEquals(1L, result);
 
         verify(restTemplate, times(1)).exchange(
                 anyString(),
@@ -76,43 +75,8 @@ class UserServiceClientImplTest {
                 any(HttpEntity.class),
                 eq(UserResponse.class)
         );
-        verify(usedCouponRepository, times(1)).existsByUserIdAndCouponId(1L, couponId);
-        verify(usedCouponRepository, times(1)).save(any(UsedCoupon.class));
     }
 
-    @Test
-    void testUseCoupon_couponAlreadyUsed() {
-        // Arrange
-        String token = "validToken";
-        UserResponse userResponse = new UserResponse();
-        userResponse.setId(1L);
-        userResponse.setSupermarketId("SUPERMARKET123");
-
-        ResponseEntity<UserResponse> responseEntity = new ResponseEntity<>(userResponse, HttpStatus.OK);
-
-        when(restTemplate.exchange(
-                anyString(),
-                eq(HttpMethod.GET),
-                any(HttpEntity.class),
-                eq(UserResponse.class)
-        )).thenReturn(responseEntity);
-
-        when(usedCouponRepository.existsByUserIdAndCouponId(1L, couponId)).thenReturn(true);
-
-        // Act & Assert
-        assertThrows(CouponAlreadyUsedException.class, () -> {
-            userServiceClientImpl.useCoupon(token, couponId);
-        });
-
-        verify(restTemplate, times(1)).exchange(
-                anyString(),
-                eq(HttpMethod.GET),
-                any(HttpEntity.class),
-                eq(UserResponse.class)
-        );
-        verify(usedCouponRepository, times(1)).existsByUserIdAndCouponId(1L, couponId);
-        verify(usedCouponRepository, never()).save(any(UsedCoupon.class));
-    }
     @Test
     void testVerifySupermarket_Successful() {
         HttpHeaders headers = new HttpHeaders();
@@ -165,8 +129,9 @@ class UserServiceClientImplTest {
         boolean result = userServiceClientImpl.verifySupermarket("anyToken", "HeyMart");
         assertFalse(result);
     }
+
     @Test
-    void testUseCoupon_nullResponse() {
+    void testGetUserId_nullResponse() {
         String token = "validToken";
         ResponseEntity<UserResponse> responseEntity = new ResponseEntity<>(null, HttpStatus.OK);
 
@@ -178,7 +143,7 @@ class UserServiceClientImplTest {
         )).thenReturn(responseEntity);
 
         assertThrows(AssertionError.class, () -> {
-            userServiceClientImpl.useCoupon(token, couponId);
+            userServiceClientImpl.getUserId(token);
         });
 
         verify(restTemplate, times(1)).exchange(
@@ -190,5 +155,4 @@ class UserServiceClientImplTest {
         verify(usedCouponRepository, never()).existsByUserIdAndCouponId(anyLong(), any(UUID.class));
         verify(usedCouponRepository, never()).save(any(UsedCoupon.class));
     }
-
 }

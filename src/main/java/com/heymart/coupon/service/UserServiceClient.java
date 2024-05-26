@@ -6,5 +6,5 @@ import java.util.UUID;
 
 public interface UserServiceClient {
     public boolean verifySupermarket(String token, String supermarketId);
-    public UsedCoupon useCoupon(String token, UUID couponId);
+    public Long getUserId(String token);
 }

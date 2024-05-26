@@ -27,8 +27,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -348,7 +347,7 @@ class TransactionCouponControllerTest {
     void testUseCoupon_CouponAlreadyUsed() throws Exception {
         when(authServiceClientImpl.verifyUserAuthorization(anyString(), anyString())).thenReturn(true);
         when(transactionCouponService.findById("1")).thenReturn(coupon);
-        when(userServiceClientImpl.useCoupon(anyString(), eq(coupon.getId()))).thenThrow(new CouponAlreadyUsedException(ErrorStatus.COUPON_ALREADY_USED.getValue()));
+        when(usedCouponService.useCoupon(eq(coupon), anyLong())).thenThrow(new CouponAlreadyUsedException(ErrorStatus.COUPON_ALREADY_USED.getValue()));
 
         mockMvc.perform(post("/api/transaction-coupon/use")
                         .header("Authorization", "Bearer token")
@@ -364,7 +363,7 @@ class TransactionCouponControllerTest {
         when(authServiceClientImpl.verifyUserAuthorization(anyString(), anyString())).thenReturn(true);
         UsedCoupon usedCoupon = new UsedCoupon();
         when(transactionCouponService.findById("1")).thenReturn(coupon);
-        when(userServiceClientImpl.useCoupon(anyString(), eq(coupon.getId()))).thenReturn(usedCoupon);
+        when(usedCouponService.useCoupon(eq(coupon),anyLong())).thenReturn(usedCoupon);
 
         mockMvc.perform(post("/api/transaction-coupon/use")
                         .header("Authorization", "Bearer token")
