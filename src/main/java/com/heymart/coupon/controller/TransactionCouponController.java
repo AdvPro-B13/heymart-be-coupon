@@ -150,12 +150,25 @@ public class TransactionCouponController implements CouponOperations{
         try {
 
             TransactionCoupon coupon = transactionCouponService.findById(request.getId());
-            return ResponseEntity.ok().body(userServiceClient.useCoupon(authorizationHeader, coupon.getId()));
+            Long userId = userServiceClient.getUserId(authorizationHeader);
+            return ResponseEntity.ok().body(usedCouponService.useCoupon(coupon, userId));
         } catch (CouponNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorStatus.COUPON_NOT_FOUND.getValue());
         } catch (CouponAlreadyUsedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorStatus.COUPON_ALREADY_USED.getValue());
         }
+    }
+    @GetMapping("/used-coupon/{supermarketId}")
+    public ResponseEntity<Object> findUsedCouponsBySupermarketId(
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+            @PathVariable("supermarketId") String supermarketName
+    ) {
+        if (!authServiceClient.verifyUserAuthorization( CouponAction.READ.getValue(), authorizationHeader)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorStatus.UNAUTHORIZED.getValue());
+        }
+        Long userId = userServiceClient.getUserId(authorizationHeader);
+        return ResponseEntity.ok().body(usedCouponService.getUsedCouponBySupermarket(supermarketName, userId));
+
     }
 
 }

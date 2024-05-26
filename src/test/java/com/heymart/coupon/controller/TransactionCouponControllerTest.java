@@ -1,6 +1,7 @@
 package com.heymart.coupon.controller;
 
 import com.heymart.coupon.dto.CouponRequest;
+import com.heymart.coupon.enums.CouponAction;
 import com.heymart.coupon.enums.ErrorStatus;
 import com.heymart.coupon.exception.CouponAlreadyUsedException;
 import com.heymart.coupon.exception.CouponNotFoundException;
@@ -24,11 +25,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -348,7 +349,7 @@ class TransactionCouponControllerTest {
     void testUseCoupon_CouponAlreadyUsed() throws Exception {
         when(authServiceClientImpl.verifyUserAuthorization(anyString(), anyString())).thenReturn(true);
         when(transactionCouponService.findById("1")).thenReturn(coupon);
-        when(userServiceClientImpl.useCoupon(anyString(), eq(coupon.getId()))).thenThrow(new CouponAlreadyUsedException(ErrorStatus.COUPON_ALREADY_USED.getValue()));
+        when(usedCouponService.useCoupon(eq(coupon), anyLong())).thenThrow(new CouponAlreadyUsedException(ErrorStatus.COUPON_ALREADY_USED.getValue()));
 
         mockMvc.perform(post("/api/transaction-coupon/use")
                         .header("Authorization", "Bearer token")
@@ -364,12 +365,45 @@ class TransactionCouponControllerTest {
         when(authServiceClientImpl.verifyUserAuthorization(anyString(), anyString())).thenReturn(true);
         UsedCoupon usedCoupon = new UsedCoupon();
         when(transactionCouponService.findById("1")).thenReturn(coupon);
-        when(userServiceClientImpl.useCoupon(anyString(), eq(coupon.getId()))).thenReturn(usedCoupon);
+        when(usedCouponService.useCoupon(eq(coupon),anyLong())).thenReturn(usedCoupon);
 
         mockMvc.perform(post("/api/transaction-coupon/use")
                         .header("Authorization", "Bearer token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{ \"id\": \"1\" }"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void testFindUsedCouponsBySupermarketId_Unauthorized() {
+        String authorizationHeader = "authHeader";
+        String supermarketId = "supermarketId";
+
+        when(authServiceClientImpl.verifyUserAuthorization(CouponAction.READ.getValue(), authorizationHeader)).thenReturn(false);
+
+        ResponseEntity<Object> response = transactionCouponController.findUsedCouponsBySupermarketId(authorizationHeader, supermarketId);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals(ErrorStatus.UNAUTHORIZED.getValue(), response.getBody());
+    }
+
+    @Test
+    void testFindUsedCouponsBySupermarketId_Success() {
+        String authorizationHeader = "authHeader";
+        String supermarketId = "supermarketId";
+        Long userId = 1L;
+        List<UsedCoupon> usedCoupons = Arrays.asList(
+                new UsedCoupon(UUID.randomUUID(), supermarketId, userId),
+                new UsedCoupon(UUID.randomUUID(), supermarketId, userId)
+        );
+
+        when(authServiceClientImpl.verifyUserAuthorization(CouponAction.READ.getValue(), authorizationHeader)).thenReturn(true);
+        when(userServiceClientImpl.getUserId(authorizationHeader)).thenReturn(userId);
+        when(usedCouponService.getUsedCouponBySupermarket(supermarketId, userId)).thenReturn(usedCoupons);
+
+        ResponseEntity<Object> response = transactionCouponController.findUsedCouponsBySupermarketId(authorizationHeader, supermarketId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(usedCoupons, response.getBody());
     }
 }
