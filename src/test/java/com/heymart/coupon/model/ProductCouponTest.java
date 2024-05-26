@@ -115,6 +115,14 @@ class ProductCouponTest {
         assertTrue(ex.getMessage().contains("Percent discount cannot be negative"));
     }
     @Test
+    void setGreaterThanHundrtedPercentDiscount() {
+        ProductCoupon coupon = new ProductCoupon(10, 5, 20, "Supermarket", "123");
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                coupon.setPercentDiscount(110)
+        );
+        assertTrue(ex.getMessage().contains("Percent discount cannot be more than 100"));
+    }
+    @Test
     void setNegativeFixedDiscount() {
         ProductCoupon coupon = new ProductCoupon(10, 5, 20, "Supermarket", "123");
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
