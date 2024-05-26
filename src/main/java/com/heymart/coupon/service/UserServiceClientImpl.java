@@ -1,7 +1,6 @@
 package com.heymart.coupon.service;
 
 import com.heymart.coupon.dto.UserResponse;
-import com.heymart.coupon.repository.UsedCouponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -12,13 +11,11 @@ import java.util.Objects;
 
 @Service
 public class UserServiceClientImpl implements UserServiceClient {
-    RestTemplate restTemplate = new RestTemplate();
+    RestTemplate restTemplate;
     @Value("${user.api}")
     String userServiceUrl;
-    private final UsedCouponRepository usedCouponRepository;
     @Autowired
-    public UserServiceClientImpl(UsedCouponRepository usedCouponRepository, RestTemplate restTemplate) {
-        this.usedCouponRepository = usedCouponRepository;
+    public UserServiceClientImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 

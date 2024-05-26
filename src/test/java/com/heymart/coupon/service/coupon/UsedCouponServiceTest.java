@@ -49,8 +49,7 @@ class UsedCouponServiceTest {
     @Test
     void testDeleteUsedCouponsByCouponIdWhenCouponsExist() {
         CouponRequest request = new CouponRequest();
-        request.setId("c0a8012b-68e6-42d9-b99e-4f318a25e3a0");
-        UUID couponId = UUID.fromString(request.getId());
+        request.setId(couponId.toString());
 
         CompletableFuture<Void> future = usedCouponService.deleteUsedCouponsByCouponId(request);
 
@@ -61,9 +60,7 @@ class UsedCouponServiceTest {
     @Test
     void testDeleteUsedCouponsByCouponIdWhenCouponsDoNotExist() {
         CouponRequest request = new CouponRequest();
-        request.setId("c0a8012b-68e6-42d9-b99e-4f318a25e3a0");
-        UUID couponId = UUID.fromString(request.getId());
-
+        request.setId(couponId.toString());
 
         CompletableFuture<Void> future = usedCouponService.deleteUsedCouponsByCouponId(request);
 
@@ -97,7 +94,7 @@ class UsedCouponServiceTest {
     }
 
     @Test
-    public void testGetUsedCouponBySupermarket() {
+    void testGetUsedCouponBySupermarket() {
         // Setup
         String supermarketId = "someSupermarket";
         Long userId = 1L;
